@@ -1,5 +1,5 @@
 namespace :macgap do
   task :build do
-    `macgap --name Stylo ./public`
+    `macgap build --name Stylo ./public`
   end
 end

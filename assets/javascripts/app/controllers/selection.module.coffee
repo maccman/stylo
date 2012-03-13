@@ -18,10 +18,9 @@ class Area extends Spine.Controller
       @el.css(key)
 
   resize: (left, top) ->
-    dimensions = {
-      width:  left - @left,
+    dimensions =
+      width:  left - @left
       height: top  - @top
-    }
 
     # Support negative areas
     if dimensions.width < 0
@@ -44,7 +43,7 @@ class Selection extends Spine.Module
   constructor: (@elements = []) ->
 
   # Returns a property for an element selection.
-  # Returns null if any of the elements have a different value.
+  # Returns null unless all of the elements have the same value.
   get: (key) ->
     result = (el.get(key) for el in @elements)
     first  = result.shift()
@@ -52,18 +51,21 @@ class Selection extends Spine.Module
       return null
     return first
 
+  # Sets a property on all elements
   set: (key, value) ->
     el.set(key, value) for el in @elements
 
   isMultiple: ->
     @elements.length > 1
 
+  # Select an element
   add: (element) ->
     return if element in @elements
     @elements.push(element)
     element.trigger('selected', true)
     @trigger('change')
 
+  # Remove a selected element
   remove: (element) ->
     return if element not in @elements
     element.trigger('selected', false)

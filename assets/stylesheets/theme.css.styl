@@ -1,0 +1,86 @@
+@import 'mixins'
+
+body, html {
+  height: 100%
+  width: 100%
+  margin: 0
+  padding: 0
+  overflow: hidden
+  -webkit-user-select: none
+}
+
+body {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: stretch;
+
+  text-rendering: optimizeLegibility
+  -webkit-font-smoothing: antialiased
+  color: #626262;
+  font-family: 'Helvetica Neue', Helvetica, Arial Geneva, sans-serif;
+  font-size: 12px;
+}
+
+// * {
+//   -moz-box-sizing: border-box;
+//   -webkit-box-sizing: border-box;
+//   box-sizing: border-box;
+// }
+
+p {
+  margin: 0 0 10px 0
+  line-height: 1.5em
+}
+
+a {
+  color: #2D81C5
+  text-shadow: 0 1px 0 #FFF
+  text-decoration: none
+  cursor: pointer
+}
+
+::selection {
+  background: #E0EDF8
+  text-shadow: none
+}
+
+hr {
+  border: 1px solid lighten(#D1D1D1, 20%)
+  border-width: 1px 0 0 0
+  margin: 10px 0 20px 0
+}
+
+input[type=text], input[type=url], textarea {
+  padding: 3px
+  margin: 0
+  border: 1px solid rgba(0, 0, 0, 0.2)
+  inset-box-shadow(0, 1px, 2px, rgba(0, 0, 0, 0.1))
+}
+
+input[type=text], input[type=url], textarea, select {
+  &:focus {
+    outline: none
+    border-color: rgba(104, 189, 244, 0.8)
+
+    -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(104, 189, 244, 0.6)
+    -moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(104, 189, 244, 0.6)
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(104, 189, 244, 0.6)
+  }
+}
+
+textarea {
+  padding: 5px
+  height: 80px
+}
+
+.right {
+  float: right
+}
+
+.left {
+  float: left
+}
+
+.hidden {
+  display: none
+}

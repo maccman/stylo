@@ -11157,7 +11157,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
       position: 'absolute',
       width: '100px',
       height: '100px',
-      background: 'red',
+      background: 'rgba(0, 0, 0, 0.5)',
       left: '0',
       top: '0',
       minWidth: '1',
@@ -11169,12 +11169,16 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
       'dblclick': 'edit'
     };
 
-    function Element() {
-      this.selected = __bind(this.selected, this);      Element.__super__.constructor.apply(this, arguments);
+    function Element(attrs) {
+      if (attrs == null) attrs = {};
+      this.selected = __bind(this.selected, this);
+      Element.__super__.constructor.call(this);
       this.resizing = new Resizing(this);
       this.el.addClass('element');
-      this.set(this.defaults);
       this.bind('selected', this.selected);
+      this.set(this.defaults);
+      this.set(attrs);
+      this.log(attrs);
     }
 
     Element.prototype.get = function(key) {
@@ -11215,7 +11219,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
     };
 
     Element.prototype.select = function(e) {
-      return this.el.trigger('select', this);
+      return this.el.trigger('select', [this, e.shiftKey]);
     };
 
     Element.prototype.selected = function(bool) {
@@ -11347,6 +11351,53 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   })(Canvas);
 
   module.exports = Rectangle;
+
+}).call(this);
+;}});this.require.define({"app/controllers/header":function(exports, require, module){(function() {
+  var Header,
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  Header = (function(_super) {
+
+    __extends(Header, _super);
+
+    Header.prototype.tag = 'header';
+
+    Header.prototype.className = 'header';
+
+    function Header() {
+      Header.__super__.constructor.apply(this, arguments);
+      if (!this.stage) throw 'stage required';
+    }
+
+    return Header;
+
+  })(Spine.Controller);
+
+  module.exports = Header;
+
+}).call(this);
+;}});this.require.define({"app/controllers/inspector":function(exports, require, module){(function() {
+  var Inspector,
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  Inspector = (function(_super) {
+
+    __extends(Inspector, _super);
+
+    function Inspector() {
+      Inspector.__super__.constructor.apply(this, arguments);
+    }
+
+    Inspector.prototype.className = 'inspector';
+
+    return Inspector;
+
+  })(Spine.Controller);
+
+  module["export"] = Inspector;
 
 }).call(this);
 ;}});this.require.define({"app/controllers/resizing":function(exports, require, module){(function() {
@@ -11699,23 +11750,22 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
       this.add = __bind(this.add, this);      Stage.__super__.constructor.apply(this, arguments);
       this.selection = new Selection;
       this.elements = [];
-      this.add(new Rectangle);
-      this.rectangle2 = new Rectangle;
-      this.add(this.rectangle2);
-      this.rectangle2.set({
-        left: '200',
-        top: '200',
-        background: 'blue'
+      this.rectangle1 = new Rectangle({
+        background: 'url(assets/whitey.png)',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.4)'
       });
+      this.rectangle2 = new Rectangle({
+        left: '200px',
+        top: '200px',
+        background: 'url(assets/blacky.png)'
+      });
+      this.add(this.rectangle1);
+      this.add(this.rectangle2);
     }
 
     Stage.prototype.add = function(element) {
       this.elements.push(element);
       return this.append(element);
-    };
-
-    Stage.prototype.toDataURL = function(type) {
-      if (type == null) type = 'image/png';
     };
 
     Stage.prototype.dragListen = function(e) {
@@ -11725,8 +11775,8 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
         left: e.pageX,
         top: e.pageY
       };
-      $(document).mousemove(this.drag);
-      return $(document).mouseup(this.drop);
+      $(this.el).mousemove(this.drag);
+      return $(this.el).mouseup(this.drop);
     };
 
     Stage.prototype.drag = function(e) {
@@ -11740,12 +11790,12 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 
     Stage.prototype.drop = function(e) {
       this.selection.set('fix');
-      $(document).unbind('mousemove', this.drag);
-      return $(document).unbind('mouseup', this.drop);
+      $(this.el).unbind('mousemove', this.drag);
+      return $(this.el).unbind('mouseup', this.drop);
     };
 
-    Stage.prototype.select = function(e, element) {
-      if (!this.selection.isMultiple()) this.selection.clear();
+    Stage.prototype.select = function(e, element, modifier) {
+      if (!this.selection.isMultiple() && !modifier) this.selection.clear();
       return this.selection.add(element);
     };
 
@@ -11756,15 +11806,16 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
     Stage.prototype.selectAreaListen = function(e) {
       e.preventDefault();
       e.stopPropagation();
-      this.$selectArea = new Selection.Area(e.clientX, e.clientY);
+      this.offset = this.el.offset();
+      this.$selectArea = new Selection.Area(e.clientX - this.offset.left, e.clientY - this.offset.top);
       this.append(this.$selectArea);
-      $(document).mousemove(this.selectArea);
-      return $(document).mouseup(this.selectAreaRemove);
+      $(this.el).mousemove(this.selectArea);
+      return $(this.el).mouseup(this.selectAreaRemove);
     };
 
     Stage.prototype.selectArea = function(e) {
       var area, element, _i, _len, _ref, _results;
-      this.$selectArea.resize(e.clientX, e.clientY);
+      this.$selectArea.resize(e.clientX - this.offset.left, e.clientY - this.offset.top);
       area = this.$selectArea.area();
       _ref = this.elements;
       _results = [];
@@ -11781,8 +11832,8 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 
     Stage.prototype.selectAreaRemove = function(e) {
       this.$selectArea.remove();
-      $(document).unbind('mousemove', this.selectArea);
-      return $(document).unbind('mouseup', this.selectAreaRemove);
+      $(this.el).unbind('mousemove', this.selectArea);
+      return $(this.el).unbind('mouseup', this.selectAreaRemove);
     };
 
     Stage.prototype.resizeStart = function() {
@@ -11801,11 +11852,13 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 
 }).call(this);
 ;}});this.require.define({"app/index":function(exports, require, module){(function() {
-  var App, Stage,
+  var App, Header, Stage,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  Stage = require('app/controllers/stage');
+  Stage = require('./controllers/stage');
+
+  Header = require('./controllers/header');
 
   App = (function(_super) {
 
@@ -11815,7 +11868,11 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 
     function App() {
       App.__super__.constructor.apply(this, arguments);
-      this.append(this.stage = new Stage);
+      this.stage = new Stage;
+      this.header = new Header({
+        stage: this.stage
+      });
+      this.append(this.header, this.stage);
     }
 
     return App;

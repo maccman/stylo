@@ -5,7 +5,7 @@ class Element extends Spine.Controller
     position: 'absolute'
     width: '100px'
     height: '100px'
-    background: 'red'
+    background: 'rgba(0, 0, 0, 0.5)'
     left: '0'
     top: '0'
     minWidth: '1'
@@ -15,12 +15,14 @@ class Element extends Spine.Controller
     'mousedown': 'select'
     'dblclick':  'edit'
 
-  constructor: ->
-    super
+  constructor: (attrs = {}) ->
+    super()
     @resizing = new Resizing(this)
     @el.addClass('element')
-    @set @defaults
     @bind 'selected', @selected
+    @set @defaults
+    @set attrs
+    @log attrs
 
   get: (key) ->
     @[key]?() or @el.css(key)
@@ -43,7 +45,7 @@ class Element extends Spine.Controller
     @el.transform(translate3d: '0,0,0')
 
   select: (e) ->
-    @el.trigger('select', this)
+    @el.trigger('select', [this, e.shiftKey])
 
   selected: (bool) =>
     @el.toggleClass('selected', bool)

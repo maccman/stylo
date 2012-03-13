@@ -36,6 +36,4 @@ class Canvas extends Element
 
   borderRadius: (val) ->
 
-
-
 module.exports = Canvas

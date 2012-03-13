@@ -1,3 +1,8 @@
+A Photoshop replacement. Inspired by Keynote.
+
+##TODO
+
+Phase 1:
 
 * ✓ Move
 * ✓ Resize
@@ -5,6 +10,8 @@
 * ✓ Select multiple items
 * Toolbar menu
 * Property panel
+
+Phase 2:
 
 * Snapping
 * Pen tool
@@ -14,7 +21,10 @@
 * Z-index
 * Keyboard shortcuts
 
-Keynote!!!
+Nice to have:
+
+* Versioning
+* Exporting HTML
 
 ##Rulers & Snap
 

@@ -1,12 +1,4 @@
 /*
+= require theme
 = require_tree ./app
 */
-
-body {
-  margin: 0;
-  padding: 0;
-
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-box-align: stretch;
-}

@@ -17,17 +17,16 @@ class Stage extends Spine.Controller
     @selection = new Selection
     @elements  = []
 
-    # Test data
-    @add(new Rectangle)
-    @rectangle2 = new Rectangle
+    # FIXME: Test data
+    @rectangle1 = new Rectangle(background: 'url(assets/whitey.png)', boxShadow: '0 1px 3px rgba(0,0,0,0.4)')
+    @rectangle2 = new Rectangle(left: '200px', top: '200px', background: 'url(assets/blacky.png)')
+
+    @add(@rectangle1)
     @add(@rectangle2)
-    @rectangle2.set(left: '200', top: '200', background: 'blue')
 
   add: (element) =>
     @elements.push(element)
     @append(element)
-
-  toDataURL: (type = 'image/png') ->
 
   # Dragging elements
 
@@ -36,10 +35,10 @@ class Stage extends Spine.Controller
     e.stopPropagation()
 
     @dragPosition = {left: e.pageX, top: e.pageY}
-    $(document).mousemove(@drag)
-    $(document).mouseup(@drop)
+    $(@el).mousemove(@drag)
+    $(@el).mouseup(@drop)
 
-  # Snapping:
+  # TODO: Snapping:
   # - Middle of x axis
   # - Middle of y axis
   # - Middle of element x axis
@@ -56,13 +55,17 @@ class Stage extends Spine.Controller
 
   drop: (e) =>
     @selection.set('fix')
-    $(document).unbind('mousemove', @drag)
-    $(document).unbind('mouseup', @drop)
+    $(@el).unbind('mousemove', @drag)
+    $(@el).unbind('mouseup', @drop)
 
   # Selecting elements
 
-  select: (e, element) =>
-    @selection.clear() unless @selection.isMultiple()
+  select: (e, element, modifier) =>
+    # Clear selection unless multiple items are
+    # selected, or the shift key is pressed
+    if !@selection.isMultiple() and !modifier
+      @selection.clear()
+
     @selection.add(element)
 
   deselect: (e) =>
@@ -75,14 +78,25 @@ class Stage extends Spine.Controller
     e.preventDefault()
     e.stopPropagation()
 
-    @$selectArea = new Selection.Area(e.clientX, e.clientY)
+    # Mouse events need to be offset
+    # by the height of the header
+    @offset      = @el.offset()
+    @$selectArea = new Selection.Area(
+      e.clientX - @offset.left,
+      e.clientY - @offset.top
+    )
+
     @append(@$selectArea)
 
-    $(document).mousemove(@selectArea)
-    $(document).mouseup(@selectAreaRemove)
+    $(@el).mousemove(@selectArea)
+    $(@el).mouseup(@selectAreaRemove)
 
   selectArea: (e) =>
-    @$selectArea.resize(e.clientX, e.clientY)
+    @$selectArea.resize(
+      e.clientX - @offset.left,
+      e.clientY - @offset.top
+    )
+
     area = @$selectArea.area()
 
     for element in @elements
@@ -93,8 +107,8 @@ class Stage extends Spine.Controller
 
   selectAreaRemove: (e) =>
     @$selectArea.remove()
-    $(document).unbind('mousemove', @selectArea)
-    $(document).unbind('mouseup', @selectAreaRemove)
+    $(@el).unbind('mousemove', @selectArea)
+    $(@el).unbind('mouseup', @selectAreaRemove)
 
   # Resizing
 
@@ -103,6 +117,5 @@ class Stage extends Spine.Controller
 
   resizeEnd: ->
     @$('.thumb').show()
-
 
 module.exports = Stage

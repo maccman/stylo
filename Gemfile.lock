@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/maccman/guard-sprockets2.git
-  revision: c5ba5979959b480f90e59e015ebc855a70e6e50a
+  revision: 33bba41f012afbc3e7d849450a651796e9f6f218
   specs:
     guard-sprockets2 (0.0.2)
       guard

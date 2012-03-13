@@ -11090,7 +11090,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  Element = require('app/controllers/element');
+  Element = require('./element');
 
   Canvas = (function(_super) {
 
@@ -11104,11 +11104,6 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
       Canvas.__super__.constructor.apply(this, arguments);
       this.ctx = this.el[0].getContext('2d');
     }
-
-    Canvas.prototype.css = function() {
-      Canvas.__super__.css.apply(this, arguments);
-      return this.paint();
-    };
 
     Canvas.prototype.paint = function() {
       var first, point, points, _i, _len, _ref, _ref2, _ref3;
@@ -11147,26 +11142,57 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 
 }).call(this);
 ;}});this.require.define({"app/controllers/element":function(exports, require, module){(function() {
-  var Element,
+  var Element, Resizing,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  Resizing = require('./resizing');
 
   Element = (function(_super) {
 
     __extends(Element, _super);
 
+    Element.prototype.defaults = {
+      position: 'absolute',
+      width: '100px',
+      height: '100px',
+      background: 'red',
+      left: '0',
+      top: '0',
+      minWidth: '1',
+      minHeight: '1'
+    };
+
+    Element.prototype.events = {
+      'mousedown': 'select',
+      'dblclick': 'edit'
+    };
+
     function Element() {
-      Element.__super__.constructor.apply(this, arguments);
+      this.selected = __bind(this.selected, this);      Element.__super__.constructor.apply(this, arguments);
+      this.resizing = new Resizing(this);
+      this.el.addClass('element');
+      this.set(this.defaults);
+      this.bind('selected', this.selected);
     }
 
-    Element.prototype.css = function(types) {
-      var key, value, _results;
-      _results = [];
-      for (key in types) {
-        value = types[key];
-        _results.push((typeof this[key] === "function" ? this[key](value) : void 0) || this.el.css(key, value));
+    Element.prototype.get = function(key) {
+      return (typeof this[key] === "function" ? this[key]() : void 0) || this.el.css(key);
+    };
+
+    Element.prototype.set = function(key, value) {
+      var k, v, _results;
+      if (typeof key === 'object') {
+        _results = [];
+        for (k in key) {
+          v = key[k];
+          _results.push(this.set(k, v));
+        }
+        return _results;
+      } else {
+        return (typeof this[key] === "function" ? this[key](value) : void 0) || this.el.css(key, value);
       }
-      return _results;
     };
 
     Element.prototype.rotate = function(val) {
@@ -11175,11 +11201,84 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
       });
     };
 
+    Element.prototype.translate = function(position) {
+      var coords;
+      coords = [position.left, position.top, 0].join('px,');
+      return this.el.css('-webkit-transform', "translate3d(" + coords + ")");
+    };
+
+    Element.prototype.fix = function() {
+      this.el.css(this.el.position());
+      return this.el.transform({
+        translate3d: '0,0,0'
+      });
+    };
+
+    Element.prototype.select = function(e) {
+      return this.el.trigger('select', this);
+    };
+
+    Element.prototype.selected = function(bool) {
+      this.el.toggleClass('selected', bool);
+      return this.resizing.toggle(bool);
+    };
+
+    Element.prototype.area = function() {
+      var area;
+      area = this.el.position();
+      area.height = this.el.height();
+      area.width = this.el.width();
+      return area;
+    };
+
+    Element.prototype.areaPoints = function() {
+      var area;
+      area = this.area();
+      return [[area.left, area.top], [area.left + area.width, area.top], [area.left, area.top - area.height], [area.left + area.width, area.top - area.height]];
+    };
+
+    Element.prototype.inArea = function(testArea) {
+      var area;
+      area = this.area();
+      if ((area.left + area.width) > testArea.left && area.left < (testArea.left + testArea.width) && (area.top + area.height) > testArea.top && area.top < (testArea.top + testArea.height)) {
+        return true;
+      }
+      return false;
+    };
+
+    Element.prototype.edit = function() {
+      return this.el.attr('contenteditable', true);
+    };
+
     return Element;
 
   })(Spine.Controller);
 
   module.exports = Element;
+
+}).call(this);
+;}});this.require.define({"app/controllers/elements/ellipsis":function(exports, require, module){(function() {
+  var Element, Ellipsis,
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  Element = require('app/controllers/element');
+
+  Ellipsis = (function(_super) {
+
+    __extends(Ellipsis, _super);
+
+    function Ellipsis() {
+      Ellipsis.__super__.constructor.apply(this, arguments);
+    }
+
+    Ellipsis.prototype.className = 'ellipsis';
+
+    return Ellipsis;
+
+  })(Element);
+
+  module.exports = Ellipsis;
 
 }).call(this);
 ;}});this.require.define({"app/controllers/elements/rectangle":function(exports, require, module){(function() {
@@ -11197,11 +11296,37 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
       Rectangle.__super__.constructor.apply(this, arguments);
     }
 
+    Rectangle.prototype.className = 'rectangle';
+
     return Rectangle;
 
   })(Element);
 
   module.exports = Rectangle;
+
+}).call(this);
+;}});this.require.define({"app/controllers/elements/text":function(exports, require, module){(function() {
+  var Rectangle, Text,
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  Rectangle = require('./rectangle');
+
+  Text = (function(_super) {
+
+    __extends(Text, _super);
+
+    function Text() {
+      Text.__super__.constructor.apply(this, arguments);
+    }
+
+    Text.prototype.className = 'text';
+
+    return Text;
+
+  })(Rectangle);
+
+  module.exports = Text;
 
 }).call(this);
 ;}});this.require.define({"app/controllers/elements/triangle":function(exports, require, module){(function() {
@@ -11219,6 +11344,8 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
       Triangle.__super__.constructor.apply(this, arguments);
     }
 
+    Triangle.prototype.className = 'triangle';
+
     Triangle.prototype.points = [1, 2, 3];
 
     return Triangle;
@@ -11228,20 +11355,431 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = Rectangle;
 
 }).call(this);
-;}});this.require.define({"app/controllers/stage":function(exports, require, module){(function() {
-  var Stage,
+;}});this.require.define({"app/controllers/resizing":function(exports, require, module){(function() {
+  var Resizing, Thumb,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  Thumb = (function(_super) {
+
+    __extends(Thumb, _super);
+
+    Thumb.prototype.className = 'thumb';
+
+    Thumb.prototype.events = {
+      'mousedown': 'startListening'
+    };
+
+    function Thumb(type) {
+      this.type = type;
+      this.drop = __bind(this.drop, this);
+      this.drag = __bind(this.drag, this);
+      this.stopListening = __bind(this.stopListening, this);
+      this.startListening = __bind(this.startListening, this);
+      Thumb.__super__.constructor.call(this);
+      this.el.addClass(this.type);
+    }
+
+    Thumb.prototype.startListening = function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      this.dragPosition = {
+        left: e.pageX,
+        top: e.pageY
+      };
+      $(document).mousemove(this.drag);
+      return $(document).mouseup(this.drop);
+    };
+
+    Thumb.prototype.stopListening = function() {
+      $(document).unbind('mousemove', this.drag);
+      return $(document).unbind('mouseup', this.drop);
+    };
+
+    Thumb.prototype.drag = function(e) {
+      var difference;
+      difference = {
+        left: e.pageX - this.dragPosition.left,
+        top: e.pageY - this.dragPosition.top
+      };
+      this.dragPosition = {
+        left: e.pageX,
+        top: e.pageY
+      };
+      return this.el.trigger('resize.start', [this.type, difference]);
+    };
+
+    Thumb.prototype.drop = function(e) {
+      this.el.trigger('resize.end');
+      return this.stopListening();
+    };
+
+    return Thumb;
+
+  })(Spine.Controller);
+
+  Resizing = (function(_super) {
+
+    __extends(Resizing, _super);
+
+    Resizing.prototype.className = 'resizing';
+
+    Resizing.prototype.events = {
+      'resize.start': 'resize'
+    };
+
+    function Resizing(element) {
+      this.element = element;
+      Resizing.__super__.constructor.call(this, {
+        el: this.element.el
+      });
+    }
+
+    Resizing.prototype.render = function() {
+      this.thumbs = $('<div />');
+      this.thumbs.append(new Thumb('tl').el);
+      this.thumbs.append(new Thumb('tr').el);
+      this.thumbs.append(new Thumb('bl').el);
+      this.thumbs.append(new Thumb('br').el);
+      this.thumbs = this.thumbs.children();
+      return this.append(this.thumbs);
+    };
+
+    Resizing.prototype.remove = function() {
+      var _ref;
+      return (_ref = this.thumbs) != null ? _ref.remove() : void 0;
+    };
+
+    Resizing.prototype.toggle = function(bool) {
+      if (bool) {
+        return this.render();
+      } else {
+        return this.remove();
+      }
+    };
+
+    Resizing.prototype.resize = function(e, type, position) {
+      var area;
+      area = this.element.area();
+      switch (type) {
+        case 'tl':
+          area.width -= position.left;
+          area.height -= position.top;
+          area.top += position.top;
+          area.left += position.left;
+          break;
+        case 'tr':
+          area.width += position.left;
+          area.height -= position.top;
+          area.top += position.top;
+          break;
+        case 'bl':
+          area.width -= position.left;
+          area.height += position.top;
+          area.left += position.left;
+          break;
+        case 'br':
+          area.width += position.left;
+          area.height += position.top;
+      }
+      return this.element.set(area);
+    };
+
+    return Resizing;
+
+  })(Spine.Controller);
+
+  module.exports = Resizing;
+
+}).call(this);
+;}});this.require.define({"app/controllers/selection":function(exports, require, module){(function() {
+  var Area, Selection,
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
+    __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+  Area = (function(_super) {
+
+    __extends(Area, _super);
+
+    Area.prototype.className = 'selectArea';
+
+    function Area(left, top) {
+      this.left = left;
+      this.top = top;
+      Area.__super__.constructor.call(this);
+      this.set({
+        left: this.left,
+        top: this.top
+      });
+    }
+
+    Area.prototype.area = function() {
+      var area;
+      area = this.el.position();
+      area.height = this.el.height();
+      area.width = this.el.width();
+      return area;
+    };
+
+    Area.prototype.set = function(key, value) {
+      if (value != null) {
+        return this.el.css(key, value);
+      } else {
+        return this.el.css(key);
+      }
+    };
+
+    Area.prototype.resize = function(left, top) {
+      var dimensions;
+      dimensions = {
+        width: left - this.left,
+        height: top - this.top
+      };
+      if (dimensions.width < 0) {
+        dimensions.left = this.left + dimensions.width;
+        dimensions.width *= -1;
+      }
+      if (dimensions.height < 0) {
+        dimensions.top = this.top + dimensions.height;
+        dimensions.height *= -1;
+      }
+      return this.set(dimensions);
+    };
+
+    Area.prototype.remove = function() {
+      return this.el.remove();
+    };
+
+    return Area;
+
+  })(Spine.Controller);
+
+  Selection = (function(_super) {
+
+    __extends(Selection, _super);
+
+    Selection.include(Spine.Events);
+
+    Selection.Area = Area;
+
+    function Selection(elements) {
+      this.elements = elements != null ? elements : [];
+    }
+
+    Selection.prototype.get = function(key) {
+      var el, first, result, value, _i, _len;
+      result = (function() {
+        var _i, _len, _ref, _results;
+        _ref = this.elements;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          el = _ref[_i];
+          _results.push(el.get(key));
+        }
+        return _results;
+      }).call(this);
+      first = result.shift();
+      for (_i = 0, _len = result.length; _i < _len; _i++) {
+        value = result[_i];
+        if (value !== first) return null;
+      }
+      return first;
+    };
+
+    Selection.prototype.set = function(key, value) {
+      var el, _i, _len, _ref, _results;
+      _ref = this.elements;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        el = _ref[_i];
+        _results.push(el.set(key, value));
+      }
+      return _results;
+    };
+
+    Selection.prototype.isMultiple = function() {
+      return this.elements.length > 1;
+    };
+
+    Selection.prototype.add = function(element) {
+      if (__indexOf.call(this.elements, element) >= 0) return;
+      this.elements.push(element);
+      element.trigger('selected', true);
+      return this.trigger('change');
+    };
+
+    Selection.prototype.remove = function(element) {
+      var elements, index;
+      if (__indexOf.call(this.elements, element) < 0) return;
+      element.trigger('selected', false);
+      index = this.elements.indexOf(element);
+      elements = this.elements.slice();
+      elements.splice(index, 1);
+      this.elements = elements;
+      return this.trigger('change');
+    };
+
+    Selection.prototype.refresh = function(elements) {
+      var el, _i, _len, _results;
+      this.clear();
+      _results = [];
+      for (_i = 0, _len = elements.length; _i < _len; _i++) {
+        el = elements[_i];
+        _results.push(this.add(el));
+      }
+      return _results;
+    };
+
+    Selection.prototype.clear = function() {
+      var el, _i, _len, _ref, _results;
+      _ref = this.elements;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        el = _ref[_i];
+        _results.push(this.remove(el));
+      }
+      return _results;
+    };
+
+    return Selection;
+
+  })(Spine.Module);
+
+  module.exports = Selection;
+
+}).call(this);
+;}});this.require.define({"app/controllers/stage":function(exports, require, module){(function() {
+  var Rectangle, Selection, Stage,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  Rectangle = require('./elements/rectangle');
+
+  Selection = require('./selection');
 
   Stage = (function(_super) {
 
     __extends(Stage, _super);
 
+    Stage.prototype.className = 'stage';
+
+    Stage.prototype.events = {
+      'select': 'select',
+      'mousedown.deselect': 'deselect',
+      'mousedown .selected': 'dragListen',
+      'mousedown.selectarea': 'selectAreaListen',
+      'resize.start': 'resizeStart',
+      'resize.end': 'resizeEnd'
+    };
+
     function Stage() {
-      Stage.__super__.constructor.apply(this, arguments);
+      this.selectAreaRemove = __bind(this.selectAreaRemove, this);
+      this.selectArea = __bind(this.selectArea, this);
+      this.selectAreaListen = __bind(this.selectAreaListen, this);
+      this.deselect = __bind(this.deselect, this);
+      this.select = __bind(this.select, this);
+      this.drop = __bind(this.drop, this);
+      this.drag = __bind(this.drag, this);
+      this.dragListen = __bind(this.dragListen, this);
+      this.add = __bind(this.add, this);      Stage.__super__.constructor.apply(this, arguments);
+      this.selection = new Selection;
+      this.elements = [];
+      this.add(new Rectangle);
+      this.rectangle2 = new Rectangle;
+      this.add(this.rectangle2);
+      this.rectangle2.set({
+        left: '200',
+        top: '200',
+        background: 'blue'
+      });
     }
 
-    Stage.prototype.className = 'stage';
+    Stage.prototype.add = function(element) {
+      this.elements.push(element);
+      return this.append(element);
+    };
+
+    Stage.prototype.toDataURL = function(type) {
+      if (type == null) type = 'image/png';
+    };
+
+    Stage.prototype.dragListen = function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      this.dragPosition = {
+        left: e.pageX,
+        top: e.pageY
+      };
+      $(document).mousemove(this.drag);
+      return $(document).mouseup(this.drop);
+    };
+
+    Stage.prototype.drag = function(e) {
+      var difference;
+      difference = {
+        left: e.pageX - this.dragPosition.left,
+        top: e.pageY - this.dragPosition.top
+      };
+      return this.selection.set('translate', difference);
+    };
+
+    Stage.prototype.drop = function(e) {
+      this.selection.set('fix');
+      $(document).unbind('mousemove', this.drag);
+      return $(document).unbind('mouseup', this.drop);
+    };
+
+    Stage.prototype.select = function(e, element) {
+      if (!this.selection.isMultiple()) this.selection.clear();
+      return this.selection.add(element);
+    };
+
+    Stage.prototype.deselect = function(e) {
+      if (e.target === e.currentTarget) return this.selection.clear();
+    };
+
+    Stage.prototype.selectAreaListen = function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      this.$selectArea = new Selection.Area(e.clientX, e.clientY);
+      this.append(this.$selectArea);
+      $(document).mousemove(this.selectArea);
+      return $(document).mouseup(this.selectAreaRemove);
+    };
+
+    Stage.prototype.selectArea = function(e) {
+      var area, element, _i, _len, _ref, _results;
+      this.$selectArea.resize(e.clientX, e.clientY);
+      area = this.$selectArea.area();
+      _ref = this.elements;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        element = _ref[_i];
+        if (element.inArea(area)) {
+          _results.push(this.selection.add(element));
+        } else {
+          _results.push(this.selection.remove(element));
+        }
+      }
+      return _results;
+    };
+
+    Stage.prototype.selectAreaRemove = function(e) {
+      this.$selectArea.remove();
+      $(document).unbind('mousemove', this.selectArea);
+      return $(document).unbind('mouseup', this.selectAreaRemove);
+    };
+
+    Stage.prototype.resizeStart = function() {
+      return this.$('.thumb').hide();
+    };
+
+    Stage.prototype.resizeEnd = function() {
+      return this.$('.thumb').show();
+    };
 
     return Stage;
 

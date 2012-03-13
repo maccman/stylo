@@ -33,6 +33,7 @@ class App < Sinatra::Base
 
     sprockets.register_engine '.styl', Tilt::StylusTemplate
     sprockets.register_preprocessor 'text/css', Stylus::ImportProcessor
+    Stylus.paths.concat sprockets.paths
 
     sprockets.append_path(Sprockets::CommonJS::ASSETS_PATH)
 

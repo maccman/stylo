@@ -1,3 +1,48 @@
+@import 'mixins'
+
 #app .stage {
+  vbox()
+  box-flex(1)
+
   background: url('bg-grid.png')
+  position: relative
+
+  .element.selected {
+    // outline: 1px dotted rgba(0, 0, 0, 1)
+  }
+
+  .resizing .thumb {
+    position: absolute
+    width: 6px
+    height: 6px
+    background: #FFF
+    border: 1px solid #000
+    cursor: pointer
+
+    &.tl {
+      left: -3px
+      top: -3px
+    }
+
+    &.tr {
+      right: -3px
+      top: -3px
+    }
+
+    &.bl {
+      left: -3px
+      bottom: -3px
+    }
+
+    &.br {
+      right: -3px
+      bottom: -3px
+    }
+  }
+
+  .selectArea {
+    position: absolute
+    border: 1px solid rgba(0, 0, 255, 0.3)
+    background: rgba(0, 0, 255, 0.2)
+  }
 }

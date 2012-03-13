@@ -1,6 +1,66 @@
+#app {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  -moz-box-align: stretch;
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  box-flex: 1;
+}
 #app .stage {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  -moz-box-align: stretch;
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  box-flex: 1;
   background: url("bg-grid.png");
+  position: relative;
+}
+#app .stage .resizing .thumb {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #fff;
+  border: 1px solid #000;
+  cursor: pointer;
+}
+#app .stage .resizing .thumb.tl {
+  left: -3px;
+  top: -3px;
+}
+#app .stage .resizing .thumb.tr {
+  right: -3px;
+  top: -3px;
+}
+#app .stage .resizing .thumb.bl {
+  left: -3px;
+  bottom: -3px;
+}
+#app .stage .resizing .thumb.br {
+  right: -3px;
+  bottom: -3px;
+}
+#app .stage .selectArea {
+  position: absolute;
+  border: 1px solid rgba(0,0,255,0.30);
+  background: rgba(0,0,255,0.20);
 }
 /*
 
 */
+
+
+body {
+  margin: 0;
+  padding: 0;
+
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: stretch;
+}

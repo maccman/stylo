@@ -1,4 +1,4 @@
-Element = require('app/controllers/element')
+Element = require('./element')
 
 class Canvas extends Element
   tag: 'canvas'
@@ -8,10 +8,6 @@ class Canvas extends Element
   constructor: ->
     super
     @ctx = @el[0].getContext('2d')
-
-  css: ->
-    super
-    @paint()
 
   paint: ->
     first  = @points[0]

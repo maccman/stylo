@@ -1,8 +1,36 @@
 
+* ✓ Move
 * Resize
-* Move
-* Text
+* Select
+* Select multiple items
+* Pen tool
+* Layers
+* Color picker
+* Scaling stage & size
+* Z-index
 
+Keynote!!!
+
+##Selected
+
+Listen to drag events - move element around
+When an element is selected, create 6 elements for resizing the element
+If mouse is outside the selected element - a drag rotates the element
+
+##Rulers & Snap
+
+When moving element - cycle through all the other elements, compare the sides - inject rulers if necessary. Also show rulers for center of page. Need to think about how multiple selected items works.
+
+##Elements
+
+* Triangle
+* Rectangle
+* Ellipsis
+* Form elements
+* Text
+* Image
+* Line tool?
+* Link?
 
 ##Canvas CSS properties
 

@@ -1,0 +1,89 @@
+border-radius()
+  -moz-border-radius: arguments
+  -webkit-border-radius: arguments
+  border-radius: arguments
+
+/* Vertical Background Gradient */
+vbg-gradient(fc = #FFF, tc = #FFF)
+  background: fc
+  background: -webkit-gradient(linear, left top, left bottom, from(fc), to(tc))
+  background: -moz-linear-gradient(top, fc, tc)
+  background: linear-gradient(top, fc, tc)
+
+/* Horizontal Background Gradient */
+hbg-gradient(fc = #FFF, tc = #FFF)
+  background: fc
+  background: -webkit-gradient(linear, left top, right top, from(fc), to(tc))
+  background: -moz-linear-gradient(left, fc, tc)
+  background: linear-gradient(left, fc, tc)
+
+box-shadow()
+  -moz-box-shadow: arguments
+  -webkit-box-shadow: arguments
+  box-shadow: arguments
+
+inset-box-shadow()
+  -moz-box-shadow: inset arguments
+  -webkit-box-shadow: inset arguments
+  box-shadow: inset arguments
+
+box-flex(s = 0)
+  -webkit-box-flex: s
+  -moz-box-flex: s
+  box-flex: s
+
+hbox()
+  display: -webkit-box
+  -webkit-box-orient: horizontal
+  -webkit-box-align: stretch
+  -webkit-box-pack: start
+
+  display: -moz-box
+  -moz-box-orient: horizontal
+  -moz-box-align: stretch
+  -moz-box-pack: start
+
+vbox()
+  display: -webkit-box
+  -webkit-box-orient: vertical
+  -webkit-box-align: stretch
+
+  display: -moz-box
+  -moz-box-orient: vertical
+  -moz-box-align: stretch
+
+border-box()
+  -webkit-box-sizing: border-box
+  -moz-box-sizing: border-box
+  box-sizing: border-box
+
+transition(s = 0.3s, o =  opacity, t = linear)
+  -webkit-transition: s o t
+  -moz-transition: s o t
+  transition: s o t
+
+ellipsis()
+  text-overflow: ellipsis
+  overflow: hidden
+  white-space:nowrap
+
+inset-line(opacity = 0.4, size = 1px)
+  inset-box-shadow(0, size, 0, rgba(255, 255, 255, opacity))
+
+outset-line(opacity = 0.4, size = 1px)
+  box-shadow(0, size, 0, rgba(255, 255, 255, opacity))
+
+box-pack(type = center)
+  -webkit-box-pack: type
+  -moz-box-pack: type
+  box-pack: type
+
+transform(tr)
+  -webkit-transform: tr
+  -moz-transform: tr
+  -ms-transform: tr
+  -o-transform: tr
+  transform: tr
+
+hacel()
+  transform(translate3d(0,0,0))

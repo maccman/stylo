@@ -24,9 +24,21 @@
       top: -3px
     }
 
+    &.tt {
+      margin-left: -3px
+      left: 50%
+      top:-3px
+    }
+
     &.tr {
       right: -3px
       top: -3px
+    }
+
+    &.rr {
+      right: -3px
+      top: 50%
+      margin-top: -3px
     }
 
     &.bl {
@@ -34,15 +46,28 @@
       bottom: -3px
     }
 
+    &.bb {
+      left: 50%
+      bottom: -3px
+      margin-left: -3px
+    }
+
     &.br {
       right: -3px
       bottom: -3px
+    }
+
+    &.ll {
+      top: 50%
+      left: -3px
+      margin-top: -3px
     }
   }
 
   .selectArea {
     position: absolute
-    border: 1px solid rgba(0, 0, 255, 0.3)
-    background: rgba(0, 0, 255, 0.2)
+    border: 1px solid rgba(0, 0, 250, 0.15)
+    background: rgba(0, 0, 250, 0.1)
+    z-index: 1000
   }
 }

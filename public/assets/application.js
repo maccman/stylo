@@ -11439,9 +11439,13 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
     Resizing.prototype.render = function() {
       this.thumbs = $('<div />');
       this.thumbs.append(new Thumb('tl').el);
+      this.thumbs.append(new Thumb('tt').el);
       this.thumbs.append(new Thumb('tr').el);
-      this.thumbs.append(new Thumb('bl').el);
+      this.thumbs.append(new Thumb('rr').el);
       this.thumbs.append(new Thumb('br').el);
+      this.thumbs.append(new Thumb('bb').el);
+      this.thumbs.append(new Thumb('bl').el);
+      this.thumbs.append(new Thumb('ll').el);
       this.thumbs = this.thumbs.children();
       return this.append(this.thumbs);
     };
@@ -11469,19 +11473,33 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
           area.top += position.top;
           area.left += position.left;
           break;
+        case 'tt':
+          area.height -= position.top;
+          area.top += position.top;
+          break;
         case 'tr':
           area.width += position.left;
           area.height -= position.top;
           area.top += position.top;
+          break;
+        case 'rr':
+          area.width += position.left;
+          break;
+        case 'br':
+          area.width += position.left;
+          area.height += position.top;
+          break;
+        case 'bb':
+          area.height += position.top;
           break;
         case 'bl':
           area.width -= position.left;
           area.height += position.top;
           area.left += position.left;
           break;
-        case 'br':
-          area.width += position.left;
-          area.height += position.top;
+        case 'll':
+          area.width -= position.left;
+          area.left += position.left;
       }
       return this.element.set(area);
     };

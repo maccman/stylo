@@ -43,9 +43,13 @@ class Resizing extends Spine.Controller
   render: ->
     @thumbs = $('<div />')
     @thumbs.append(new Thumb('tl').el)
+    @thumbs.append(new Thumb('tt').el)
     @thumbs.append(new Thumb('tr').el)
-    @thumbs.append(new Thumb('bl').el)
+    @thumbs.append(new Thumb('rr').el)
     @thumbs.append(new Thumb('br').el)
+    @thumbs.append(new Thumb('bb').el)
+    @thumbs.append(new Thumb('bl').el)
+    @thumbs.append(new Thumb('ll').el)
     @thumbs = @thumbs.children()
     @append(@thumbs)
 
@@ -65,19 +69,29 @@ class Resizing extends Spine.Controller
 
         area.top    += position.top
         area.left   += position.left
+      when 'tt'
+        area.height -= position.top
+        area.top    += position.top
       when 'tr'
         area.width  += position.left
         area.height -= position.top
 
         area.top    += position.top
+      when 'rr'
+        area.width  += position.left
+      when 'br'
+        area.width  += position.left
+        area.height += position.top
+      when 'bb'
+        area.height += position.top
       when 'bl'
         area.width  -= position.left
         area.height += position.top
 
         area.left   += position.left
-      when 'br'
-        area.width  += position.left
-        area.height += position.top
+      when 'll'
+        area.width  -= position.left
+        area.left   += position.left
 
     @element.set(area)
 

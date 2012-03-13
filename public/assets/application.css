@@ -34,22 +34,43 @@
   left: -3px;
   top: -3px;
 }
+#app .stage .resizing .thumb.tt {
+  margin-left: -3px;
+  left: 50%;
+  top: -3px;
+}
 #app .stage .resizing .thumb.tr {
   right: -3px;
   top: -3px;
+}
+#app .stage .resizing .thumb.rr {
+  right: -3px;
+  top: 50%;
+  margin-top: -3px;
 }
 #app .stage .resizing .thumb.bl {
   left: -3px;
   bottom: -3px;
 }
+#app .stage .resizing .thumb.bb {
+  left: 50%;
+  bottom: -3px;
+  margin-left: -3px;
+}
 #app .stage .resizing .thumb.br {
   right: -3px;
   bottom: -3px;
 }
+#app .stage .resizing .thumb.ll {
+  top: 50%;
+  left: -3px;
+  margin-top: -3px;
+}
 #app .stage .selectArea {
   position: absolute;
-  border: 1px solid rgba(0,0,255,0.30);
-  background: rgba(0,0,255,0.20);
+  border: 1px solid rgba(0,0,250,0.15);
+  background: rgba(0,0,250,0.10);
+  z-index: 1000;
 }
 /*
 

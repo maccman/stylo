@@ -66,29 +66,33 @@ class Resizing extends Spine.Controller
       when 'tl'
         area.width  -= position.left
         area.height -= position.top
-
         area.top    += position.top
         area.left   += position.left
+
       when 'tt'
         area.height -= position.top
         area.top    += position.top
+
       when 'tr'
         area.width  += position.left
         area.height -= position.top
-
         area.top    += position.top
+
       when 'rr'
         area.width  += position.left
+
       when 'br'
         area.width  += position.left
         area.height += position.top
+
       when 'bb'
         area.height += position.top
+
       when 'bl'
         area.width  -= position.left
         area.height += position.top
-
         area.left   += position.left
+
       when 'll'
         area.width  -= position.left
         area.left   += position.left

@@ -39,6 +39,14 @@ class Stage extends Spine.Controller
     $(document).mousemove(@drag)
     $(document).mouseup(@drop)
 
+  # Snapping:
+  # - Middle of x axis
+  # - Middle of y axis
+  # - Middle of element x axis
+  # - Middle of element y axis
+  # - Same distance from two elements
+  # - Element edge?
+
   drag: (e) =>
     difference =
       left: e.pageX - @dragPosition.left

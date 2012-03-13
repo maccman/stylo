@@ -55,16 +55,6 @@ class Element extends Spine.Controller
     area.width  = @el.width()
     area
 
-  areaPoints: ->
-    area = @area()
-
-    [
-      [area.left, area.top],                # Top left
-      [area.left + area.width, area.top],   # Top right
-      [area.left, area.top - area.height],  # Bottom left
-      [area.left + area.width, area.top - area.height] # Bottom right
-    ]
-
   inArea: (testArea) ->
     area = @area()
 

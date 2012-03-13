@@ -1,21 +1,20 @@
 
 * ✓ Move
-* Resize
-* Select
-* Select multiple items
+* ✓ Resize
+* ✓ Select
+* ✓ Select multiple items
+* Toolbar menu
+* Property panel
+
+* Snapping
 * Pen tool
 * Layers
 * Color picker
 * Scaling stage & size
 * Z-index
+* Keyboard shortcuts
 
 Keynote!!!
-
-##Selected
-
-Listen to drag events - move element around
-When an element is selected, create 6 elements for resizing the element
-If mouse is outside the selected element - a drag rotates the element
 
 ##Rulers & Snap
 
@@ -24,7 +23,7 @@ When moving element - cycle through all the other elements, compare the sides - 
 ##Elements
 
 * Triangle
-* Rectangle
+* ✓ Rectangle
 * Ellipsis
 * Form elements
 * Text

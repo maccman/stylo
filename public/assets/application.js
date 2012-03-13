@@ -11231,12 +11231,6 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
       return area;
     };
 
-    Element.prototype.areaPoints = function() {
-      var area;
-      area = this.area();
-      return [[area.left, area.top], [area.left + area.width, area.top], [area.left, area.top - area.height], [area.left + area.width, area.top - area.height]];
-    };
-
     Element.prototype.inArea = function(testArea) {
       var area;
       area = this.area();

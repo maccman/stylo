@@ -17,62 +17,6 @@ body {
   font-family: 'Helvetica Neue', Helvetica, Arial Geneva, sans-serif;
   font-size: 12px;
 }
-p {
-  margin: 0 0 10px 0;
-  line-height: 1.5em;
-}
-a {
-  color: #2d81c5;
-  text-shadow: 0 1px 0 #fff;
-  text-decoration: none;
-  cursor: pointer;
-}
-::selection {
-  background: #e0edf8;
-  text-shadow: none;
-}
-hr {
-  border: 1px solid #dadada;
-  border-width: 1px 0 0 0;
-  margin: 10px 0 20px 0;
-}
-input[type=text],
-input[type=url],
-textarea {
-  padding: 3px;
-  margin: 0;
-  border: 1px solid rgba(0,0,0,0.20);
-  -moz-box-shadow: inset 0 1px 2px rgba(0,0,0,0.10);
-  -webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,0.10);
-  -moz-box-shadow: inset 0 1px 2px rgba(0,0,0,0.10);
-  -webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,0.10);
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.10);
-}
-input[type=text]:focus,
-input[type=url]:focus,
-textarea:focus,
-select:focus {
-  outline: none;
-  border-color: rgba(104,189,244,0.80);
-  -webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,0.20), 0 1px 5px 0 rgba(104,189,244,0.60);
-  -moz-box-shadow: inset 0 1px 2px rgba(0,0,0,0.20), 0 1px 5px 0 rgba(104,189,244,0.60);
-  -moz-box-shadow: inset 0 1px 2px rgba(0,0,0,0.20), 0 1px 5px 0 rgba(104,189,244,0.60);
-  -webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,0.20), 0 1px 5px 0 rgba(104,189,244,0.60);
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.20), 0 1px 5px 0 rgba(104,189,244,0.60);
-}
-textarea {
-  padding: 5px;
-  height: 80px;
-}
-.right {
-  float: right;
-}
-.left {
-  float: left;
-}
-.hidden {
-  display: none;
-}
 #app .header {
   height: 40px;
   line-height: 40px;

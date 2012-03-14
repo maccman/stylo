@@ -97,6 +97,6 @@ class Resizing extends Spine.Controller
         area.width  -= position.left
         area.left   += position.left
 
-    @element.set(area)
+    @element.resize(area)
 
 module.exports = Resizing

@@ -62,13 +62,13 @@ class Selection extends Spine.Module
   add: (element) ->
     return if element in @elements
     @elements.push(element)
-    element.trigger('selected', true)
+    element.selected(true)
     @trigger('change')
 
   # Remove a selected element
   remove: (element) ->
     return if element not in @elements
-    element.trigger('selected', false)
+    element.selected(false)
 
     index    = @elements.indexOf(element)
     elements = @elements.slice()

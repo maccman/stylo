@@ -11141,6 +11141,66 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = Canvas;
 
 }).call(this);
+;}});this.require.define({"app/controllers/dragging":function(exports, require, module){(function() {
+  var Dragging,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  Dragging = (function(_super) {
+
+    __extends(Dragging, _super);
+
+    Dragging.prototype.events = {
+      'mousedown .selected': 'listen'
+    };
+
+    function Dragging(stage) {
+      this.stage = stage;
+      this.drop = __bind(this.drop, this);
+      this.drag = __bind(this.drag, this);
+      this.listen = __bind(this.listen, this);
+      Dragging.__super__.constructor.call(this, {
+        el: this.stage.el
+      });
+    }
+
+    Dragging.prototype.listen = function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      this.dragPosition = {
+        left: e.pageX,
+        top: e.pageY
+      };
+      $(this.el).mousemove(this.drag);
+      return $(this.el).mouseup(this.drop);
+    };
+
+    Dragging.prototype.drag = function(e) {
+      var difference;
+      difference = {
+        left: e.pageX - this.dragPosition.left,
+        top: e.pageY - this.dragPosition.top
+      };
+      this.dragPosition = {
+        left: e.pageX,
+        top: e.pageY
+      };
+      return this.stage.selection.set('move', difference);
+    };
+
+    Dragging.prototype.drop = function(e) {
+      $(this.el).unbind('mousemove', this.drag);
+      return $(this.el).unbind('mouseup', this.drop);
+    };
+
+    return Dragging;
+
+  })(Spine.Controller);
+
+  module.exports = Dragging;
+
+}).call(this);
 ;}});this.require.define({"app/controllers/element":function(exports, require, module){(function() {
   var Element, Resizing,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
@@ -11175,10 +11235,8 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
       Element.__super__.constructor.call(this);
       this.resizing = new Resizing(this);
       this.el.addClass('element');
-      this.bind('selected', this.selected);
       this.set(this.defaults);
       this.set(attrs);
-      this.log(attrs);
     }
 
     Element.prototype.get = function(key) {
@@ -11205,17 +11263,18 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
       });
     };
 
-    Element.prototype.translate = function(position) {
-      var coords;
-      coords = [position.left, position.top, 0].join('px,');
-      return this.el.css('-webkit-transform', "translate3d(" + coords + ")");
+    Element.prototype.resize = function(area) {
+      this.el.css(area);
+      return this.el.trigger('resized', this);
     };
 
-    Element.prototype.fix = function() {
-      this.el.css(this.el.position());
-      return this.el.transform({
-        translate3d: '0,0,0'
-      });
+    Element.prototype.move = function(toPosition) {
+      var position;
+      position = this.el.position();
+      position.left += toPosition.left;
+      position.top += toPosition.top;
+      this.el.css(position);
+      return this.el.trigger('moved', this);
     };
 
     Element.prototype.select = function(e) {
@@ -11266,11 +11325,14 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 
     __extends(Ellipsis, _super);
 
+    Ellipsis.prototype.className = 'ellipsis';
+
     function Ellipsis() {
       Ellipsis.__super__.constructor.apply(this, arguments);
+      this.set({
+        borderRadius: '50%'
+      });
     }
-
-    Ellipsis.prototype.className = 'ellipsis';
 
     return Ellipsis;
 
@@ -11546,7 +11608,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
           area.width -= position.left;
           area.left += position.left;
       }
-      return this.element.set(area);
+      return this.element.resize(area);
     };
 
     return Resizing;
@@ -11554,6 +11616,129 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   })(Spine.Controller);
 
   module.exports = Resizing;
+
+}).call(this);
+;}});this.require.define({"app/controllers/select_area":function(exports, require, module){(function() {
+  var Area, SelectArea,
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
+  Area = (function(_super) {
+
+    __extends(Area, _super);
+
+    Area.prototype.className = 'selectArea';
+
+    function Area(left, top) {
+      this.left = left;
+      this.top = top;
+      Area.__super__.constructor.call(this);
+      this.set({
+        left: this.left,
+        top: this.top
+      });
+    }
+
+    Area.prototype.area = function() {
+      var area;
+      area = this.el.position();
+      area.height = this.el.height();
+      area.width = this.el.width();
+      return area;
+    };
+
+    Area.prototype.set = function(key, value) {
+      if (value != null) {
+        return this.el.css(key, value);
+      } else {
+        return this.el.css(key);
+      }
+    };
+
+    Area.prototype.resize = function(left, top) {
+      var dimensions;
+      dimensions = {
+        width: left - this.left,
+        height: top - this.top
+      };
+      if (dimensions.width < 0) {
+        dimensions.left = this.left + dimensions.width;
+        dimensions.width *= -1;
+      }
+      if (dimensions.height < 0) {
+        dimensions.top = this.top + dimensions.height;
+        dimensions.height *= -1;
+      }
+      return this.set(dimensions);
+    };
+
+    Area.prototype.remove = function() {
+      return this.el.remove();
+    };
+
+    return Area;
+
+  })(Spine.Controller);
+
+  SelectArea = (function(_super) {
+
+    __extends(SelectArea, _super);
+
+    SelectArea.prototype.events = {
+      'mousedown': 'listen'
+    };
+
+    function SelectArea(stage) {
+      this.stage = stage;
+      this.drop = __bind(this.drop, this);
+      this.drag = __bind(this.drag, this);
+      this.listen = __bind(this.listen, this);
+      SelectArea.__super__.constructor.call(this, {
+        el: this.stage.el
+      });
+    }
+
+    SelectArea.prototype.listen = function(e) {
+      var _ref;
+      e.preventDefault();
+      e.stopPropagation();
+      if ((_ref = this.$selectArea) != null) _ref.remove();
+      this.offset = this.el.offset();
+      this.$selectArea = new Area(e.clientX - this.offset.left, e.clientY - this.offset.top);
+      this.append(this.$selectArea);
+      $(this.el).mousemove(this.drag);
+      return $(this.el).mouseup(this.drop);
+    };
+
+    SelectArea.prototype.drag = function(e) {
+      var area, element, _i, _len, _ref, _results;
+      this.$selectArea.resize(e.clientX - this.offset.left, e.clientY - this.offset.top);
+      area = this.$selectArea.area();
+      _ref = this.stage.elements;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        element = _ref[_i];
+        if (element.inArea(area)) {
+          _results.push(this.stage.selection.add(element));
+        } else {
+          _results.push(this.stage.selection.remove(element));
+        }
+      }
+      return _results;
+    };
+
+    SelectArea.prototype.drop = function(e) {
+      this.$selectArea.remove();
+      $(this.el).unbind('mousemove', this.drag);
+      return $(this.el).unbind('mouseup', this.drop);
+    };
+
+    return SelectArea;
+
+  })(Spine.Controller);
+
+  module.exports = SelectArea;
 
 }).call(this);
 ;}});this.require.define({"app/controllers/selection":function(exports, require, module){(function() {
@@ -11669,14 +11854,14 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
     Selection.prototype.add = function(element) {
       if (__indexOf.call(this.elements, element) >= 0) return;
       this.elements.push(element);
-      element.trigger('selected', true);
+      element.selected(true);
       return this.trigger('change');
     };
 
     Selection.prototype.remove = function(element) {
       var elements, index;
       if (__indexOf.call(this.elements, element) < 0) return;
-      element.trigger('selected', false);
+      element.selected(false);
       index = this.elements.indexOf(element);
       elements = this.elements.slice();
       elements.splice(index, 1);
@@ -11714,14 +11899,21 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 
 }).call(this);
 ;}});this.require.define({"app/controllers/stage":function(exports, require, module){(function() {
-  var Rectangle, Selection, Stage,
+  var Dragging, Ellipsis, Rectangle, SelectArea, Selection, Stage,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
+    __slice = Array.prototype.slice;
 
   Rectangle = require('./elements/rectangle');
 
+  Ellipsis = require('./elements/ellipsis');
+
   Selection = require('./selection');
+
+  Dragging = require('./dragging');
+
+  SelectArea = require('./select_area');
 
   Stage = (function(_super) {
 
@@ -11732,66 +11924,44 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
     Stage.prototype.events = {
       'select': 'select',
       'mousedown.deselect': 'deselect',
-      'mousedown .selected': 'dragListen',
-      'mousedown.selectarea': 'selectAreaListen',
       'resize.start': 'resizeStart',
       'resize.end': 'resizeEnd'
     };
 
     function Stage() {
-      this.selectAreaRemove = __bind(this.selectAreaRemove, this);
-      this.selectArea = __bind(this.selectArea, this);
-      this.selectAreaListen = __bind(this.selectAreaListen, this);
       this.deselect = __bind(this.deselect, this);
       this.select = __bind(this.select, this);
-      this.drop = __bind(this.drop, this);
-      this.drag = __bind(this.drag, this);
-      this.dragListen = __bind(this.dragListen, this);
       this.add = __bind(this.add, this);      Stage.__super__.constructor.apply(this, arguments);
-      this.selection = new Selection;
       this.elements = [];
+      this.selection = new Selection;
+      this.dragging = new Dragging(this);
+      this.selectArea = new SelectArea(this);
       this.rectangle1 = new Rectangle({
-        background: 'url(assets/whitey.png)',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.4)'
-      });
-      this.rectangle2 = new Rectangle({
         left: '200px',
         top: '200px',
         background: 'url(assets/blacky.png)'
       });
-      this.add(this.rectangle1);
-      this.add(this.rectangle2);
+      this.rectangle2 = new Rectangle({
+        background: 'url(assets/whitey.png)',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.4)'
+      });
+      this.ellipsis = new Ellipsis({
+        left: '100px',
+        top: '100px'
+      });
+      this.add(this.rectangle1, this.rectangle2, this.ellipsis);
     }
 
-    Stage.prototype.add = function(element) {
-      this.elements.push(element);
-      return this.append(element);
-    };
-
-    Stage.prototype.dragListen = function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      this.dragPosition = {
-        left: e.pageX,
-        top: e.pageY
-      };
-      $(this.el).mousemove(this.drag);
-      return $(this.el).mouseup(this.drop);
-    };
-
-    Stage.prototype.drag = function(e) {
-      var difference;
-      difference = {
-        left: e.pageX - this.dragPosition.left,
-        top: e.pageY - this.dragPosition.top
-      };
-      return this.selection.set('translate', difference);
-    };
-
-    Stage.prototype.drop = function(e) {
-      this.selection.set('fix');
-      $(this.el).unbind('mousemove', this.drag);
-      return $(this.el).unbind('mouseup', this.drop);
+    Stage.prototype.add = function() {
+      var element, elements, _i, _len, _results;
+      elements = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      _results = [];
+      for (_i = 0, _len = elements.length; _i < _len; _i++) {
+        element = elements[_i];
+        this.elements.push(element);
+        _results.push(this.append(element));
+      }
+      return _results;
     };
 
     Stage.prototype.select = function(e, element, modifier) {
@@ -11801,39 +11971,6 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 
     Stage.prototype.deselect = function(e) {
       if (e.target === e.currentTarget) return this.selection.clear();
-    };
-
-    Stage.prototype.selectAreaListen = function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      this.offset = this.el.offset();
-      this.$selectArea = new Selection.Area(e.clientX - this.offset.left, e.clientY - this.offset.top);
-      this.append(this.$selectArea);
-      $(this.el).mousemove(this.selectArea);
-      return $(this.el).mouseup(this.selectAreaRemove);
-    };
-
-    Stage.prototype.selectArea = function(e) {
-      var area, element, _i, _len, _ref, _results;
-      this.$selectArea.resize(e.clientX - this.offset.left, e.clientY - this.offset.top);
-      area = this.$selectArea.area();
-      _ref = this.elements;
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        element = _ref[_i];
-        if (element.inArea(area)) {
-          _results.push(this.selection.add(element));
-        } else {
-          _results.push(this.selection.remove(element));
-        }
-      }
-      return _results;
-    };
-
-    Stage.prototype.selectAreaRemove = function(e) {
-      this.$selectArea.remove();
-      $(this.el).unbind('mousemove', this.selectArea);
-      return $(this.el).unbind('mouseup', this.selectAreaRemove);
     };
 
     Stage.prototype.resizeStart = function() {

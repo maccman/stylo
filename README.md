@@ -9,11 +9,12 @@ Phase 1:
 * ✓ Select
 * ✓ Select multiple items
 * Toolbar menu
-* Property panel
+* Inspector panel
 
 Phase 2:
 
 * Snapping
+* Undo/redo
 * Pen tool
 * Layers
 * Color picker
@@ -25,10 +26,22 @@ Nice to have:
 
 * Versioning
 * Exporting HTML
+* Share (dropbox/email?)
+* Clone HTML components
 
 ##Rulers & Snap
 
 When moving element - cycle through all the other elements, compare the sides - inject rulers if necessary. Also show rulers for center of page. Need to think about how multiple selected items works.
+
+Two types of snapping:
+
+* Line snapping to:
+  * Center of page (x/y) axis
+  * Bottom/left/right side of pages?
+  * Sides of elements?
+  * Middle of elements
+* Width snapping:
+  * Detect distance between elements - snap when two distances are the same.
 
 ##Elements
 
@@ -76,3 +89,6 @@ height: 20px;
 
 width: 848px;
 z-index: auto;
+
+#
+

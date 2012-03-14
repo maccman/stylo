@@ -19,10 +19,8 @@ class Element extends Spine.Controller
     super()
     @resizing = new Resizing(this)
     @el.addClass('element')
-    @bind 'selected', @selected
     @set @defaults
     @set attrs
-    @log attrs
 
   get: (key) ->
     @[key]?() or @el.css(key)
@@ -33,16 +31,24 @@ class Element extends Spine.Controller
     else
       @[key]?(value) or @el.css(key, value)
 
+  # Manipulating elements
+
   rotate: (val) ->
     @el.transform(rotate: val)
 
-  translate: (position) ->
-    coords = [position.left, position.top, 0].join('px,')
-    @el.css('-webkit-transform', "translate3d(#{coords})")
+  resize: (area) ->
+    @el.css(area)
+    @el.trigger('resized', this)
 
-  fix: ->
-    @el.css(@el.position())
-    @el.transform(translate3d: '0,0,0')
+  move: (toPosition) ->
+    position       = @el.position()
+    position.left += toPosition.left
+    position.top  += toPosition.top
+
+    @el.css(position)
+    @el.trigger('moved', this)
+
+  # Selecting elements
 
   select: (e) ->
     @el.trigger('select', [this, e.shiftKey])
@@ -50,6 +56,8 @@ class Element extends Spine.Controller
   selected: (bool) =>
     @el.toggleClass('selected', bool)
     @resizing.toggle(bool)
+
+  # Position & Area
 
   area: ->
     area        = @el.position()

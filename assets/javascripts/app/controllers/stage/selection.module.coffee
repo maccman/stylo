@@ -1,44 +1,5 @@
-class Area extends Spine.Controller
-  className: 'selectArea'
-
-  constructor: (@left, @top) ->
-    super()
-    @set(left: @left, top: @top)
-
-  area: ->
-    area        = @el.position()
-    area.height = @el.height()
-    area.width  = @el.width()
-    area
-
-  set: (key, value) ->
-    if value?
-      @el.css(key, value)
-    else
-      @el.css(key)
-
-  resize: (left, top) ->
-    dimensions =
-      width:  left - @left
-      height: top  - @top
-
-    # Support negative areas
-    if dimensions.width < 0
-      dimensions.left = @left + dimensions.width
-      dimensions.width *= -1
-
-    if dimensions.height < 0
-      dimensions.top = @top + dimensions.height
-      dimensions.height *= -1
-
-    @set(dimensions)
-
-  remove: ->
-    @el.remove()
-
 class Selection extends Spine.Module
   @include Spine.Events
-  @Area: Area
 
   constructor: (@elements = []) ->
 

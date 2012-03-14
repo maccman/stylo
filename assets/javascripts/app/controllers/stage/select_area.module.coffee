@@ -3,19 +3,13 @@ class Area extends Spine.Controller
 
   constructor: (@left, @top) ->
     super()
-    @set(left: @left, top: @top)
+    @el.css(left: @left, top: @top)
 
   area: ->
     area        = @el.position()
     area.height = @el.height()
     area.width  = @el.width()
     area
-
-  set: (key, value) ->
-    if value?
-      @el.css(key, value)
-    else
-      @el.css(key)
 
   resize: (left, top) ->
     dimensions =
@@ -31,7 +25,7 @@ class Area extends Spine.Controller
       dimensions.top = @top + dimensions.height
       dimensions.height *= -1
 
-    @set(dimensions)
+    @el.css(dimensions)
 
   remove: ->
     @el.remove()

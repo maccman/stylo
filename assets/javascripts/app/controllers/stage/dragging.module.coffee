@@ -18,7 +18,9 @@ class Dragging extends Spine.Controller
       left: e.pageX - @dragPosition.left
       top:  e.pageY - @dragPosition.top
 
-    @dragPosition = {left: e.pageX, top: e.pageY}
+    @dragPosition = {left: e.pageX, top: e.pageY
+
+    # Check snapping
 
     @stage.selection.set('move', difference)
 

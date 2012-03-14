@@ -1,8 +1,8 @@
 Rectangle  = require('./elements/rectangle')
 Ellipsis   = require('./elements/ellipsis')
-Selection  = require('./selection')
-Dragging   = require('./dragging')
-SelectArea = require('./select_area')
+Selection  = require('./stage/selection')
+Dragging   = require('./stage/dragging')
+SelectArea = require('./stage/select_area')
 
 class Stage extends Spine.Controller
   className: 'stage'

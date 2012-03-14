@@ -1,4 +1,4 @@
-Resizing = require('./resizing')
+Resizing = require('./element/resizing')
 
 class Element extends Spine.Controller
   defaults:

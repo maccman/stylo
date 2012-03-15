@@ -11832,7 +11832,11 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 
     KeyBindings.prototype.mapping = {
       8: 'backspace',
-      46: 'backspace'
+      46: 'backspace',
+      37: 'leftArrow',
+      38: 'upArrow',
+      39: 'rightArrow',
+      40: 'downArrow'
     };
 
     function KeyBindings(stage) {
@@ -11849,6 +11853,46 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
     KeyBindings.prototype.backspace = function(e) {
       e.preventDefault();
       return this.stage.removeSelected();
+    };
+
+    KeyBindings.prototype.leftArrow = function(e) {
+      var amount;
+      amount = -1;
+      if (e.shiftKey) amount *= 5;
+      return this.stage.selection.set('move', {
+        left: amount,
+        top: 0
+      });
+    };
+
+    KeyBindings.prototype.upArrow = function(e) {
+      var amount;
+      amount = -1;
+      if (e.shiftKey) amount *= 5;
+      return this.stage.selection.set('move', {
+        left: 0,
+        top: amount
+      });
+    };
+
+    KeyBindings.prototype.rightArrow = function(e) {
+      var amount;
+      amount = 1;
+      if (e.shiftKey) amount *= 5;
+      return this.stage.selection.set('move', {
+        left: amount,
+        top: 0
+      });
+    };
+
+    KeyBindings.prototype.downArrow = function(e) {
+      var amount;
+      amount = 1;
+      if (e.shiftKey) amount *= 5;
+      return this.stage.selection.set('move', {
+        left: 0,
+        top: 1
+      });
     };
 
     return KeyBindings;

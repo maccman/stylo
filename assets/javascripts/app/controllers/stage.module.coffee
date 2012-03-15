@@ -1,8 +1,12 @@
+Selection   = require('./stage/selection')
+Dragging    = require('./stage/dragging')
+Resizing    = require('./stage/resizing')
+SelectArea  = require('./stage/select_area')
+Snapping    = require('./stage/snapping')
+KeyBindings = require('./stage/key_bindings')
+
 Rectangle  = require('./elements/rectangle')
 Ellipsis   = require('./elements/ellipsis')
-Selection  = require('./stage/selection')
-Dragging   = require('./stage/dragging')
-SelectArea = require('./stage/select_area')
 
 class Stage extends Spine.Controller
   className: 'stage'
@@ -15,10 +19,16 @@ class Stage extends Spine.Controller
 
   constructor: ->
     super
-    @elements   = []
-    @selection  = new Selection
-    @dragging   = new Dragging(this)
-    @selectArea = new SelectArea(this)
+    @elements    = []
+    @selection   = new Selection
+    @dragging    = new Dragging(this)
+    @resizing    = new Resizing(this)
+    @selectArea  = new SelectArea(this)
+    @snapping    = new Snapping(this)
+    @keybindings = new KeyBindings(this)
+
+    @selection.bind 'change', =>
+      @el.trigger('selection.change', this)
 
     # FIXME: Test data
     @rectangle1 = new Rectangle(left: '200px', top: '200px', background: 'url(assets/blacky.png)')
@@ -31,6 +41,14 @@ class Stage extends Spine.Controller
     for element in elements
       @elements.push(element)
       @append(element)
+
+  remove: (element) =>
+    @selection.remove(element)
+    element.remove()
+    @elements.splice(@elements.indexOf(element), 1)
+
+  removeSelected: ->
+    @remove(el) for el in @selection.elements
 
   # Selecting elements
 
@@ -53,5 +71,17 @@ class Stage extends Spine.Controller
 
   resizeEnd: ->
     @$('.thumb').show()
+
+  area: ->
+    area        = @el.position()
+    area.height = @el.height()
+    area.width  = @el.width()
+    area
+
+  center: ->
+    area = @area()
+    position =
+      left: area.width / 2
+      top:  area.height / 2
 
 module.exports = Stage

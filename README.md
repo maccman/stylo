@@ -9,11 +9,14 @@ Phase 1:
 * ✓ Select
 * ✓ Select multiple items
 * Toolbar menu
-* Inspector panel
+* Inspector panel (Element/Text/Ruler)
 
 Phase 2:
 
-* Snapping
+* ✓ Stage snapping
+* Resizing snapping
+* Element snapping
+* Canvas snapping
 * Undo/redo
 * Pen tool
 * Layers

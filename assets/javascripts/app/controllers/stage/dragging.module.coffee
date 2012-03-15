@@ -1,3 +1,15 @@
+class CoordTitle extends Spine.Controller
+  className: 'coordTitle'
+
+  change: (area) ->
+    @html("x: #{area.left}px  y: #{area.top}px")
+
+  move: (position) ->
+    @el.css(left: position.left, top: position.top)
+
+  remove: ->
+    @el.remove()
+
 class Dragging extends Spine.Controller
   events:
     'mousedown .selected': 'listen'
@@ -10,32 +22,45 @@ class Dragging extends Spine.Controller
     e.stopPropagation()
 
     @dragPosition = {left: e.pageX, top: e.pageY}
-    $(@el).mousemove(@drag)
-    $(@el).mouseup(@drop)
+
+    @el.mousemove(@drag)
+    @el.mouseup(@drop)
 
   drag: (e) =>
     difference =
       left: e.pageX - @dragPosition.left
       top:  e.pageY - @dragPosition.top
 
-    @dragPosition = {left: e.pageX, top: e.pageY
+    @dragPosition  = {left: e.pageX, top: e.pageY}
+    @stageArea     = @stage.area()
+    @selectionArea = @stage.selection.area()
 
-    # Check snapping
+    # Check vertical/center stage snapping
+    difference = @stage.snapping.snap(@selectionArea, difference)
+
+    # Setup CoordTitle
+    @moveCoordTitle(e)
 
     @stage.selection.set('move', difference)
 
   drop: (e) =>
-    $(@el).unbind('mousemove', @drag)
-    $(@el).unbind('mouseup', @drop)
+    @el.unbind('mousemove', @drag)
+    @el.unbind('mouseup', @drop)
+    @el.trigger('dragging.end')
 
+    # Reset coordTitle
+    @coordTitle?.remove()
+    @coordTitle = null
 
-# * Line snapping to:
-#   * Center of page (x/y) axis
-#   * Bottom/left/right side of pages?
-#   * Sides of elements?
-#   * Middle of elements
-# * Width snapping:
-#   * Detect distance between elements - snap when two distances are the same.
+  moveCoordTitle: ->
+    unless @coordTitle
+      @append(@coordTitle = new CoordTitle)
 
+    @coordTitle.move(
+      left: @dragPosition.left - @stageArea.left + 10,
+      top:  @dragPosition.top  - @stageArea.top  + 10
+    )
+
+    @coordTitle.change(@selectionArea)
 
 module.exports = Dragging

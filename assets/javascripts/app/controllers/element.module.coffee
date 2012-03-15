@@ -79,4 +79,7 @@ class Element extends Spine.Controller
   edit: ->
     @el.attr('contenteditable', true)
 
+  remove: ->
+    @el.remove()
+
 module.exports = Element

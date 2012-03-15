@@ -2,13 +2,13 @@ class Thumb extends Spine.Controller
   className: 'thumb'
 
   events:
-    'mousedown': 'startListening'
+    'mousedown': 'listen'
 
   constructor: (@type) ->
     super()
     @el.addClass(@type)
 
-  startListening: (e) =>
+  listen: (e) =>
     e.preventDefault()
     e.stopPropagation()
 
@@ -16,20 +16,18 @@ class Thumb extends Spine.Controller
     $(document).mousemove(@drag)
     $(document).mouseup(@drop)
 
-  stopListening: =>
-    $(document).unbind('mousemove', @drag)
-    $(document).unbind('mouseup', @drop)
-
   drag: (e) =>
     difference =
       left: e.pageX - @dragPosition.left
       top:  e.pageY - @dragPosition.top
     @dragPosition = {left: e.pageX, top: e.pageY}
-    @el.trigger('resize.start', [@type, difference])
+    @el.trigger('resize.start', [@type, difference, e.shiftKey])
 
   drop: (e) =>
     @el.trigger('resize.end')
-    @stopListening()
+
+    $(document).unbind('mousemove', @drag)
+    $(document).unbind('mouseup', @drop)
 
 class Resizing extends Spine.Controller
   className: 'resizing'
@@ -59,7 +57,7 @@ class Resizing extends Spine.Controller
   toggle: (bool) ->
     if bool then @render() else @remove()
 
-  resize: (e, type, position) ->
+  resize: (e, type, position, lockAR) ->
     area = @element.area()
 
     switch type
@@ -96,6 +94,11 @@ class Resizing extends Spine.Controller
       when 'll'
         area.width  -= position.left
         area.left   += position.left
+
+    if lockAR
+      # TODO - FIXME
+      area.width  = Math.max(area.width, area.height)
+      area.height = area.width
 
     @element.resize(area)
 

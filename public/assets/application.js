@@ -11141,73 +11141,13 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = Canvas;
 
 }).call(this);
-;}});this.require.define({"app/controllers/dragging":function(exports, require, module){(function() {
-  var Dragging,
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = Object.prototype.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
-
-  Dragging = (function(_super) {
-
-    __extends(Dragging, _super);
-
-    Dragging.prototype.events = {
-      'mousedown .selected': 'listen'
-    };
-
-    function Dragging(stage) {
-      this.stage = stage;
-      this.drop = __bind(this.drop, this);
-      this.drag = __bind(this.drag, this);
-      this.listen = __bind(this.listen, this);
-      Dragging.__super__.constructor.call(this, {
-        el: this.stage.el
-      });
-    }
-
-    Dragging.prototype.listen = function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      this.dragPosition = {
-        left: e.pageX,
-        top: e.pageY
-      };
-      $(this.el).mousemove(this.drag);
-      return $(this.el).mouseup(this.drop);
-    };
-
-    Dragging.prototype.drag = function(e) {
-      var difference;
-      difference = {
-        left: e.pageX - this.dragPosition.left,
-        top: e.pageY - this.dragPosition.top
-      };
-      this.dragPosition = {
-        left: e.pageX,
-        top: e.pageY
-      };
-      return this.stage.selection.set('move', difference);
-    };
-
-    Dragging.prototype.drop = function(e) {
-      $(this.el).unbind('mousemove', this.drag);
-      return $(this.el).unbind('mouseup', this.drop);
-    };
-
-    return Dragging;
-
-  })(Spine.Controller);
-
-  module.exports = Dragging;
-
-}).call(this);
 ;}});this.require.define({"app/controllers/element":function(exports, require, module){(function() {
   var Element, Resizing,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  Resizing = require('./resizing');
+  Resizing = require('./element/resizing');
 
   Element = (function(_super) {
 
@@ -11307,11 +11247,170 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
       return this.el.attr('contenteditable', true);
     };
 
+    Element.prototype.remove = function() {
+      return this.el.remove();
+    };
+
     return Element;
 
   })(Spine.Controller);
 
   module.exports = Element;
+
+}).call(this);
+;}});this.require.define({"app/controllers/element/resizing":function(exports, require, module){(function() {
+  var Resizing, Thumb,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  Thumb = (function(_super) {
+
+    __extends(Thumb, _super);
+
+    Thumb.prototype.className = 'thumb';
+
+    Thumb.prototype.events = {
+      'mousedown': 'listen'
+    };
+
+    function Thumb(type) {
+      this.type = type;
+      this.drop = __bind(this.drop, this);
+      this.drag = __bind(this.drag, this);
+      this.listen = __bind(this.listen, this);
+      Thumb.__super__.constructor.call(this);
+      this.el.addClass(this.type);
+    }
+
+    Thumb.prototype.listen = function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      this.dragPosition = {
+        left: e.pageX,
+        top: e.pageY
+      };
+      $(document).mousemove(this.drag);
+      return $(document).mouseup(this.drop);
+    };
+
+    Thumb.prototype.drag = function(e) {
+      var difference;
+      difference = {
+        left: e.pageX - this.dragPosition.left,
+        top: e.pageY - this.dragPosition.top
+      };
+      this.dragPosition = {
+        left: e.pageX,
+        top: e.pageY
+      };
+      return this.el.trigger('resize.start', [this.type, difference, e.shiftKey]);
+    };
+
+    Thumb.prototype.drop = function(e) {
+      this.el.trigger('resize.end');
+      $(document).unbind('mousemove', this.drag);
+      return $(document).unbind('mouseup', this.drop);
+    };
+
+    return Thumb;
+
+  })(Spine.Controller);
+
+  Resizing = (function(_super) {
+
+    __extends(Resizing, _super);
+
+    Resizing.prototype.className = 'resizing';
+
+    Resizing.prototype.events = {
+      'resize.start': 'resize'
+    };
+
+    function Resizing(element) {
+      this.element = element;
+      Resizing.__super__.constructor.call(this, {
+        el: this.element.el
+      });
+    }
+
+    Resizing.prototype.render = function() {
+      this.thumbs = $('<div />');
+      this.thumbs.append(new Thumb('tl').el);
+      this.thumbs.append(new Thumb('tt').el);
+      this.thumbs.append(new Thumb('tr').el);
+      this.thumbs.append(new Thumb('rr').el);
+      this.thumbs.append(new Thumb('br').el);
+      this.thumbs.append(new Thumb('bb').el);
+      this.thumbs.append(new Thumb('bl').el);
+      this.thumbs.append(new Thumb('ll').el);
+      this.thumbs = this.thumbs.children();
+      return this.append(this.thumbs);
+    };
+
+    Resizing.prototype.remove = function() {
+      var _ref;
+      return (_ref = this.thumbs) != null ? _ref.remove() : void 0;
+    };
+
+    Resizing.prototype.toggle = function(bool) {
+      if (bool) {
+        return this.render();
+      } else {
+        return this.remove();
+      }
+    };
+
+    Resizing.prototype.resize = function(e, type, position, lockAR) {
+      var area;
+      area = this.element.area();
+      switch (type) {
+        case 'tl':
+          area.width -= position.left;
+          area.height -= position.top;
+          area.top += position.top;
+          area.left += position.left;
+          break;
+        case 'tt':
+          area.height -= position.top;
+          area.top += position.top;
+          break;
+        case 'tr':
+          area.width += position.left;
+          area.height -= position.top;
+          area.top += position.top;
+          break;
+        case 'rr':
+          area.width += position.left;
+          break;
+        case 'br':
+          area.width += position.left;
+          area.height += position.top;
+          break;
+        case 'bb':
+          area.height += position.top;
+          break;
+        case 'bl':
+          area.width -= position.left;
+          area.height += position.top;
+          area.left += position.left;
+          break;
+        case 'll':
+          area.width -= position.left;
+          area.left += position.left;
+      }
+      if (lockAR) {
+        area.width = Math.max(area.width, area.height);
+        area.height = area.width;
+      }
+      return this.element.resize(area);
+    };
+
+    return Resizing;
+
+  })(Spine.Controller);
+
+  module.exports = Resizing;
 
 }).call(this);
 ;}});this.require.define({"app/controllers/elements/ellipsis":function(exports, require, module){(function() {
@@ -11416,9 +11515,13 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 
 }).call(this);
 ;}});this.require.define({"app/controllers/header":function(exports, require, module){(function() {
-  var Header,
+  var Ellipsis, Header, Rectangle,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  Rectangle = require('./elements/rectangle');
+
+  Ellipsis = require('./elements/ellipsis');
 
   Header = (function(_super) {
 
@@ -11428,10 +11531,24 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 
     Header.prototype.className = 'header';
 
+    Header.prototype.events = {
+      'click .rectangle': 'addRectangle',
+      'click .ellipsis': 'addEllipsis'
+    };
+
     function Header() {
       Header.__super__.constructor.apply(this, arguments);
       if (!this.stage) throw 'stage required';
+      this.html(JST['app/views/header'](this));
     }
+
+    Header.prototype.addRectangle = function() {
+      return this.stage.add(new Rectangle(this.stage.center()));
+    };
+
+    Header.prototype.addEllipsis = function() {
+      return this.stage.add(new Ellipsis(this.stage.center()));
+    };
 
     return Header;
 
@@ -11462,49 +11579,210 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module["export"] = Inspector;
 
 }).call(this);
-;}});this.require.define({"app/controllers/resizing":function(exports, require, module){(function() {
-  var Resizing, Thumb,
+;}});this.require.define({"app/controllers/stage":function(exports, require, module){(function() {
+  var Dragging, Ellipsis, KeyBindings, Rectangle, Resizing, SelectArea, Selection, Snapping, Stage,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
+    __slice = Array.prototype.slice;
 
-  Thumb = (function(_super) {
+  Selection = require('./stage/selection');
 
-    __extends(Thumb, _super);
+  Dragging = require('./stage/dragging');
 
-    Thumb.prototype.className = 'thumb';
+  Resizing = require('./stage/resizing');
 
-    Thumb.prototype.events = {
-      'mousedown': 'startListening'
+  SelectArea = require('./stage/select_area');
+
+  Snapping = require('./stage/snapping');
+
+  KeyBindings = require('./stage/key_bindings');
+
+  Rectangle = require('./elements/rectangle');
+
+  Ellipsis = require('./elements/ellipsis');
+
+  Stage = (function(_super) {
+
+    __extends(Stage, _super);
+
+    Stage.prototype.className = 'stage';
+
+    Stage.prototype.events = {
+      'select': 'select',
+      'mousedown.deselect': 'deselect',
+      'resize.start': 'resizeStart',
+      'resize.end': 'resizeEnd'
     };
 
-    function Thumb(type) {
-      this.type = type;
-      this.drop = __bind(this.drop, this);
-      this.drag = __bind(this.drag, this);
-      this.stopListening = __bind(this.stopListening, this);
-      this.startListening = __bind(this.startListening, this);
-      Thumb.__super__.constructor.call(this);
-      this.el.addClass(this.type);
+    function Stage() {
+      this.deselect = __bind(this.deselect, this);
+      this.select = __bind(this.select, this);
+      this.remove = __bind(this.remove, this);
+      this.add = __bind(this.add, this);
+      var _this = this;
+      Stage.__super__.constructor.apply(this, arguments);
+      this.elements = [];
+      this.selection = new Selection;
+      this.dragging = new Dragging(this);
+      this.resizing = new Resizing(this);
+      this.selectArea = new SelectArea(this);
+      this.snapping = new Snapping(this);
+      this.keybindings = new KeyBindings(this);
+      this.selection.bind('change', function() {
+        return _this.el.trigger('selection.change', _this);
+      });
+      this.rectangle1 = new Rectangle({
+        left: '200px',
+        top: '200px',
+        background: 'url(assets/blacky.png)'
+      });
+      this.rectangle2 = new Rectangle({
+        background: 'url(assets/whitey.png)',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.4)'
+      });
+      this.ellipsis = new Ellipsis({
+        left: '100px',
+        top: '100px'
+      });
+      this.add(this.rectangle1, this.rectangle2, this.ellipsis);
     }
 
-    Thumb.prototype.startListening = function(e) {
+    Stage.prototype.add = function() {
+      var element, elements, _i, _len, _results;
+      elements = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      _results = [];
+      for (_i = 0, _len = elements.length; _i < _len; _i++) {
+        element = elements[_i];
+        this.elements.push(element);
+        _results.push(this.append(element));
+      }
+      return _results;
+    };
+
+    Stage.prototype.remove = function(element) {
+      this.selection.remove(element);
+      element.remove();
+      return this.elements.splice(this.elements.indexOf(element), 1);
+    };
+
+    Stage.prototype.removeSelected = function() {
+      var el, _i, _len, _ref, _results;
+      _ref = this.selection.elements;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        el = _ref[_i];
+        _results.push(this.remove(el));
+      }
+      return _results;
+    };
+
+    Stage.prototype.select = function(e, element, modifier) {
+      if (!this.selection.isMultiple() && !modifier) this.selection.clear();
+      return this.selection.add(element);
+    };
+
+    Stage.prototype.deselect = function(e) {
+      if (e.target === e.currentTarget) return this.selection.clear();
+    };
+
+    Stage.prototype.resizeStart = function() {
+      return this.$('.thumb').hide();
+    };
+
+    Stage.prototype.resizeEnd = function() {
+      return this.$('.thumb').show();
+    };
+
+    Stage.prototype.area = function() {
+      var area;
+      area = this.el.position();
+      area.height = this.el.height();
+      area.width = this.el.width();
+      return area;
+    };
+
+    Stage.prototype.center = function() {
+      var area, position;
+      area = this.area();
+      return position = {
+        left: area.width / 2,
+        top: area.height / 2
+      };
+    };
+
+    return Stage;
+
+  })(Spine.Controller);
+
+  module.exports = Stage;
+
+}).call(this);
+;}});this.require.define({"app/controllers/stage/dragging":function(exports, require, module){(function() {
+  var CoordTitle, Dragging,
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
+  CoordTitle = (function(_super) {
+
+    __extends(CoordTitle, _super);
+
+    function CoordTitle() {
+      CoordTitle.__super__.constructor.apply(this, arguments);
+    }
+
+    CoordTitle.prototype.className = 'coordTitle';
+
+    CoordTitle.prototype.change = function(area) {
+      return this.html("x: " + area.left + "px  y: " + area.top + "px");
+    };
+
+    CoordTitle.prototype.move = function(position) {
+      return this.el.css({
+        left: position.left,
+        top: position.top
+      });
+    };
+
+    CoordTitle.prototype.remove = function() {
+      return this.el.remove();
+    };
+
+    return CoordTitle;
+
+  })(Spine.Controller);
+
+  Dragging = (function(_super) {
+
+    __extends(Dragging, _super);
+
+    Dragging.prototype.events = {
+      'mousedown .selected': 'listen'
+    };
+
+    function Dragging(stage) {
+      this.stage = stage;
+      this.drop = __bind(this.drop, this);
+      this.drag = __bind(this.drag, this);
+      this.listen = __bind(this.listen, this);
+      Dragging.__super__.constructor.call(this, {
+        el: this.stage.el
+      });
+    }
+
+    Dragging.prototype.listen = function(e) {
       e.preventDefault();
       e.stopPropagation();
       this.dragPosition = {
         left: e.pageX,
         top: e.pageY
       };
-      $(document).mousemove(this.drag);
-      return $(document).mouseup(this.drop);
+      this.el.mousemove(this.drag);
+      return this.el.mouseup(this.drop);
     };
 
-    Thumb.prototype.stopListening = function() {
-      $(document).unbind('mousemove', this.drag);
-      return $(document).unbind('mouseup', this.drop);
-    };
-
-    Thumb.prototype.drag = function(e) {
+    Dragging.prototype.drag = function(e) {
       var difference;
       difference = {
         left: e.pageX - this.dragPosition.left,
@@ -11514,15 +11792,103 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
         left: e.pageX,
         top: e.pageY
       };
-      return this.el.trigger('resize.start', [this.type, difference]);
+      this.stageArea = this.stage.area();
+      this.selectionArea = this.stage.selection.area();
+      difference = this.stage.snapping.snap(this.selectionArea, difference);
+      this.moveCoordTitle(e);
+      return this.stage.selection.set('move', difference);
     };
 
-    Thumb.prototype.drop = function(e) {
-      this.el.trigger('resize.end');
-      return this.stopListening();
+    Dragging.prototype.drop = function(e) {
+      var _ref;
+      this.el.unbind('mousemove', this.drag);
+      this.el.unbind('mouseup', this.drop);
+      this.el.trigger('dragging.end');
+      if ((_ref = this.coordTitle) != null) _ref.remove();
+      return this.coordTitle = null;
     };
 
-    return Thumb;
+    Dragging.prototype.moveCoordTitle = function() {
+      if (!this.coordTitle) this.append(this.coordTitle = new CoordTitle);
+      this.coordTitle.move({
+        left: this.dragPosition.left - this.stageArea.left + 10,
+        top: this.dragPosition.top - this.stageArea.top + 10
+      });
+      return this.coordTitle.change(this.selectionArea);
+    };
+
+    return Dragging;
+
+  })(Spine.Controller);
+
+  module.exports = Dragging;
+
+}).call(this);
+;}});this.require.define({"app/controllers/stage/key_bindings":function(exports, require, module){(function() {
+  var KeyBindings,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
+  KeyBindings = (function() {
+
+    KeyBindings.prototype.mapping = {
+      8: 'backspace',
+      46: 'backspace'
+    };
+
+    function KeyBindings(stage) {
+      this.stage = stage;
+      this.keypress = __bind(this.keypress, this);
+      $(document).bind('keydown', this.keypress);
+    }
+
+    KeyBindings.prototype.keypress = function(e) {
+      var _name;
+      return typeof this[_name = this.mapping[e.which]] === "function" ? this[_name](e) : void 0;
+    };
+
+    KeyBindings.prototype.backspace = function(e) {
+      e.preventDefault();
+      return this.stage.removeSelected();
+    };
+
+    return KeyBindings;
+
+  })();
+
+  module.exports = KeyBindings;
+
+}).call(this);
+;}});this.require.define({"app/controllers/stage/resizing":function(exports, require, module){(function() {
+  var AreaTitle, Resizing,
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  AreaTitle = (function(_super) {
+
+    __extends(AreaTitle, _super);
+
+    function AreaTitle() {
+      AreaTitle.__super__.constructor.apply(this, arguments);
+    }
+
+    AreaTitle.prototype.className = 'areaTitle';
+
+    AreaTitle.prototype.change = function(area) {
+      return this.html("width: " + area.width + "px  height: " + area.height + "px");
+    };
+
+    AreaTitle.prototype.move = function(position) {
+      return this.el.css({
+        left: position.left,
+        top: position.top
+      });
+    };
+
+    AreaTitle.prototype.remove = function() {
+      return this.el.remove();
+    };
+
+    return AreaTitle;
 
   })(Spine.Controller);
 
@@ -11530,85 +11896,33 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 
     __extends(Resizing, _super);
 
-    Resizing.prototype.className = 'resizing';
-
     Resizing.prototype.events = {
-      'resize.start': 'resize'
+      'resized': 'resized',
+      'resize.end': 'resizeEnd'
     };
 
-    function Resizing(element) {
-      this.element = element;
+    function Resizing(stage) {
+      this.stage = stage;
       Resizing.__super__.constructor.call(this, {
-        el: this.element.el
+        el: this.stage.el
       });
     }
 
-    Resizing.prototype.render = function() {
-      this.thumbs = $('<div />');
-      this.thumbs.append(new Thumb('tl').el);
-      this.thumbs.append(new Thumb('tt').el);
-      this.thumbs.append(new Thumb('tr').el);
-      this.thumbs.append(new Thumb('rr').el);
-      this.thumbs.append(new Thumb('br').el);
-      this.thumbs.append(new Thumb('bb').el);
-      this.thumbs.append(new Thumb('bl').el);
-      this.thumbs.append(new Thumb('ll').el);
-      this.thumbs = this.thumbs.children();
-      return this.append(this.thumbs);
-    };
-
-    Resizing.prototype.remove = function() {
-      var _ref;
-      return (_ref = this.thumbs) != null ? _ref.remove() : void 0;
-    };
-
-    Resizing.prototype.toggle = function(bool) {
-      if (bool) {
-        return this.render();
-      } else {
-        return this.remove();
-      }
-    };
-
-    Resizing.prototype.resize = function(e, type, position) {
+    Resizing.prototype.resized = function(e, element) {
       var area;
-      area = this.element.area();
-      switch (type) {
-        case 'tl':
-          area.width -= position.left;
-          area.height -= position.top;
-          area.top += position.top;
-          area.left += position.left;
-          break;
-        case 'tt':
-          area.height -= position.top;
-          area.top += position.top;
-          break;
-        case 'tr':
-          area.width += position.left;
-          area.height -= position.top;
-          area.top += position.top;
-          break;
-        case 'rr':
-          area.width += position.left;
-          break;
-        case 'br':
-          area.width += position.left;
-          area.height += position.top;
-          break;
-        case 'bb':
-          area.height += position.top;
-          break;
-        case 'bl':
-          area.width -= position.left;
-          area.height += position.top;
-          area.left += position.left;
-          break;
-        case 'll':
-          area.width -= position.left;
-          area.left += position.left;
-      }
-      return this.element.resize(area);
+      area = element.area();
+      if (!this.areaTitle) this.append(this.areaTitle = new AreaTitle);
+      this.areaTitle.move({
+        left: area.left + area.width + 10,
+        top: area.top + area.height + 10
+      });
+      return this.areaTitle.change(area);
+    };
+
+    Resizing.prototype.resizeEnd = function() {
+      var _ref;
+      if ((_ref = this.areaTitle) != null) _ref.remove();
+      return this.areaTitle = null;
     };
 
     return Resizing;
@@ -11618,7 +11932,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = Resizing;
 
 }).call(this);
-;}});this.require.define({"app/controllers/select_area":function(exports, require, module){(function() {
+;}});this.require.define({"app/controllers/stage/select_area":function(exports, require, module){(function() {
   var Area, SelectArea,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
@@ -11634,7 +11948,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
       this.left = left;
       this.top = top;
       Area.__super__.constructor.call(this);
-      this.set({
+      this.el.css({
         left: this.left,
         top: this.top
       });
@@ -11646,14 +11960,6 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
       area.height = this.el.height();
       area.width = this.el.width();
       return area;
-    };
-
-    Area.prototype.set = function(key, value) {
-      if (value != null) {
-        return this.el.css(key, value);
-      } else {
-        return this.el.css(key);
-      }
     };
 
     Area.prototype.resize = function(left, top) {
@@ -11670,7 +11976,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
         dimensions.top = this.top + dimensions.height;
         dimensions.height *= -1;
       }
-      return this.set(dimensions);
+      return this.el.css(dimensions);
     };
 
     Area.prototype.remove = function() {
@@ -11741,76 +12047,31 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = SelectArea;
 
 }).call(this);
-;}});this.require.define({"app/controllers/selection":function(exports, require, module){(function() {
-  var Area, Selection,
+;}});this.require.define({"app/controllers/stage/selection":function(exports, require, module){(function() {
+  var Selection, max, min,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  Area = (function(_super) {
+  min = function(a, b) {
+    if (a == null) a = 0;
+    if (b == null) b = 0;
+    if (a === 0) return b;
+    return Math.min(a, b);
+  };
 
-    __extends(Area, _super);
-
-    Area.prototype.className = 'selectArea';
-
-    function Area(left, top) {
-      this.left = left;
-      this.top = top;
-      Area.__super__.constructor.call(this);
-      this.set({
-        left: this.left,
-        top: this.top
-      });
-    }
-
-    Area.prototype.area = function() {
-      var area;
-      area = this.el.position();
-      area.height = this.el.height();
-      area.width = this.el.width();
-      return area;
-    };
-
-    Area.prototype.set = function(key, value) {
-      if (value != null) {
-        return this.el.css(key, value);
-      } else {
-        return this.el.css(key);
-      }
-    };
-
-    Area.prototype.resize = function(left, top) {
-      var dimensions;
-      dimensions = {
-        width: left - this.left,
-        height: top - this.top
-      };
-      if (dimensions.width < 0) {
-        dimensions.left = this.left + dimensions.width;
-        dimensions.width *= -1;
-      }
-      if (dimensions.height < 0) {
-        dimensions.top = this.top + dimensions.height;
-        dimensions.height *= -1;
-      }
-      return this.set(dimensions);
-    };
-
-    Area.prototype.remove = function() {
-      return this.el.remove();
-    };
-
-    return Area;
-
-  })(Spine.Controller);
+  max = function(a, b) {
+    if (a == null) a = 0;
+    if (b == null) b = 0;
+    if (a === 0) return b;
+    return Math.max(a, b);
+  };
 
   Selection = (function(_super) {
 
     __extends(Selection, _super);
 
     Selection.include(Spine.Events);
-
-    Selection.Area = Area;
 
     function Selection(elements) {
       this.elements = elements != null ? elements : [];
@@ -11891,6 +12152,26 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
       return _results;
     };
 
+    Selection.prototype.area = function() {
+      var area, element, elementArea, _i, _len, _ref;
+      if (this.elements.length === 1) return this.elements[0].area();
+      area = {};
+      _ref = this.elements;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        element = _ref[_i];
+        elementArea = element.area();
+        area.left = min(area.left, elementArea.left);
+        area.top = min(area.top, elementArea.top);
+        area.right = max(area.right, elementArea.left + elementArea.width);
+        area.bottom = max(area.bottom, elementArea.top + elementArea.height);
+      }
+      area.width = area.right - area.left;
+      area.height = area.bottom - area.top;
+      delete area.right;
+      delete area.bottom;
+      return area;
+    };
+
     return Selection;
 
   })(Spine.Module);
@@ -11898,94 +12179,143 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = Selection;
 
 }).call(this);
-;}});this.require.define({"app/controllers/stage":function(exports, require, module){(function() {
-  var Dragging, Ellipsis, Rectangle, SelectArea, Selection, Stage,
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+;}});this.require.define({"app/controllers/stage/snapping":function(exports, require, module){(function() {
+  var SnapLine, Snapping,
     __hasProp = Object.prototype.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
-    __slice = Array.prototype.slice;
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  Rectangle = require('./elements/rectangle');
+  SnapLine = (function(_super) {
 
-  Ellipsis = require('./elements/ellipsis');
+    __extends(SnapLine, _super);
 
-  Selection = require('./selection');
+    SnapLine.prototype.className = 'snapLine';
 
-  Dragging = require('./dragging');
-
-  SelectArea = require('./select_area');
-
-  Stage = (function(_super) {
-
-    __extends(Stage, _super);
-
-    Stage.prototype.className = 'stage';
-
-    Stage.prototype.events = {
-      'select': 'select',
-      'mousedown.deselect': 'deselect',
-      'resize.start': 'resizeStart',
-      'resize.end': 'resizeEnd'
-    };
-
-    function Stage() {
-      this.deselect = __bind(this.deselect, this);
-      this.select = __bind(this.select, this);
-      this.add = __bind(this.add, this);      Stage.__super__.constructor.apply(this, arguments);
-      this.elements = [];
-      this.selection = new Selection;
-      this.dragging = new Dragging(this);
-      this.selectArea = new SelectArea(this);
-      this.rectangle1 = new Rectangle({
-        left: '200px',
-        top: '200px',
-        background: 'url(assets/blacky.png)'
-      });
-      this.rectangle2 = new Rectangle({
-        background: 'url(assets/whitey.png)',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.4)'
-      });
-      this.ellipsis = new Ellipsis({
-        left: '100px',
-        top: '100px'
-      });
-      this.add(this.rectangle1, this.rectangle2, this.ellipsis);
+    function SnapLine(type) {
+      this.type = type;
+      SnapLine.__super__.constructor.call(this);
+      this.el.addClass(this.type);
     }
 
-    Stage.prototype.add = function() {
-      var element, elements, _i, _len, _results;
-      elements = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-      _results = [];
-      for (_i = 0, _len = elements.length; _i < _len; _i++) {
-        element = elements[_i];
-        this.elements.push(element);
-        _results.push(this.append(element));
-      }
-      return _results;
+    SnapLine.prototype.set = function(values) {
+      return this.el.css(values);
     };
 
-    Stage.prototype.select = function(e, element, modifier) {
-      if (!this.selection.isMultiple() && !modifier) this.selection.clear();
-      return this.selection.add(element);
+    SnapLine.prototype.remove = function() {
+      return this.el.remove();
     };
 
-    Stage.prototype.deselect = function(e) {
-      if (e.target === e.currentTarget) return this.selection.clear();
-    };
-
-    Stage.prototype.resizeStart = function() {
-      return this.$('.thumb').hide();
-    };
-
-    Stage.prototype.resizeEnd = function() {
-      return this.$('.thumb').show();
-    };
-
-    return Stage;
+    return SnapLine;
 
   })(Spine.Controller);
 
-  module.exports = Stage;
+  Snapping = (function(_super) {
+
+    __extends(Snapping, _super);
+
+    Snapping.prototype.events = {
+      'resized': 'removeLines',
+      'selection.change': 'removeLines',
+      'dragging.end': 'removeLines'
+    };
+
+    function Snapping(stage) {
+      this.stage = stage;
+      Snapping.__super__.constructor.call(this, {
+        el: this.stage.el
+      });
+      this.lines = {};
+      this.snapped = {};
+    }
+
+    Snapping.prototype.snapElement = function(element, difference) {
+      return this.snap(element.area(), difference);
+    };
+
+    Snapping.prototype.snapSelection = function(difference) {
+      return this.snap(this.stage.selection.area(), difference);
+    };
+
+    Snapping.prototype.snap = function(area, difference) {
+      this.stageArea || (this.stageArea = this.stage.area());
+      difference = this.verticalStageSnap(area, difference);
+      difference = this.horizontalStageSnap(area, difference);
+      return difference;
+    };
+
+    Snapping.prototype.threshold = 6;
+
+    Snapping.prototype.escapeThreshold = 10;
+
+    Snapping.prototype.withinThreshold = function(a, b, threshold) {
+      if (threshold == null) threshold = this.threshold;
+      return (a - b) > -threshold && (a - b) < threshold;
+    };
+
+    Snapping.prototype.verticalStageSnap = function(area, difference) {
+      var left, middle, _ref, _ref2;
+      left = area.left + (area.width / 2);
+      middle = this.stageArea.width / 2;
+      if (this.snapped.vertical) {
+        this.snapped.vertical += difference.left;
+        if (this.snapped.vertical > this.escapeThreshold || this.snapped.vertical < -this.escapeThreshold) {
+          difference.left = this.snapped.vertical;
+          this.snapped.vertical = 0;
+          if ((_ref = this.lines.vertical) != null) _ref.remove();
+        } else {
+          difference.left = 0;
+        }
+      } else if (this.withinThreshold(left, middle)) {
+        this.snapped.vertical = 1;
+        difference.left = middle - left;
+        if ((_ref2 = this.lines.vertical) != null) _ref2.remove();
+        this.lines.vertical = new SnapLine('vertical');
+        this.lines.vertical.set({
+          left: middle,
+          top: 0,
+          bottom: 0
+        });
+        this.append(this.lines.vertical);
+      }
+      return difference;
+    };
+
+    Snapping.prototype.horizontalStageSnap = function(area, difference) {
+      var middle, top, _ref, _ref2;
+      top = area.top + (area.height / 2);
+      middle = this.stageArea.height / 2;
+      if (this.snapped.horizontal) {
+        this.snapped.horizontal += difference.top;
+        if (this.snapped.horizontal > this.escapeThreshold || this.snapped.horizontal < -this.escapeThreshold) {
+          difference.top = this.snapped.horizontal;
+          this.snapped.horizontal = 0;
+          if ((_ref = this.lines.horizontal) != null) _ref.remove();
+        } else {
+          difference.top = 0;
+        }
+      } else if (this.withinThreshold(top, middle)) {
+        this.snapped.horizontal = 1;
+        difference.top = middle - top;
+        if ((_ref2 = this.lines.horizontal) != null) _ref2.remove();
+        this.lines.horizontal = new SnapLine('horizontal');
+        this.lines.horizontal.set({
+          top: middle,
+          left: 0,
+          right: 0
+        });
+        this.append(this.lines.horizontal);
+      }
+      return difference;
+    };
+
+    Snapping.prototype.removeLines = function() {
+      return this.$('.snapLine').remove();
+    };
+
+    return Snapping;
+
+  })(Spine.Controller);
+
+  module.exports = Snapping;
 
 }).call(this);
 ;}});this.require.define({"app/index":function(exports, require, module){(function() {
@@ -12019,7 +12349,58 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = App;
 
 }).call(this);
-;}});
+;}});(function() {
+  this.JST || (this.JST = {});
+  this.JST["app/views/header"] = function(__obj) {
+    if (!__obj) __obj = {};
+    var __out = [], __capture = function(callback) {
+      var out = __out, result;
+      __out = [];
+      callback.call(this);
+      result = __out.join('');
+      __out = out;
+      return __safe(result);
+    }, __sanitize = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else if (typeof value !== 'undefined' && value != null) {
+        return __escape(value);
+      } else {
+        return '';
+      }
+    }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+    __safe = __obj.safe = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else {
+        if (!(typeof value !== 'undefined' && value != null)) value = '';
+        var result = new String(value);
+        result.ecoSafe = true;
+        return result;
+      }
+    };
+    if (!__escape) {
+      __escape = __obj.escape = function(value) {
+        return ('' + value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      };
+    }
+    (function() {
+      (function() {
+      
+        __out.push('<h1>Stylo</h1>\n\n<nav class="toolbar">\n  <div class="rectangle" title="Rectangle"><span></span></div>\n  <div class="ellipsis" title="Ellipsis"><span></span></div>\n</nav>\n');
+      
+      }).call(this);
+      
+    }).call(__obj);
+    __obj.safe = __objSafe, __obj.escape = __escape;
+    return __out.join('');
+  };
+}).call(this);
+
 
 
 

@@ -20,50 +20,57 @@
     background: #FFF
     border: 1px solid #000
     cursor: pointer
-    cursor: x-resize // TODO
 
     &.tl {
       left: -3px
       top: -3px
+      cursor: nw-resize
     }
 
     &.tt {
       margin-left: -3px
       left: 50%
       top:-3px
+      cursor: n-resize
     }
 
     &.tr {
       right: -3px
       top: -3px
+      cursor: ne-resize
     }
 
     &.rr {
       right: -3px
       top: 50%
       margin-top: -3px
+      cursor: e-resize
     }
 
-    &.bl {
-      left: -3px
+    &.br {
+      right: -3px
       bottom: -3px
+      cursor: se-resize
     }
 
     &.bb {
       left: 50%
       bottom: -3px
       margin-left: -3px
+      cursor: s-resize
     }
 
-    &.br {
-      right: -3px
+    &.bl {
+      left: -3px
       bottom: -3px
+      cursor: sw-resize
     }
 
     &.ll {
       top: 50%
       left: -3px
       margin-top: -3px
+      cursor: w-resize
     }
   }
 

@@ -13,7 +13,8 @@ class Stage extends Spine.Controller
 
   events:
     'select': 'select'
-    'mousedown.deselect': 'deselect'
+    'deselect': 'deselect'
+    'mousedown.deselect': 'deselectAll'
     'resize.start': 'resizeStart'
     'resize.end': 'resizeEnd'
 
@@ -65,7 +66,11 @@ class Stage extends Spine.Controller
 
     @selection.add(element)
 
-  deselect: (e) =>
+  deselect: (e, element, modifier) =>
+    if modifier
+      @selection.remove(element)
+
+  deselectAll: (e) =>
     if (e.target is e.currentTarget)
       @selection.clear()
 

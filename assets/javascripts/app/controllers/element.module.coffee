@@ -51,11 +51,17 @@ class Element extends Spine.Controller
   # Selecting elements
 
   select: (e) ->
-    @el.trigger('select', [this, e.shiftKey])
+    if @isSelected()
+      @el.trigger('deselect', [this, e.shiftKey])
+    else
+      @el.trigger('select', [this, e.shiftKey])
 
   selected: (bool) =>
     @el.toggleClass('selected', bool)
     @resizing.toggle(bool)
+
+  isSelected: ->
+    @el.hasClass('selected')
 
   # Position & Area
 

@@ -124,43 +124,50 @@ body {
   background: #fff;
   border: 1px solid #000;
   cursor: pointer;
-  cursor: x-resize;
 }
 #app .stage .resizing .thumb.tl {
   left: -3px;
   top: -3px;
+  cursor: nw-resize;
 }
 #app .stage .resizing .thumb.tt {
   margin-left: -3px;
   left: 50%;
   top: -3px;
+  cursor: n-resize;
 }
 #app .stage .resizing .thumb.tr {
   right: -3px;
   top: -3px;
+  cursor: ne-resize;
 }
 #app .stage .resizing .thumb.rr {
   right: -3px;
   top: 50%;
   margin-top: -3px;
+  cursor: e-resize;
 }
-#app .stage .resizing .thumb.bl {
-  left: -3px;
+#app .stage .resizing .thumb.br {
+  right: -3px;
   bottom: -3px;
+  cursor: se-resize;
 }
 #app .stage .resizing .thumb.bb {
   left: 50%;
   bottom: -3px;
   margin-left: -3px;
+  cursor: s-resize;
 }
-#app .stage .resizing .thumb.br {
-  right: -3px;
+#app .stage .resizing .thumb.bl {
+  left: -3px;
   bottom: -3px;
+  cursor: sw-resize;
 }
 #app .stage .resizing .thumb.ll {
   top: 50%;
   left: -3px;
   margin-top: -3px;
+  cursor: w-resize;
 }
 #app .stage .selectArea {
   position: absolute;

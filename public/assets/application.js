@@ -11218,12 +11218,20 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
     };
 
     Element.prototype.select = function(e) {
-      return this.el.trigger('select', [this, e.shiftKey]);
+      if (this.isSelected()) {
+        return this.el.trigger('deselect', [this, e.shiftKey]);
+      } else {
+        return this.el.trigger('select', [this, e.shiftKey]);
+      }
     };
 
     Element.prototype.selected = function(bool) {
       this.el.toggleClass('selected', bool);
       return this.resizing.toggle(bool);
+    };
+
+    Element.prototype.isSelected = function() {
+      return this.el.hasClass('selected');
     };
 
     Element.prototype.area = function() {
@@ -11822,12 +11830,14 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 
     Stage.prototype.events = {
       'select': 'select',
-      'mousedown.deselect': 'deselect',
+      'deselect': 'deselect',
+      'mousedown.deselect': 'deselectAll',
       'resize.start': 'resizeStart',
       'resize.end': 'resizeEnd'
     };
 
     function Stage() {
+      this.deselectAll = __bind(this.deselectAll, this);
       this.deselect = __bind(this.deselect, this);
       this.select = __bind(this.select, this);
       this.remove = __bind(this.remove, this);
@@ -11905,7 +11915,11 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
       return this.selection.add(element);
     };
 
-    Stage.prototype.deselect = function(e) {
+    Stage.prototype.deselect = function(e, element, modifier) {
+      if (modifier) return this.selection.remove(element);
+    };
+
+    Stage.prototype.deselectAll = function(e) {
       if (e.target === e.currentTarget) return this.selection.clear();
     };
 

@@ -11958,7 +11958,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
     CoordTitle.prototype.className = 'coordTitle';
 
     CoordTitle.prototype.change = function(area) {
-      return this.html("x: " + area.left + "px  y: " + area.top + "px");
+      return this.html("x: " + area.left + "px &nbsp; y: " + area.top + "px");
     };
 
     CoordTitle.prototype.move = function(position) {
@@ -12186,7 +12186,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
     AreaTitle.prototype.className = 'areaTitle';
 
     AreaTitle.prototype.change = function(area) {
-      return this.html("width: " + area.width + "px  height: " + area.height + "px");
+      return this.html("width: " + area.width + "px &nbsp; height: " + area.height + "px");
     };
 
     AreaTitle.prototype.move = function(position) {

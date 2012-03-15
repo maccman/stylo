@@ -2,7 +2,7 @@ class CoordTitle extends Spine.Controller
   className: 'coordTitle'
 
   change: (area) ->
-    @html("x: #{area.left}px  y: #{area.top}px")
+    @html("x: #{area.left}px &nbsp; y: #{area.top}px")
 
   move: (position) ->
     @el.css(left: position.left, top: position.top)

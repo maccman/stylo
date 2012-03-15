@@ -78,9 +78,9 @@ body {
   width: 20px;
   display: block;
   background: rgba(0,0,0,0.20);
-  -moz-box-shadow: inset 1px 1px 1px rgba(0,0,0,0.40), 0 1px 0 rgba(255,255,255,0.20);
-  -webkit-box-shadow: inset 1px 1px 1px rgba(0,0,0,0.40), 0 1px 0 rgba(255,255,255,0.20);
-  box-shadow: inset 1px 1px 1px rgba(0,0,0,0.40), 0 1px 0 rgba(255,255,255,0.20);
+  -moz-box-shadow: inset 1px 1px 1px rgba(0,0,0,0.35), 0 1px 0 rgba(255,255,255,0.20);
+  -webkit-box-shadow: inset 1px 1px 1px rgba(0,0,0,0.35), 0 1px 0 rgba(255,255,255,0.20);
+  box-shadow: inset 1px 1px 1px rgba(0,0,0,0.35), 0 1px 0 rgba(255,255,255,0.20);
   color: #fff;
   text-shadow: 0 -1px 0 rgba(0,0,0,0.30);
   font-weight: bold;
@@ -124,6 +124,7 @@ body {
   background: #fff;
   border: 1px solid #000;
   cursor: pointer;
+  cursor: x-resize;
 }
 #app .stage .resizing .thumb.tl {
   left: -3px;

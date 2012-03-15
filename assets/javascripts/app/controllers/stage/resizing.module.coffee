@@ -2,7 +2,7 @@ class AreaTitle extends Spine.Controller
   className: 'areaTitle'
 
   change: (area) ->
-    @html("width: #{area.width}px  height: #{area.height}px")
+    @html("width: #{area.width}px &nbsp; height: #{area.height}px")
 
   move: (position) ->
     @el.css(left: position.left, top: position.top)

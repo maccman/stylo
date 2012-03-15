@@ -11418,7 +11418,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  Element = require('app/controllers/element');
+  Element = require('../element');
 
   Ellipsis = (function(_super) {
 
@@ -11440,12 +11440,110 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = Ellipsis;
 
 }).call(this);
+;}});this.require.define({"app/controllers/elements/input":function(exports, require, module){(function() {
+  var CheckBox, Element, Input, Text, Textarea,
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  Element = require('../element');
+
+  Input = (function(_super) {
+
+    __extends(Input, _super);
+
+    function Input() {
+      Input.__super__.constructor.apply(this, arguments);
+    }
+
+    Input.prototype.tag = 'input';
+
+    return Input;
+
+  })(Element);
+
+  Text = (function(_super) {
+
+    __extends(Text, _super);
+
+    function Text() {
+      Text.__super__.constructor.apply(this, arguments);
+    }
+
+    Text.prototype.attrs = {
+      type: 'text'
+    };
+
+    return Text;
+
+  })(Input);
+
+  Textarea = (function(_super) {
+
+    __extends(Textarea, _super);
+
+    function Textarea() {
+      Textarea.__super__.constructor.apply(this, arguments);
+    }
+
+    Textarea.prototype.tag = 'textarea';
+
+    return Textarea;
+
+  })(Input);
+
+  CheckBox = (function(_super) {
+
+    __extends(CheckBox, _super);
+
+    function CheckBox() {
+      CheckBox.__super__.constructor.apply(this, arguments);
+    }
+
+    CheckBox.prototype.attrs = {
+      type: 'checkbox'
+    };
+
+    return CheckBox;
+
+  })(Input);
+
+  module.exports = {
+    Text: Text,
+    Textarea: Textarea,
+    CheckBox: CheckBox
+  };
+
+}).call(this);
+;}});this.require.define({"app/controllers/elements/line":function(exports, require, module){(function() {
+  var Element, Line,
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  Element = require('../element');
+
+  Line = (function(_super) {
+
+    __extends(Line, _super);
+
+    function Line() {
+      Line.__super__.constructor.apply(this, arguments);
+    }
+
+    Line.prototype.className = 'line';
+
+    return Line;
+
+  })(Element);
+
+  module.exports = Line;
+
+}).call(this);
 ;}});this.require.define({"app/controllers/elements/rectangle":function(exports, require, module){(function() {
   var Element, Rectangle,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  Element = require('app/controllers/element');
+  Element = require('../element');
 
   Rectangle = (function(_super) {
 
@@ -11465,11 +11563,11 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 
 }).call(this);
 ;}});this.require.define({"app/controllers/elements/text":function(exports, require, module){(function() {
-  var Rectangle, Text,
+  var Element, Text,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  Rectangle = require('./rectangle');
+  Element = require('../element');
 
   Text = (function(_super) {
 
@@ -11493,7 +11591,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  Element = require('app/controllers/canvas');
+  Element = require('../element');
 
   Triangle = (function(_super) {
 
@@ -11543,11 +11641,19 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
     }
 
     Header.prototype.addRectangle = function() {
-      return this.stage.add(new Rectangle(this.stage.center()));
+      var position;
+      position = this.stage.center();
+      position.left -= 50;
+      position.top -= 50;
+      return this.stage.add(new Rectangle(position));
     };
 
     Header.prototype.addEllipsis = function() {
-      return this.stage.add(new Ellipsis(this.stage.center()));
+      var position;
+      position = this.stage.center();
+      position.left -= 50;
+      position.top -= 50;
+      return this.stage.add(new Ellipsis(position));
     };
 
     return Header;
@@ -11577,6 +11683,112 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   })(Spine.Controller);
 
   module["export"] = Inspector;
+
+}).call(this);
+;}});this.require.define({"app/controllers/inspector/background":function(exports, require, module){(function() {
+  var Background,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  Background = (function(_super) {
+
+    __extends(Background, _super);
+
+    Background.prototype.className = 'background';
+
+    Background.prototype.styles = ['backgroundColor', 'backgroundImage', 'backgroundRepeat', 'backgroundSize'];
+
+    function Background() {
+      this.render = __bind(this.render, this);      Background.__super__.constructor.apply(this, arguments);
+      if (!this.stage) throw 'stage required';
+      this.stage.selection.bind('change', this.render);
+    }
+
+    Background.prototype.render = function() {
+      var style, _i, _len, _ref;
+      this.background = {};
+      _ref = this.styles;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        style = _ref[_i];
+        this.background[style] = this.stage.selection.get(style);
+      }
+      return this.html(JST['app/views/inspector/background'](this));
+    };
+
+    return Background;
+
+  })(Spine.Controller);
+
+  module.exports = Background;
+
+}).call(this);
+;}});this.require.define({"app/controllers/inspector/border":function(exports, require, module){(function() {
+  var Border,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  Border = (function(_super) {
+
+    __extends(Border, _super);
+
+    Border.prototype.className = 'border';
+
+    Border.prototype.styles = ['borderColor'];
+
+    function Border() {
+      this.render = __bind(this.render, this);      Border.__super__.constructor.apply(this, arguments);
+      if (!this.stage) throw 'stage required';
+      this.stage.selection.bind('change', this.render);
+    }
+
+    Border.prototype.render = function() {
+      var style, _i, _len, _ref;
+      this.border = {};
+      _ref = this.styles;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        style = _ref[_i];
+        this.border[style] = this.stage.selection.get(style);
+      }
+      return this.html(JST['app/views/inspector/border'](this));
+    };
+
+    return Border;
+
+  })(Spine.Controller);
+
+  module.exports = Border;
+
+}).call(this);
+;}});this.require.define({"app/controllers/inspector/opacity":function(exports, require, module){(function() {
+  var Opacity,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  Opacity = (function(_super) {
+
+    __extends(Opacity, _super);
+
+    Opacity.prototype.className = 'border';
+
+    function Opacity() {
+      this.render = __bind(this.render, this);      Opacity.__super__.constructor.apply(this, arguments);
+      if (!this.stage) throw 'stage required';
+      this.stage.selection.bind('change', this.render);
+    }
+
+    Opacity.prototype.render = function() {
+      this.opacitty = this.stage.selection.get('opacity');
+      return this.html(JST['app/views/inspector/opacity'](this));
+    };
+
+    return Opacity;
+
+  })(Spine.Controller);
+
+  module.exports = Border;
 
 }).call(this);
 ;}});this.require.define({"app/controllers/stage":function(exports, require, module){(function() {
@@ -11673,6 +11885,17 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         el = _ref[_i];
         _results.push(this.remove(el));
+      }
+      return _results;
+    };
+
+    Stage.prototype.selectAll = function() {
+      var el, _i, _len, _ref, _results;
+      _ref = this.elements;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        el = _ref[_i];
+        _results.push(this.selection.add(el));
       }
       return _results;
     };
@@ -11826,17 +12049,28 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 }).call(this);
 ;}});this.require.define({"app/controllers/stage/key_bindings":function(exports, require, module){(function() {
   var KeyBindings,
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  KeyBindings = (function() {
+  KeyBindings = (function(_super) {
+
+    __extends(KeyBindings, _super);
+
+    KeyBindings.include(Spine.Log);
 
     KeyBindings.prototype.mapping = {
       8: 'backspace',
-      46: 'backspace',
       37: 'leftArrow',
       38: 'upArrow',
       39: 'rightArrow',
-      40: 'downArrow'
+      40: 'downArrow',
+      46: 'backspace',
+      65: 'aKey',
+      68: 'dKey',
+      83: 'sKey',
+      187: 'plusKey',
+      189: 'minusKey'
     };
 
     function KeyBindings(stage) {
@@ -11857,6 +12091,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 
     KeyBindings.prototype.leftArrow = function(e) {
       var amount;
+      e.preventDefault();
       amount = -1;
       if (e.shiftKey) amount *= 5;
       return this.stage.selection.set('move', {
@@ -11867,6 +12102,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 
     KeyBindings.prototype.upArrow = function(e) {
       var amount;
+      e.preventDefault();
       amount = -1;
       if (e.shiftKey) amount *= 5;
       return this.stage.selection.set('move', {
@@ -11877,6 +12113,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 
     KeyBindings.prototype.rightArrow = function(e) {
       var amount;
+      e.preventDefault();
       amount = 1;
       if (e.shiftKey) amount *= 5;
       return this.stage.selection.set('move', {
@@ -11887,17 +12124,48 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 
     KeyBindings.prototype.downArrow = function(e) {
       var amount;
+      e.preventDefault();
       amount = 1;
       if (e.shiftKey) amount *= 5;
       return this.stage.selection.set('move', {
         left: 0,
-        top: 1
+        top: amount
       });
+    };
+
+    KeyBindings.prototype.aKey = function(e) {
+      if (!e.metaKey) return;
+      e.preventDefault();
+      return this.stage.selectAll();
+    };
+
+    KeyBindings.prototype.dKey = function(e) {
+      if (!e.metaKey) return;
+      e.preventDefault();
+      if (e.metaKey) return this.stage.selection.clear();
+    };
+
+    KeyBindings.prototype.sKey = function(e) {
+      if (!e.metaKey) return;
+      e.preventDefault();
+      return this.log('save');
+    };
+
+    KeyBindings.prototype.plusKey = function(e) {
+      if (!e.metaKey) return;
+      e.preventDefault();
+      return this.log('zoomIn');
+    };
+
+    KeyBindings.prototype.minusKey = function(e) {
+      if (!e.metaKey) return;
+      e.preventDefault();
+      return this.log('zoomOut');
     };
 
     return KeyBindings;
 
-  })();
+  })(Spine.Module);
 
   module.exports = KeyBindings;
 
@@ -12280,7 +12548,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
     };
 
     Snapping.prototype.snap = function(area, difference) {
-      this.stageArea || (this.stageArea = this.stage.area());
+      this.stageArea = this.stage.area();
       difference = this.verticalStageSnap(area, difference);
       difference = this.horizontalStageSnap(area, difference);
       return difference;
@@ -12436,6 +12704,163 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
       (function() {
       
         __out.push('<h1>Stylo</h1>\n\n<nav class="toolbar">\n  <div class="rectangle" title="Rectangle"><span></span></div>\n  <div class="ellipsis" title="Ellipsis"><span></span></div>\n</nav>\n');
+      
+      }).call(this);
+      
+    }).call(__obj);
+    __obj.safe = __objSafe, __obj.escape = __escape;
+    return __out.join('');
+  };
+}).call(this);
+(function() {
+  this.JST || (this.JST = {});
+  this.JST["app/views/inspector/background"] = function(__obj) {
+    if (!__obj) __obj = {};
+    var __out = [], __capture = function(callback) {
+      var out = __out, result;
+      __out = [];
+      callback.call(this);
+      result = __out.join('');
+      __out = out;
+      return __safe(result);
+    }, __sanitize = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else if (typeof value !== 'undefined' && value != null) {
+        return __escape(value);
+      } else {
+        return '';
+      }
+    }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+    __safe = __obj.safe = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else {
+        if (!(typeof value !== 'undefined' && value != null)) value = '';
+        var result = new String(value);
+        result.ecoSafe = true;
+        return result;
+      }
+    };
+    if (!__escape) {
+      __escape = __obj.escape = function(value) {
+        return ('' + value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      };
+    }
+    (function() {
+      (function() {
+      
+        __out.push('<h3>Background</h3>\n\n<label>\n  <span>Fill Style</span>\n  <select name="style">\n    <option value="none">None</option>\n    <option value="color">Color</option>\n    <option value="color">Gradient</option>\n    <option value="color">Image</option>\n  </select>\n</label>\n');
+      
+      }).call(this);
+      
+    }).call(__obj);
+    __obj.safe = __objSafe, __obj.escape = __escape;
+    return __out.join('');
+  };
+}).call(this);
+(function() {
+  this.JST || (this.JST = {});
+  this.JST["app/views/inspector/border"] = function(__obj) {
+    if (!__obj) __obj = {};
+    var __out = [], __capture = function(callback) {
+      var out = __out, result;
+      __out = [];
+      callback.call(this);
+      result = __out.join('');
+      __out = out;
+      return __safe(result);
+    }, __sanitize = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else if (typeof value !== 'undefined' && value != null) {
+        return __escape(value);
+      } else {
+        return '';
+      }
+    }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+    __safe = __obj.safe = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else {
+        if (!(typeof value !== 'undefined' && value != null)) value = '';
+        var result = new String(value);
+        result.ecoSafe = true;
+        return result;
+      }
+    };
+    if (!__escape) {
+      __escape = __obj.escape = function(value) {
+        return ('' + value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      };
+    }
+    (function() {
+      (function() {
+      
+        __out.push('<h3>Border</h3>\n');
+      
+      }).call(this);
+      
+    }).call(__obj);
+    __obj.safe = __objSafe, __obj.escape = __escape;
+    return __out.join('');
+  };
+}).call(this);
+(function() {
+  this.JST || (this.JST = {});
+  this.JST["app/views/inspector/opacity"] = function(__obj) {
+    if (!__obj) __obj = {};
+    var __out = [], __capture = function(callback) {
+      var out = __out, result;
+      __out = [];
+      callback.call(this);
+      result = __out.join('');
+      __out = out;
+      return __safe(result);
+    }, __sanitize = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else if (typeof value !== 'undefined' && value != null) {
+        return __escape(value);
+      } else {
+        return '';
+      }
+    }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+    __safe = __obj.safe = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else {
+        if (!(typeof value !== 'undefined' && value != null)) value = '';
+        var result = new String(value);
+        result.ecoSafe = true;
+        return result;
+      }
+    };
+    if (!__escape) {
+      __escape = __obj.escape = function(value) {
+        return ('' + value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      };
+    }
+    (function() {
+      (function() {
+      
+        __out.push('<h3>Opacity</h3>\n\n<input type="range" name="opacity" value="');
+      
+        __out.push(__sanitize(this.opacity));
+      
+        __out.push('">\n');
       
       }).call(this);
       

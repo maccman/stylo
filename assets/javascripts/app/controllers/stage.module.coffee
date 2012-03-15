@@ -47,8 +47,13 @@ class Stage extends Spine.Controller
     element.remove()
     @elements.splice(@elements.indexOf(element), 1)
 
+  # Batch manipulate selected
+
   removeSelected: ->
     @remove(el) for el in @selection.elements
+
+  selectAll: ->
+    @selection.add(el) for el in @elements
 
   # Selecting elements
 

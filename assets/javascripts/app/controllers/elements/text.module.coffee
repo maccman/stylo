@@ -1,4 +1,4 @@
-Rectangle = require('./rectangle')
+Element = require('../element')
 
 class Text extends Rectangle
   className: 'text'

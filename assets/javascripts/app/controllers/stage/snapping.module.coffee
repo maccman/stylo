@@ -32,7 +32,7 @@ class Snapping extends Spine.Controller
   snap: (area, difference) ->
     # Lazy load stage area, otherwise
     # it has no dimensions
-    @stageArea or= @stage.area()
+    @stageArea = @stage.area()
 
     difference = @verticalStageSnap(area, difference)
     difference = @horizontalStageSnap(area, difference)

@@ -1,4 +1,4 @@
-Element = require('app/controllers/canvas')
+Element = require('../element')
 
 class Triangle extends Canvas
   className: 'triangle'

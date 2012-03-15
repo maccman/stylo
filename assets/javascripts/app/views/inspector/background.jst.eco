@@ -1,0 +1,11 @@
+<h3>Background</h3>
+
+<label>
+  <span>Fill Style</span>
+  <select name="style">
+    <option value="none">None</option>
+    <option value="color">Color</option>
+    <option value="color">Gradient</option>
+    <option value="color">Image</option>
+  </select>
+</label>

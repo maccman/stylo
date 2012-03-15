@@ -1,4 +1,4 @@
-A Photoshop replacement. Inspired by Keynote.
+A Photoshop replacement. Inspired by Keynote. Democratizing design.
 
 ##TODO
 
@@ -8,7 +8,7 @@ Phase 1:
 * ✓ Resize
 * ✓ Select
 * ✓ Select multiple items
-* Toolbar menu
+* ✓ Toolbar menu
 * Inspector panel (Element/Text/Ruler)
 
 Phase 2:
@@ -31,6 +31,8 @@ Nice to have:
 * Exporting HTML
 * Share (dropbox/email?)
 * Clone HTML components
+
+Inherit Ellipsis from Rectangle (resizing & lines).
 
 ##Rulers & Snap
 

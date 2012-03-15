@@ -15,9 +15,15 @@ class Header extends Spine.Controller
     @html JST['app/views/header'](this)
 
   addRectangle: ->
-    @stage.add(new Rectangle(@stage.center()))
+    position = @stage.center()
+    position.left -= 50
+    position.top  -= 50
+    @stage.add(new Rectangle(position))
 
   addEllipsis: ->
-    @stage.add(new Ellipsis(@stage.center()))
+    position = @stage.center()
+    position.left -= 50
+    position.top  -= 50
+    @stage.add(new Ellipsis(position))
 
 module.exports = Header

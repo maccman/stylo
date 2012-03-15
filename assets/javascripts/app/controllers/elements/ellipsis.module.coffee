@@ -1,4 +1,4 @@
-Element = require('app/controllers/element')
+Element = require('../element')
 
 class Ellipsis extends Element
   className: 'ellipsis'

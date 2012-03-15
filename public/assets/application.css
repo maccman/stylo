@@ -18,8 +18,8 @@ body {
   font-size: 12px;
 }
 #app .header {
-  height: 40px;
-  line-height: 40px;
+  height: 35px;
+  line-height: 35px;
   background: #5f9fe6;
   background: -webkit-gradient(linear, left top, left bottom, from(#5f9fe6), to(#3a7ac1));
   background: -moz-linear-gradient(top, #5f9fe6, #3a7ac1);
@@ -40,13 +40,13 @@ body {
   font-weight: normal;
   color: #fff;
   text-shadow: 0 -1px 0 rgba(0,0,0,0.30);
-  line-height: 38px;
+  line-height: 33px;
   -webkit-box-flex: 1;
   -moz-box-flex: 1;
   box-flex: 1;
 }
 #app .header nav {
-  height: 40px;
+  height: 35px;
   margin-right: 30px;
   display: -webkit-box;
   -webkit-box-orient: horizontal;
@@ -74,21 +74,18 @@ body {
   box-shadow: inset 0 0 20px rgba(0,0,0,0.30);
 }
 #app .header nav span {
-  height: 25px;
-  width: 25px;
+  height: 20px;
+  width: 20px;
   display: block;
   background: rgba(0,0,0,0.20);
-  -moz-box-shadow: inset 1px 1px 1px rgba(0,0,0,0.40), 0 1px 0 rgba(255,255,255,0.30);
-  -webkit-box-shadow: inset 1px 1px 1px rgba(0,0,0,0.40), 0 1px 0 rgba(255,255,255,0.30);
-  box-shadow: inset 1px 1px 1px rgba(0,0,0,0.40), 0 1px 0 rgba(255,255,255,0.30);
+  -moz-box-shadow: inset 1px 1px 1px rgba(0,0,0,0.40), 0 1px 0 rgba(255,255,255,0.20);
+  -webkit-box-shadow: inset 1px 1px 1px rgba(0,0,0,0.40), 0 1px 0 rgba(255,255,255,0.20);
+  box-shadow: inset 1px 1px 1px rgba(0,0,0,0.40), 0 1px 0 rgba(255,255,255,0.20);
   color: #fff;
   text-shadow: 0 -1px 0 rgba(0,0,0,0.30);
   font-weight: bold;
   text-transform: uppercase;
   font-size: 11px;
-}
-#app .header nav .rectangle span {
-  width: 35px;
 }
 #app .header nav .ellipsis span {
   -moz-border-radius: 50%;

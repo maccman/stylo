@@ -1,13 +1,16 @@
-Stage  = require('./controllers/stage')
-Header = require('./controllers/header')
+Stage     = require('./controllers/stage')
+Header    = require('./controllers/header')
+Inspector = require('./controllers/inspector')
 
 class App extends Spine.Controller
   className: 'app'
 
   constructor: ->
     super
-    @stage  = new Stage
-    @header = new Header(stage: @stage)
-    @append(@header, @stage)
+    @stage      = new Stage
+    @header     = new Header(stage: @stage)
+    @inspector  = new Inspector(stage: @stage)
+
+    @append(@header, @stage, @inspector)
 
 module.exports = App

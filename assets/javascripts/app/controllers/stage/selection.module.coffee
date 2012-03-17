@@ -28,6 +28,9 @@ class Selection extends Spine.Module
   isMultiple: ->
     @elements.length > 1
 
+  isAny: ->
+    @elements.length > 0
+
   # Select an element
   add: (element) ->
     return if element in @elements

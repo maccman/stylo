@@ -11649,19 +11649,23 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
     }
 
     Header.prototype.addRectangle = function() {
-      var position;
+      var position, shape;
       position = this.stage.center();
       position.left -= 50;
       position.top -= 50;
-      return this.stage.add(new Rectangle(position));
+      this.stage.add(shape = new Rectangle(position));
+      this.stage.selection.clear();
+      return this.stage.selection.add(shape);
     };
 
     Header.prototype.addEllipsis = function() {
-      var position;
+      var position, shape;
       position = this.stage.center();
       position.left -= 50;
       position.top -= 50;
-      return this.stage.add(new Ellipsis(position));
+      this.stage.add(shape = new Ellipsis(position));
+      this.stage.selection.clear();
+      return this.stage.selection.add(shape);
     };
 
     return Header;
@@ -11672,25 +11676,47 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 
 }).call(this);
 ;}});this.require.define({"app/controllers/inspector":function(exports, require, module){(function() {
-  var Inspector,
+  var Background, Border, Inspector, Opacity,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  Background = require('./inspector/background');
+
+  Border = require('./inspector/border');
+
+  Opacity = require('./inspector/opacity');
 
   Inspector = (function(_super) {
 
     __extends(Inspector, _super);
 
+    Inspector.prototype.className = 'inspector';
+
     function Inspector() {
-      Inspector.__super__.constructor.apply(this, arguments);
+      this.render = __bind(this.render, this);      Inspector.__super__.constructor.apply(this, arguments);
+      this.stage.selection.bind('change', this.render);
+      this.render();
     }
 
-    Inspector.prototype.className = 'inspector';
+    Inspector.prototype.render = function() {
+      this.el.empty();
+      this.append(new Background({
+        stage: this.stage
+      }));
+      this.append(new Border({
+        stage: this.stage
+      }));
+      return this.append(new Opacity({
+        stage: this.stage
+      }));
+    };
 
     return Inspector;
 
   })(Spine.Controller);
 
-  module["export"] = Inspector;
+  module.exports = Inspector;
 
 }).call(this);
 ;}});this.require.define({"app/controllers/inspector/background":function(exports, require, module){(function() {
@@ -11709,8 +11735,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 
     function Background() {
       this.render = __bind(this.render, this);      Background.__super__.constructor.apply(this, arguments);
-      if (!this.stage) throw 'stage required';
-      this.stage.selection.bind('change', this.render);
+      this.render();
     }
 
     Background.prototype.render = function() {
@@ -11747,8 +11772,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 
     function Border() {
       this.render = __bind(this.render, this);      Border.__super__.constructor.apply(this, arguments);
-      if (!this.stage) throw 'stage required';
-      this.stage.selection.bind('change', this.render);
+      this.render();
     }
 
     Border.prototype.render = function() {
@@ -11769,6 +11793,222 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = Border;
 
 }).call(this);
+;}});this.require.define({"app/controllers/inspector/color_picker":function(exports, require, module){(function() {
+  var Canvas, Color, ColorPicker, Gradient, Spectrum,
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
+    __slice = Array.prototype.slice;
+
+  Color = (function() {
+
+    Color.regex = /^(?:#([0-9a-f]{3,6})|rgba?\(([^)]+)\))/;
+
+    Color.fromHex = function(hex) {
+      var b, g, r;
+      if (hex[0] === "#") hex = hex.substring(1, 7);
+      if (hex.length < 6) hex += '000000'.substr(0, 6 - hex.length);
+      r = parseInt(hex.substring(0, 2), 16);
+      g = parseInt(hex.substring(2, 4), 16);
+      b = parseInt(hex.substring(4, 6), 16);
+      return new this(r, g, b);
+    };
+
+    Color.fromString = function(str) {
+      var hex, match, rgba;
+      match = str.match(this.regex);
+      if (match) {
+        if (hex = match[1]) {
+          return this.fromHex(hex);
+        } else if (rgba = match[2]) {
+          return (function(func, args, ctor) {
+            ctor.prototype = func.prototype;
+            var child = new ctor, result = func.apply(child, args);
+            return typeof result === "object" ? result : child;
+          })(this, rgba.split(/\s*,\s*/), function() {});
+        }
+      } else {
+        return null;
+      }
+    };
+
+    function Color(r, g, b, a) {
+      this.r = r;
+      this.g = g;
+      this.b = b;
+      this.a = a != null ? a : 1;
+    }
+
+    Color.prototype.toHex = function() {
+      var a;
+      a = (this.b | this.g << 8 | this.r << 16).toString(16);
+      return '#' + '000000'.substr(0, 6 - a.length) + a;
+    };
+
+    Color.prototype.toString = function() {
+      return "rgba(" + this.r + "," + this.g + "," + this.b + "," + this.a + ")";
+    };
+
+    Color.prototype.dup = function() {
+      return Object.create(this);
+    };
+
+    return Color;
+
+  })();
+
+  Canvas = (function(_super) {
+
+    __extends(Canvas, _super);
+
+    Canvas.prototype.tag = 'canvas';
+
+    Canvas.prototype.width = 100;
+
+    Canvas.prototype.height = 100;
+
+    Canvas.prototype.events = {
+      'click': 'click'
+    };
+
+    function Canvas() {
+      Canvas.__super__.constructor.apply(this, arguments);
+      this.el.attr({
+        width: this.width,
+        height: this.height
+      });
+      this.ctx = this.el[0].getContext('2d');
+    }
+
+    Canvas.prototype.val = function(x, y) {
+      var data;
+      data = this.ctx.getImageData(x, y, 1, 1).data;
+      return new Color(data[0], data[1], data[2]);
+    };
+
+    Canvas.prototype.click = function(e) {
+      var offset, x, y;
+      offset = this.el.offset();
+      x = e.pageX - offset.left;
+      y = e.pageY - offset.top;
+      return this.trigger('change', this.val(x, y));
+    };
+
+    return Canvas;
+
+  })(Spine.Controller);
+
+  Gradient = (function(_super) {
+
+    __extends(Gradient, _super);
+
+    Gradient.prototype.className = 'gradient';
+
+    Gradient.prototype.width = 250;
+
+    Gradient.prototype.height = 250;
+
+    function Gradient() {
+      Gradient.__super__.constructor.apply(this, arguments);
+      this.color || (this.color = new Color(0, 0, 0));
+      this.render();
+    }
+
+    Gradient.prototype.colorWithAlpha = function(a) {
+      var color;
+      color = this.color.dup();
+      color.a = a;
+      return color;
+    };
+
+    Gradient.prototype.renderGradient = function(xy, fromColor, toColor) {
+      var gradient, _ref;
+      gradient = (_ref = this.ctx).createLinearGradient.apply(_ref, [0, 0].concat(__slice.call(xy)));
+      gradient.addColorStop(0, fromColor.toString());
+      gradient.addColorStop(1, toColor.toString());
+      this.ctx.fillStyle = gradient;
+      return this.ctx.fillRect(0, 0, this.width, this.height);
+    };
+
+    Gradient.prototype.render = function() {
+      this.ctx.clearRect(0, 0, this.width, this.height);
+      this.renderGradient([this.width, 0], new Color(255, 255, 255), new Color(255, 255, 255));
+      this.renderGradient([this.width, 0], this.colorWithAlpha(0), this.colorWithAlpha(1));
+      return this.renderGradient([0, this.height], new Color(0, 0, 0, 0), new Color(0, 0, 0, 1));
+    };
+
+    return Gradient;
+
+  })(Canvas);
+
+  Spectrum = (function(_super) {
+
+    __extends(Spectrum, _super);
+
+    Spectrum.prototype.className = 'spectrum';
+
+    Spectrum.prototype.width = 25;
+
+    Spectrum.prototype.height = 250;
+
+    function Spectrum() {
+      Spectrum.__super__.constructor.apply(this, arguments);
+      this.render();
+    }
+
+    Spectrum.prototype.render = function() {
+      var gradient;
+      this.ctx.clearRect(0, 0, this.width, this.height);
+      gradient = this.ctx.createLinearGradient(0, 0, 0, this.height);
+      gradient.addColorStop(0, 'rgb(255,   0,   0)');
+      gradient.addColorStop(0.15, 'rgb(255,   0, 255)');
+      gradient.addColorStop(0.33, 'rgb(0,     0, 255)');
+      gradient.addColorStop(0.49, 'rgb(0,   255, 255)');
+      gradient.addColorStop(0.67, 'rgb(0,   255,   0)');
+      gradient.addColorStop(0.84, 'rgb(255, 255,   0)');
+      gradient.addColorStop(1, 'rgb(255,   0,   0)');
+      this.ctx.fillStyle = gradient;
+      return this.ctx.fillRect(0, 0, this.width, this.height);
+    };
+
+    return Spectrum;
+
+  })(Canvas);
+
+  ColorPicker = (function(_super) {
+
+    __extends(ColorPicker, _super);
+
+    function ColorPicker() {
+      ColorPicker.__super__.constructor.apply(this, arguments);
+      this.render();
+    }
+
+    ColorPicker.prototype.render = function() {
+      var _this = this;
+      this.el.empty();
+      this.gradient = new Gradient({
+        color: new Color(255, 0, 0)
+      });
+      this.spectrum = new Spectrum;
+      this.gradient.bind('change', function(color) {
+        return $('body').css({
+          'background': color.toString()
+        });
+      });
+      this.spectrum.bind('change', function(color) {
+        _this.gradient.color = color;
+        return _this.gradient.render();
+      });
+      return this.append(this.gradient, this.spectrum);
+    };
+
+    return ColorPicker;
+
+  })(Spine.Controller);
+
+  module.exports = ColorPicker;
+
+}).call(this);
 ;}});this.require.define({"app/controllers/inspector/opacity":function(exports, require, module){(function() {
   var Opacity,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
@@ -11779,24 +12019,37 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 
     __extends(Opacity, _super);
 
-    Opacity.prototype.className = 'border';
+    Opacity.prototype.className = 'opacity';
+
+    Opacity.prototype.events = {
+      'change input': 'change'
+    };
 
     function Opacity() {
       this.render = __bind(this.render, this);      Opacity.__super__.constructor.apply(this, arguments);
       if (!this.stage) throw 'stage required';
-      this.stage.selection.bind('change', this.render);
+      this.render();
     }
 
     Opacity.prototype.render = function() {
-      this.opacitty = this.stage.selection.get('opacity');
+      this.disabled = !this.stage.selection.isAny();
+      this.opacity = this.stage.selection.get('opacity');
+      if (this.opacity) this.opacity = parseFloat(this.opacity).toPrecision(2);
       return this.html(JST['app/views/inspector/opacity'](this));
+    };
+
+    Opacity.prototype.change = function(e) {
+      var val;
+      val = $(e.currentTarget).val();
+      this.stage.selection.set('opacity', val);
+      return this.$('input').val(val);
     };
 
     return Opacity;
 
   })(Spine.Controller);
 
-  module.exports = Border;
+  module.exports = Opacity;
 
 }).call(this);
 ;}});this.require.define({"app/controllers/stage":function(exports, require, module){(function() {
@@ -11831,7 +12084,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
     Stage.prototype.events = {
       'select': 'select',
       'deselect': 'deselect',
-      'mousedown.deselect': 'deselectAll',
+      'mousedown': 'deselectAll',
       'resize.start': 'resizeStart',
       'resize.end': 'resizeEnd'
     };
@@ -12095,6 +12348,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 
     KeyBindings.prototype.keypress = function(e) {
       var _name;
+      if ('value' in e.target) return;
       return typeof this[_name = this.mapping[e.which]] === "function" ? this[_name](e) : void 0;
     };
 
@@ -12438,6 +12692,10 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
       return this.elements.length > 1;
     };
 
+    Selection.prototype.isAny = function() {
+      return this.elements.length > 0;
+    };
+
     Selection.prototype.add = function(element) {
       if (__indexOf.call(this.elements, element) >= 0) return;
       this.elements.push(element);
@@ -12644,14 +12902,34 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = Snapping;
 
 }).call(this);
+;}});this.require.define({"app/controllers/undo":function(exports, require, module){(function() {
+  var Undo;
+
+  Undo = (function() {
+
+    function Undo() {}
+
+    Undo.commands = [];
+
+    Undo.add = function(undo, redo) {};
+
+    return Undo;
+
+  })();
+
+  module["extends"] = Undo;
+
+}).call(this);
 ;}});this.require.define({"app/index":function(exports, require, module){(function() {
-  var App, Header, Stage,
+  var App, Header, Inspector, Stage,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Stage = require('./controllers/stage');
 
   Header = require('./controllers/header');
+
+  Inspector = require('./controllers/inspector');
 
   App = (function(_super) {
 
@@ -12665,7 +12943,10 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
       this.header = new Header({
         stage: this.stage
       });
-      this.append(this.header, this.stage);
+      this.inspector = new Inspector({
+        stage: this.stage
+      });
+      this.append(this.header, this.stage, this.inspector);
     }
 
     return App;
@@ -12768,7 +13049,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
     (function() {
       (function() {
       
-        __out.push('<h3>Background</h3>\n\n<label>\n  <span>Fill Style</span>\n  <select name="style">\n    <option value="none">None</option>\n    <option value="color">Color</option>\n    <option value="color">Gradient</option>\n    <option value="color">Image</option>\n  </select>\n</label>\n');
+        __out.push('<h3>Background</h3>\n\n<article>\n  <label>\n    <span>Fill Style</span>\n    <select name="style">\n      <option value="none">None</option>\n      <option value="color">Color</option>\n      <option value="gradient">Gradient</option>\n      <option value="image">Image</option>\n    </select>\n  </label>\n\n  <div class="color hidden">\n\n  </div>\n\n  <div class="gradient hidden">\n\n  </div>\n\n  <div class="image hidden">\n\n  </div>\n</article>\n');
       
       }).call(this);
       
@@ -12819,7 +13100,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
     (function() {
       (function() {
       
-        __out.push('<h3>Border</h3>\n');
+        __out.push('<h3>Border</h3>\n\n<article>\n  Lorum\n</article>\n');
       
       }).call(this);
       
@@ -12870,11 +13151,23 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
     (function() {
       (function() {
       
-        __out.push('<h3>Opacity</h3>\n\n<input type="range" name="opacity" value="');
+        __out.push('<h3>Opacity</h3>\n\n<article>\n  <label>\n    <input\n      type="range"\n      name="opacity"\n      value="');
       
         __out.push(__sanitize(this.opacity));
       
-        __out.push('">\n');
+        __out.push('"\n      min="0" max="1" step="0.05"\n      ');
+      
+        if (this.disabled) __out.push('disabled="disabled"');
+      
+        __out.push('>\n\n    <input\n      type="number"\n      value="');
+      
+        __out.push(__sanitize(this.opacity));
+      
+        __out.push('"\n      min="0" max="1" step="0.05"\n      ');
+      
+        if (this.disabled) __out.push('disabled="disabled"');
+      
+        __out.push('>\n  </label>\n</article>\n');
       
       }).call(this);
       

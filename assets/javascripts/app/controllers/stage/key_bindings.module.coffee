@@ -18,6 +18,9 @@ class KeyBindings extends Spine.Module
     $(document).bind('keydown', @keypress)
 
   keypress: (e) =>
+    # Disable keyboard shortcuts in inputs
+    return if 'value' of e.target
+
     @[@mapping[e.which]]?(e)
 
   backspace: (e) ->

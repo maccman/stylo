@@ -14,7 +14,7 @@ class Stage extends Spine.Controller
   events:
     'select': 'select'
     'deselect': 'deselect'
-    'mousedown.deselect': 'deselectAll'
+    'mousedown': 'deselectAll'
     'resize.start': 'resizeStart'
     'resize.end': 'resizeEnd'
 

@@ -1,0 +1,55 @@
+@import 'mixins'
+
+#app .inspector {
+  width: 220px
+  position: absolute
+  right: 0px
+  bottom: 0px
+  top: 35px
+  box-shadow: inset 1px 0 2px rgba(0, 0, 0, 0.3)
+  background: #F5F5F5
+  color: #000
+
+  h3 {
+    line-height: 20px
+    padding: 0 5px
+    margin: 0
+    vbg-gradient(#F1F1F1, #DDDDDD)
+    border-left: 1px solid #C6C6C6
+    border-top: 1px solid #DDDDDD
+    border-bottom: 1px solid #C6C6C6
+    color: #777
+    text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.8)
+  }
+
+  article {
+    padding: 8px 8px 10px 8px
+  }
+
+  label span:after {
+    content: ":"
+  }
+
+  input[disabled] {
+    opacity: 0.8
+  }
+
+  .background select {
+    width: 130px
+    margin-left: 5px
+  }
+
+  .opacity label {
+    width: 100%
+    border-box()
+
+    input {
+      display: block
+      float: left
+    }
+
+    input[type=range] {
+      margin: 5px 5px 0 0
+    }
+  }
+}

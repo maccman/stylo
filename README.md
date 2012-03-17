@@ -14,16 +14,18 @@ Phase 1:
 Phase 2:
 
 * ✓ Stage snapping
+* Copy paste
+* Undo/redo
 * Resizing snapping
 * Element snapping
 * Canvas snapping
-* Undo/redo
 * Pen tool
 * Layers
 * Color picker
 * Scaling stage & size
 * Z-index
 * Keyboard shortcuts
+* Saving/opening
 
 Nice to have:
 
@@ -95,5 +97,18 @@ height: 20px;
 width: 848px;
 z-index: auto;
 
-#
+#Save to png
 
+https://github.com/paulhammond/webkit2png/blob/master/webkit2png
+https://developer.apple.com/library/mac/#samplecode/ScreenSnapshot/Listings/ScreenSnapshot_ImageView_m.html#//apple_ref/doc/uid/DTS40011158-ScreenSnapshot_ImageView_m-DontLinkElementID_7
+http://www.cocoadev.com/index.pl?HowToAcquireScreenshots
+http://www.sticksoftware.com/developer/Screensnap.m.txt
+https://github.com/appcelerator/titanium_desktop/blob/master/modules/ti.Platform/PlatformMac.mm
+
+http://www.cssdesk.com/
+
+http://10k.aneventapart.com/2/Uploads/579/
+
+http://10k.aneventapart.com/2/Uploads/504/
+
+AN EASY WAY TO CHOOSE COLORS - I.E. BURN ETC

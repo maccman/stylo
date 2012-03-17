@@ -10,8 +10,7 @@ class Background extends Spine.Controller
 
   constructor: ->
     super
-    throw 'stage required' unless @stage
-    @stage.selection.bind 'change', @render
+    @render()
 
   render: =>
     @background = {}

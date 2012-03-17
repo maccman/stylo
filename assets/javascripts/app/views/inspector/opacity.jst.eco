@@ -1,3 +1,18 @@
 <h3>Opacity</h3>
 
-<input type="range" name="opacity" value="<%= @opacity %>">
+<article>
+  <label>
+    <input
+      type="range"
+      name="opacity"
+      value="<%= @opacity %>"
+      min="0" max="1" step="0.05"
+      <% if @disabled: %>disabled="disabled"<% end %>>
+
+    <input
+      type="number"
+      value="<%= @opacity %>"
+      min="0" max="1" step="0.05"
+      <% if @disabled: %>disabled="disabled"<% end %>>
+  </label>
+</article>

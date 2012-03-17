@@ -1,11 +1,25 @@
 <h3>Background</h3>
 
-<label>
-  <span>Fill Style</span>
-  <select name="style">
-    <option value="none">None</option>
-    <option value="color">Color</option>
-    <option value="color">Gradient</option>
-    <option value="color">Image</option>
-  </select>
-</label>
+<article>
+  <label>
+    <span>Fill Style</span>
+    <select name="style">
+      <option value="none">None</option>
+      <option value="color">Color</option>
+      <option value="gradient">Gradient</option>
+      <option value="image">Image</option>
+    </select>
+  </label>
+
+  <div class="color hidden">
+
+  </div>
+
+  <div class="gradient hidden">
+
+  </div>
+
+  <div class="image hidden">
+
+  </div>
+</article>

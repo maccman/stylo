@@ -18,12 +18,16 @@ class Header extends Spine.Controller
     position = @stage.center()
     position.left -= 50
     position.top  -= 50
-    @stage.add(new Rectangle(position))
+    @stage.add(shape = new Rectangle(position))
+    @stage.selection.clear()
+    @stage.selection.add(shape)
 
   addEllipsis: ->
     position = @stage.center()
     position.left -= 50
     position.top  -= 50
-    @stage.add(new Ellipsis(position))
+    @stage.add(shape = new Ellipsis(position))
+    @stage.selection.clear()
+    @stage.selection.add(shape)
 
 module.exports = Header

@@ -34,9 +34,20 @@
     opacity: 0.8
   }
 
-  .background select {
-    width: 130px
-    margin-left: 5px
+  .background {
+    select {
+      width: 130px
+      margin-left: 5px
+    }
+
+    .preview {
+      background: url(bg-grid.png) repeat
+    }
+
+    .preview, .preview .inner {
+      width: 60px
+      height: 60px
+    }
   }
 
   .opacity label {
@@ -50,6 +61,10 @@
 
     input[type=range] {
       margin: 5px 5px 0 0
+    }
+
+    input[type=number] {
+      width: 45px
     }
   }
 }

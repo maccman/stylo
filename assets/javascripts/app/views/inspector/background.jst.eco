@@ -11,6 +11,10 @@
     </select>
   </label>
 
+  <div class="preview">
+    <div class="inner"></div>
+  </div>
+
   <div class="color hidden">
 
   </div>

@@ -11059,6 +11059,45 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     }, options);
   };
 
+  $.fn.gfxRaisedIn = function(options) {
+    if (options == null) options = {};
+    $(this).queueNext(function() {
+      return $(this).transform({
+        scale: '1',
+        opacity: '0',
+        translate3d: '0,-15px,0'
+      }).show();
+    });
+    return $(this).gfx({
+      scale: '1',
+      opacity: '1',
+      translate3d: '0,0,0'
+    }, options);
+  };
+
+  $.fn.gfxRaisedOut = function(options) {
+    if (options == null) options = {};
+    $(this).queueNext(function() {
+      return $(this).transform({
+        scale: '1',
+        opacity: '1',
+        translate3d: '0,0,0'
+      });
+    });
+    $(this).gfx({
+      scale: '1',
+      opacity: '0',
+      translate3d: '0,-8px,0'
+    }, options);
+    return $(this).queueNext(function() {
+      return $(this).hide().transform({
+        scale: '1',
+        opacity: '1',
+        translate3d: '0,0,0'
+      });
+    });
+  };
+
   $.fn.fix = function() {
     return $(this).each(function() {
       var element, parentOffset, styles;
@@ -11084,6 +11123,444 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     });
   };
 
+}).call(this);
+this.require.define({"lib/color_picker":function(exports, require, module){(function() {
+  var Canvas, Color, ColorPicker, Display, Gradient, Popup, Spectrum,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
+    __slice = Array.prototype.slice;
+
+  Popup = require('./popup');
+
+  Color = (function() {
+
+    Color.regex = /^(?:#([0-9a-f]{3,6})|rgba?\(([^)]+)\))/;
+
+    Color.fromHex = function(hex) {
+      var b, g, r;
+      if (hex[0] === '#') hex = hex.substring(1, 7);
+      if (hex.length === 3) {
+        hex = hex.charAt(0) + hex.charAt(0) + hex.charAt(1) + hex.charAt(1) + hex.charAt(2) + hex.charAt(2);
+      }
+      r = parseInt(hex.substring(0, 2), 16);
+      g = parseInt(hex.substring(2, 4), 16);
+      b = parseInt(hex.substring(4, 6), 16);
+      return new this(r, g, b);
+    };
+
+    Color.fromString = function(str) {
+      var hex, match, rgba;
+      match = str.match(this.regex);
+      if (!match) return null;
+      if (hex = match[1]) {
+        return this.fromHex(hex);
+      } else if (rgba = match[2]) {
+        return (function(func, args, ctor) {
+          ctor.prototype = func.prototype;
+          var child = new ctor, result = func.apply(child, args);
+          return typeof result === "object" ? result : child;
+        })(this, rgba.split(/\s*,\s*/), function() {});
+      }
+    };
+
+    function Color(r, g, b, a) {
+      this.r = r;
+      this.g = g;
+      this.b = b;
+      this.a = a != null ? a : 1;
+    }
+
+    Color.prototype.toHex = function() {
+      var a;
+      a = (this.b | this.g << 8 | this.r << 16).toString(16);
+      a = '#' + '000000'.substr(0, 6 - a.length) + a;
+      return a.toUpperCase();
+    };
+
+    Color.prototype.toString = function() {
+      return "rgba(" + this.r + "," + this.g + "," + this.b + "," + this.a + ")";
+    };
+
+    Color.prototype.dup = function() {
+      return Object.create(this);
+    };
+
+    return Color;
+
+  })();
+
+  Canvas = (function(_super) {
+
+    __extends(Canvas, _super);
+
+    Canvas.prototype.tag = 'canvas';
+
+    Canvas.prototype.width = 100;
+
+    Canvas.prototype.height = 100;
+
+    Canvas.prototype.events = {
+      'mousedown': 'drag'
+    };
+
+    function Canvas() {
+      this.drop = __bind(this.drop, this);
+      this.over = __bind(this.over, this);      Canvas.__super__.constructor.apply(this, arguments);
+      this.el.attr({
+        width: this.width,
+        height: this.height
+      });
+      this.ctx = this.el[0].getContext('2d');
+    }
+
+    Canvas.prototype.val = function(x, y) {
+      var data;
+      data = this.ctx.getImageData(x, y, 1, 1).data;
+      return new Color(data[0], data[1], data[2]);
+    };
+
+    Canvas.prototype.drag = function() {
+      this.el.bind('mousemove', this.over);
+      return this.el.bind('mouseup', this.drop);
+    };
+
+    Canvas.prototype.over = function(e) {
+      var offset, x, y;
+      offset = this.el.offset();
+      x = e.pageX - offset.left;
+      y = e.pageY - offset.top;
+      return this.trigger('change', this.val(x, y));
+    };
+
+    Canvas.prototype.drop = function() {
+      this.el.unbind('mousemove', this.over);
+      return this.el.unbind('mouseup', this.drop);
+    };
+
+    return Canvas;
+
+  })(Spine.Controller);
+
+  Gradient = (function(_super) {
+
+    __extends(Gradient, _super);
+
+    Gradient.prototype.className = 'gradient';
+
+    Gradient.prototype.width = 250;
+
+    Gradient.prototype.height = 250;
+
+    function Gradient() {
+      Gradient.__super__.constructor.apply(this, arguments);
+      this.color || (this.color = new Color(0, 0, 0));
+      this.setColor(this.color);
+    }
+
+    Gradient.prototype.setColor = function(color) {
+      this.color = color;
+      return this.render();
+    };
+
+    Gradient.prototype.colorWithAlpha = function(a) {
+      var color;
+      color = this.color.dup();
+      color.a = a;
+      return color;
+    };
+
+    Gradient.prototype.renderGradient = function() {
+      var color, colors, gradient, index, xy, _len, _ref, _ref2;
+      xy = arguments[0], colors = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      gradient = (_ref = this.ctx).createLinearGradient.apply(_ref, [0, 0].concat(__slice.call(xy)));
+      gradient.addColorStop(0, (_ref2 = colors.shift()) != null ? _ref2.toString() : void 0);
+      for (index = 0, _len = colors.length; index < _len; index++) {
+        color = colors[index];
+        gradient.addColorStop(index + 1 / colors.length, color.toString());
+      }
+      this.ctx.fillStyle = gradient;
+      return this.ctx.fillRect(0, 0, this.width, this.height);
+    };
+
+    Gradient.prototype.render = function() {
+      var gradient;
+      this.ctx.clearRect(0, 0, this.width, this.height);
+      this.renderGradient([this.width, 0], new Color(255, 255, 255), new Color(255, 255, 255));
+      this.renderGradient([this.width, 0], this.colorWithAlpha(0), this.colorWithAlpha(1));
+      gradient = this.ctx.createLinearGradient(0, 0, -6, this.height);
+      gradient.addColorStop(0, new Color(0, 0, 0, 0).toString());
+      gradient.addColorStop(1, new Color(0, 0, 0, 1).toString());
+      this.ctx.fillStyle = gradient;
+      return this.ctx.fillRect(0, 0, this.width, this.height);
+    };
+
+    return Gradient;
+
+  })(Canvas);
+
+  Spectrum = (function(_super) {
+
+    __extends(Spectrum, _super);
+
+    Spectrum.prototype.className = 'spectrum';
+
+    Spectrum.prototype.width = 25;
+
+    Spectrum.prototype.height = 250;
+
+    function Spectrum() {
+      Spectrum.__super__.constructor.apply(this, arguments);
+      this.color || (this.color = new Color(0, 0, 0));
+      this.setColor(this.color);
+    }
+
+    Spectrum.prototype.render = function() {
+      var gradient;
+      this.ctx.clearRect(0, 0, this.width, this.height);
+      gradient = this.ctx.createLinearGradient(0, 0, 0, this.height);
+      gradient.addColorStop(0, 'rgb(255,   0,   0)');
+      gradient.addColorStop(0.16, 'rgb(255,   0, 255)');
+      gradient.addColorStop(0.33, 'rgb(0,     0, 255)');
+      gradient.addColorStop(0.50, 'rgb(0,   255, 255)');
+      gradient.addColorStop(0.67, 'rgb(0,   255,   0)');
+      gradient.addColorStop(0.83, 'rgb(255, 255,   0)');
+      gradient.addColorStop(1, 'rgb(255,   0,   0)');
+      this.ctx.fillStyle = gradient;
+      return this.ctx.fillRect(0, 0, this.width, this.height);
+    };
+
+    Spectrum.prototype.setColor = function(color) {
+      this.color = color;
+      return this.render();
+    };
+
+    return Spectrum;
+
+  })(Canvas);
+
+  Display = (function(_super) {
+
+    __extends(Display, _super);
+
+    Display.prototype.tag = 'article';
+
+    Display.prototype.elements = {
+      'input[name=hex]': '$hex',
+      '.preview .inner': '$preview'
+    };
+
+    Display.prototype.events = {
+      'change input:not([name=hex])': 'change',
+      'change input[name=hex]': 'changeHex'
+    };
+
+    function Display() {
+      Display.__super__.constructor.apply(this, arguments);
+      this.color || (this.color = new Color(0, 0, 0));
+      this.render();
+      this.setColor(this.color);
+    }
+
+    Display.prototype.render = function() {
+      return this.html(JST['lib/views/color_picker'](this));
+    };
+
+    Display.prototype.setColor = function(color) {
+      var input, _i, _len, _ref;
+      this.color = color;
+      _ref = this.$('input');
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        input = _ref[_i];
+        input.value = this.color[input.name];
+      }
+      this.$hex.val(this.color.toHex());
+      return this.$preview.css({
+        background: this.color.toString()
+      });
+    };
+
+    Display.prototype.change = function(e) {
+      var color, input, _i, _len, _ref;
+      e.preventDefault();
+      color = new Color;
+      _ref = this.$('input');
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        input = _ref[_i];
+        color[input.name] = input.value;
+      }
+      return this.trigger('change', color);
+    };
+
+    Display.prototype.changeHex = function(e) {
+      var color;
+      e.preventDefault();
+      color = Color.fromHex(this.$hex.val());
+      return this.trigger('change', color);
+    };
+
+    return Display;
+
+  })(Spine.Controller);
+
+  ColorPicker = (function(_super) {
+
+    __extends(ColorPicker, _super);
+
+    ColorPicker.prototype.className = 'colorPicker';
+
+    function ColorPicker() {
+      ColorPicker.__super__.constructor.apply(this, arguments);
+      this.color || (this.color = new Color(255, 0, 0));
+      this.render();
+    }
+
+    ColorPicker.prototype.render = function() {
+      var _this = this;
+      this.el.empty();
+      this.gradient = new Gradient({
+        color: this.color
+      });
+      this.spectrum = new Spectrum({
+        color: this.color
+      });
+      this.display = new Display({
+        color: this.color
+      });
+      this.gradient.bind('change', function(color) {
+        _this.color = color;
+        return _this.display.setColor(_this.color);
+      });
+      this.spectrum.bind('change', function(color) {
+        _this.color = color;
+        _this.gradient.setColor(_this.color);
+        return _this.display.setColor(_this.color);
+      });
+      this.display.bind('change', function(color) {
+        return _this.setColor(color);
+      });
+      return this.append(this.gradient, this.spectrum, this.display);
+    };
+
+    ColorPicker.prototype.setColor = function(color) {
+      this.color = color;
+      this.display.setColor(color);
+      this.gradient.setColor(color);
+      return this.spectrum.setColor(color);
+    };
+
+    return ColorPicker;
+
+  })(Popup);
+
+  module.exports = ColorPicker;
+
+}).call(this);
+;}});this.require.define({"lib/popup":function(exports, require, module){(function() {
+  var Popup,
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  Popup = (function(_super) {
+
+    __extends(Popup, _super);
+
+    Popup.show = function() {
+      var _ref;
+      return (_ref = new this).show.apply(_ref, arguments);
+    };
+
+    function Popup() {
+      Popup.__super__.constructor.apply(this, arguments);
+      this.el.addClass('popup');
+      this.el.css({
+        position: 'absolute'
+      }).hide();
+    }
+
+    Popup.prototype.show = function(position) {
+      var left, top;
+      if (position == null) {
+        position = {
+          left: 0,
+          top: 0
+        };
+      }
+      left = position.left || position.clientX;
+      top = position.top || position.clientY;
+      this.el.css({
+        left: left,
+        top: top
+      });
+      $('body').append(this.el);
+      return this.el.gfxRaisedIn();
+    };
+
+    Popup.prototype.hide = function() {
+      var _this = this;
+      this.el.gfxRaisedOut();
+      return this.el.queueNext(function() {
+        return _this.el.remove();
+      });
+    };
+
+    return Popup;
+
+  })(Spine.Controller);
+
+  module.exports = Popup;
+
+}).call(this);
+;}});(function() {
+  this.JST || (this.JST = {});
+  this.JST["lib/views/color_picker"] = function(__obj) {
+    if (!__obj) __obj = {};
+    var __out = [], __capture = function(callback) {
+      var out = __out, result;
+      __out = [];
+      callback.call(this);
+      result = __out.join('');
+      __out = out;
+      return __safe(result);
+    }, __sanitize = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else if (typeof value !== 'undefined' && value != null) {
+        return __escape(value);
+      } else {
+        return '';
+      }
+    }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+    __safe = __obj.safe = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else {
+        if (!(typeof value !== 'undefined' && value != null)) value = '';
+        var result = new String(value);
+        result.ecoSafe = true;
+        return result;
+      }
+    };
+    if (!__escape) {
+      __escape = __obj.escape = function(value) {
+        return ('' + value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      };
+    }
+    (function() {
+      (function() {
+      
+        __out.push('<label>\n  <span>R</span>\n  <input type="number" min="0" max="255" name="r">\n</label>\n\n<label>\n  <span>G</span>\n  <input type="number" min="0" max="255" name="g">\n</label>\n\n<label>\n  <span>B</span>\n  <input type="number" min="0" max="255" name="b">\n</label>\n\n<label>\n  <span>A</span>\n  <input type="number" min="0" max="1" step="0.05" name="a">\n</label>\n\n<label>\n  <span>Hex</span>\n  <input type="text" name="hex">\n</label>\n\n<div class="preview">\n  <div class="inner"></div>\n</div>\n');
+      
+      }).call(this);
+      
+    }).call(__obj);
+    __obj.safe = __objSafe, __obj.escape = __escape;
+    return __out.join('');
+  };
 }).call(this);
 this.require.define({"app/controllers/canvas":function(exports, require, module){(function() {
   var Canvas, Element,
@@ -11720,10 +12197,12 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 
 }).call(this);
 ;}});this.require.define({"app/controllers/inspector/background":function(exports, require, module){(function() {
-  var Background,
+  var Background, ColorPicker,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  ColorPicker = require('lib/color_picker');
 
   Background = (function(_super) {
 
@@ -11731,7 +12210,15 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 
     Background.prototype.className = 'background';
 
-    Background.prototype.styles = ['backgroundColor', 'backgroundImage', 'backgroundRepeat', 'backgroundSize'];
+    Background.prototype.elements = {
+      '.preview .inner': '$preview'
+    };
+
+    Background.prototype.events = {
+      'click .preview': 'showColorPicker'
+    };
+
+    Background.prototype.styles = ['background', 'backgroundColor', 'backgroundImage', 'backgroundRepeat', 'backgroundSize'];
 
     function Background() {
       this.render = __bind(this.render, this);      Background.__super__.constructor.apply(this, arguments);
@@ -11740,13 +12227,22 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 
     Background.prototype.render = function() {
       var style, _i, _len, _ref;
-      this.background = {};
+      this.values = {};
       _ref = this.styles;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         style = _ref[_i];
-        this.background[style] = this.stage.selection.get(style);
+        this.values[style] = this.stage.selection.get(style);
       }
-      return this.html(JST['app/views/inspector/background'](this));
+      this.html(JST['app/views/inspector/background'](this));
+      if (this.values.background) {
+        return this.$preview.css({
+          background: this.values.background
+        });
+      }
+    };
+
+    Background.prototype.showColorPicker = function() {
+      return ColorPicker.show();
     };
 
     return Background;
@@ -11791,222 +12287,6 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   })(Spine.Controller);
 
   module.exports = Border;
-
-}).call(this);
-;}});this.require.define({"app/controllers/inspector/color_picker":function(exports, require, module){(function() {
-  var Canvas, Color, ColorPicker, Gradient, Spectrum,
-    __hasProp = Object.prototype.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
-    __slice = Array.prototype.slice;
-
-  Color = (function() {
-
-    Color.regex = /^(?:#([0-9a-f]{3,6})|rgba?\(([^)]+)\))/;
-
-    Color.fromHex = function(hex) {
-      var b, g, r;
-      if (hex[0] === "#") hex = hex.substring(1, 7);
-      if (hex.length < 6) hex += '000000'.substr(0, 6 - hex.length);
-      r = parseInt(hex.substring(0, 2), 16);
-      g = parseInt(hex.substring(2, 4), 16);
-      b = parseInt(hex.substring(4, 6), 16);
-      return new this(r, g, b);
-    };
-
-    Color.fromString = function(str) {
-      var hex, match, rgba;
-      match = str.match(this.regex);
-      if (match) {
-        if (hex = match[1]) {
-          return this.fromHex(hex);
-        } else if (rgba = match[2]) {
-          return (function(func, args, ctor) {
-            ctor.prototype = func.prototype;
-            var child = new ctor, result = func.apply(child, args);
-            return typeof result === "object" ? result : child;
-          })(this, rgba.split(/\s*,\s*/), function() {});
-        }
-      } else {
-        return null;
-      }
-    };
-
-    function Color(r, g, b, a) {
-      this.r = r;
-      this.g = g;
-      this.b = b;
-      this.a = a != null ? a : 1;
-    }
-
-    Color.prototype.toHex = function() {
-      var a;
-      a = (this.b | this.g << 8 | this.r << 16).toString(16);
-      return '#' + '000000'.substr(0, 6 - a.length) + a;
-    };
-
-    Color.prototype.toString = function() {
-      return "rgba(" + this.r + "," + this.g + "," + this.b + "," + this.a + ")";
-    };
-
-    Color.prototype.dup = function() {
-      return Object.create(this);
-    };
-
-    return Color;
-
-  })();
-
-  Canvas = (function(_super) {
-
-    __extends(Canvas, _super);
-
-    Canvas.prototype.tag = 'canvas';
-
-    Canvas.prototype.width = 100;
-
-    Canvas.prototype.height = 100;
-
-    Canvas.prototype.events = {
-      'click': 'click'
-    };
-
-    function Canvas() {
-      Canvas.__super__.constructor.apply(this, arguments);
-      this.el.attr({
-        width: this.width,
-        height: this.height
-      });
-      this.ctx = this.el[0].getContext('2d');
-    }
-
-    Canvas.prototype.val = function(x, y) {
-      var data;
-      data = this.ctx.getImageData(x, y, 1, 1).data;
-      return new Color(data[0], data[1], data[2]);
-    };
-
-    Canvas.prototype.click = function(e) {
-      var offset, x, y;
-      offset = this.el.offset();
-      x = e.pageX - offset.left;
-      y = e.pageY - offset.top;
-      return this.trigger('change', this.val(x, y));
-    };
-
-    return Canvas;
-
-  })(Spine.Controller);
-
-  Gradient = (function(_super) {
-
-    __extends(Gradient, _super);
-
-    Gradient.prototype.className = 'gradient';
-
-    Gradient.prototype.width = 250;
-
-    Gradient.prototype.height = 250;
-
-    function Gradient() {
-      Gradient.__super__.constructor.apply(this, arguments);
-      this.color || (this.color = new Color(0, 0, 0));
-      this.render();
-    }
-
-    Gradient.prototype.colorWithAlpha = function(a) {
-      var color;
-      color = this.color.dup();
-      color.a = a;
-      return color;
-    };
-
-    Gradient.prototype.renderGradient = function(xy, fromColor, toColor) {
-      var gradient, _ref;
-      gradient = (_ref = this.ctx).createLinearGradient.apply(_ref, [0, 0].concat(__slice.call(xy)));
-      gradient.addColorStop(0, fromColor.toString());
-      gradient.addColorStop(1, toColor.toString());
-      this.ctx.fillStyle = gradient;
-      return this.ctx.fillRect(0, 0, this.width, this.height);
-    };
-
-    Gradient.prototype.render = function() {
-      this.ctx.clearRect(0, 0, this.width, this.height);
-      this.renderGradient([this.width, 0], new Color(255, 255, 255), new Color(255, 255, 255));
-      this.renderGradient([this.width, 0], this.colorWithAlpha(0), this.colorWithAlpha(1));
-      return this.renderGradient([0, this.height], new Color(0, 0, 0, 0), new Color(0, 0, 0, 1));
-    };
-
-    return Gradient;
-
-  })(Canvas);
-
-  Spectrum = (function(_super) {
-
-    __extends(Spectrum, _super);
-
-    Spectrum.prototype.className = 'spectrum';
-
-    Spectrum.prototype.width = 25;
-
-    Spectrum.prototype.height = 250;
-
-    function Spectrum() {
-      Spectrum.__super__.constructor.apply(this, arguments);
-      this.render();
-    }
-
-    Spectrum.prototype.render = function() {
-      var gradient;
-      this.ctx.clearRect(0, 0, this.width, this.height);
-      gradient = this.ctx.createLinearGradient(0, 0, 0, this.height);
-      gradient.addColorStop(0, 'rgb(255,   0,   0)');
-      gradient.addColorStop(0.15, 'rgb(255,   0, 255)');
-      gradient.addColorStop(0.33, 'rgb(0,     0, 255)');
-      gradient.addColorStop(0.49, 'rgb(0,   255, 255)');
-      gradient.addColorStop(0.67, 'rgb(0,   255,   0)');
-      gradient.addColorStop(0.84, 'rgb(255, 255,   0)');
-      gradient.addColorStop(1, 'rgb(255,   0,   0)');
-      this.ctx.fillStyle = gradient;
-      return this.ctx.fillRect(0, 0, this.width, this.height);
-    };
-
-    return Spectrum;
-
-  })(Canvas);
-
-  ColorPicker = (function(_super) {
-
-    __extends(ColorPicker, _super);
-
-    function ColorPicker() {
-      ColorPicker.__super__.constructor.apply(this, arguments);
-      this.render();
-    }
-
-    ColorPicker.prototype.render = function() {
-      var _this = this;
-      this.el.empty();
-      this.gradient = new Gradient({
-        color: new Color(255, 0, 0)
-      });
-      this.spectrum = new Spectrum;
-      this.gradient.bind('change', function(color) {
-        return $('body').css({
-          'background': color.toString()
-        });
-      });
-      this.spectrum.bind('change', function(color) {
-        _this.gradient.color = color;
-        return _this.gradient.render();
-      });
-      return this.append(this.gradient, this.spectrum);
-    };
-
-    return ColorPicker;
-
-  })(Spine.Controller);
-
-  module.exports = ColorPicker;
 
 }).call(this);
 ;}});this.require.define({"app/controllers/inspector/opacity":function(exports, require, module){(function() {
@@ -13049,7 +13329,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
     (function() {
       (function() {
       
-        __out.push('<h3>Background</h3>\n\n<article>\n  <label>\n    <span>Fill Style</span>\n    <select name="style">\n      <option value="none">None</option>\n      <option value="color">Color</option>\n      <option value="gradient">Gradient</option>\n      <option value="image">Image</option>\n    </select>\n  </label>\n\n  <div class="color hidden">\n\n  </div>\n\n  <div class="gradient hidden">\n\n  </div>\n\n  <div class="image hidden">\n\n  </div>\n</article>\n');
+        __out.push('<h3>Background</h3>\n\n<article>\n  <label>\n    <span>Fill Style</span>\n    <select name="style">\n      <option value="none">None</option>\n      <option value="color">Color</option>\n      <option value="gradient">Gradient</option>\n      <option value="image">Image</option>\n    </select>\n  </label>\n\n  <div class="preview">\n    <div class="inner"></div>\n  </div>\n\n  <div class="color hidden">\n\n  </div>\n\n  <div class="gradient hidden">\n\n  </div>\n\n  <div class="image hidden">\n\n  </div>\n</article>\n');
       
       }).call(this);
       
@@ -13176,6 +13456,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
     return __out.join('');
   };
 }).call(this);
+
 
 
 

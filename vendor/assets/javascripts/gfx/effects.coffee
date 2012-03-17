@@ -140,6 +140,19 @@ $.fn.gfxSlideIn = (options = {}) ->
     $(@).transform(translate3d: "#{distance},0,0", opacity: opacity).show()
   $(@).gfx({translate3d: "0,0,0", opacity: 1}, options)
 
+$.fn.gfxRaisedIn = (options = {}) ->
+  $(@).queueNext ->
+    $(@).transform(scale: '1', opacity: '0', translate3d: '0,-15px,0').show()
+  $(@).gfx({scale: '1', opacity: '1', translate3d: '0,0,0'}, options)
+
+$.fn.gfxRaisedOut = (options = {}) ->
+  $(@).queueNext ->
+    $(@).transform(scale: '1', opacity: '1', translate3d: '0,0,0')
+  $(@).gfx({scale: '1', opacity: '0', translate3d: '0,-8px,0'}, options)
+
+  $(@).queueNext ->
+    $(@).hide().transform(scale: '1', opacity: '1', translate3d: '0,0,0')
+
 $.fn.fix = ->
   $(@).each ->
     element = $(@)

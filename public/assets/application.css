@@ -158,6 +158,14 @@ body {
   width: 130px;
   margin-left: 5px;
 }
+#app .inspector .background .preview {
+  background: url("bg-grid.png") repeat;
+}
+#app .inspector .background .preview,
+#app .inspector .background .preview .inner {
+  width: 60px;
+  height: 60px;
+}
 #app .inspector .opacity label {
   width: 100%;
   -webkit-box-sizing: border-box;
@@ -170,6 +178,9 @@ body {
 }
 #app .inspector .opacity label input[type=range] {
   margin: 5px 5px 0 0;
+}
+#app .inspector .opacity label input[type=number] {
+  width: 45px;
 }
 #app .stage {
   display: -webkit-box;

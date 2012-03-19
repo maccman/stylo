@@ -41,6 +41,15 @@ class Color
   dup: ->
     Object.create(this)
 
+  set: (values) ->
+    @[key] = value for key, value of values
+
+  rgb: ->
+    result =
+      r: @r
+      g: @g
+      b: @b
+
 class Canvas extends Spine.Controller
   tag: 'canvas'
   width: 100
@@ -62,8 +71,8 @@ class Canvas extends Spine.Controller
      new Color(data[0], data[1], data[2])
 
   drag: (e) ->
-    @el.bind('mousemove', @over)
-    @el.bind('mouseup', @drop)
+    @el.mousemove(@over)
+    $(document).mouseup(@drop)
     @over(e)
 
   over: (e) =>
@@ -74,7 +83,7 @@ class Canvas extends Spine.Controller
 
   drop: =>
     @el.unbind('mousemove', @over)
-    @el.unbind('mouseup', @drop)
+    $(document).unbind('mouseup', @drop)
 
 class Gradient extends Canvas
   className: 'gradient'
@@ -199,6 +208,7 @@ class ColorPicker extends Popup
 
   events:
     'click .save': 'save'
+    'form submit': 'save'
 
   constructor: ->
     super
@@ -214,10 +224,12 @@ class ColorPicker extends Popup
     @spectrum = new Spectrum(color: @color)
     @display  = new Display(color: @color)
 
-    @gradient.bind 'change', (@color) =>
+    @gradient.bind 'change', (color) =>
+      @color.set(color.rgb())
       @display.setColor(@color)
 
-    @spectrum.bind 'change', (@color) =>
+    @spectrum.bind 'change', (color) =>
+      @color.set(color.rgb())
       @gradient.setColor(@color)
       @display.setColor(@color)
 
@@ -227,11 +239,13 @@ class ColorPicker extends Popup
     @append(@gradient, @spectrum, @display)
 
   setColor: (@color) ->
-    @display.setColor(color)
-    @gradient.setColor(color)
-    @spectrum.setColor(color)
+    @display.setColor(@color)
+    @gradient.setColor(@color)
+    @spectrum.setColor(@color)
 
-  save: ->
+  save: (e) ->
+    e.preventDefault()
+
     @trigger 'change', @color
     @close()
 

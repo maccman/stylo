@@ -1,34 +1,36 @@
 <div class="controls">
-  <label>
-    <span>R</span>
-    <input type="number" min="0" max="255" name="r">
-  </label>
+  <form>
+    <label>
+      <span>R</span>
+      <input type="number" min="0" max="255" name="r" required  autofocus>
+    </label>
 
-  <label>
-    <span>G</span>
-    <input type="number" min="0" max="255" name="g">
-  </label>
+    <label>
+      <span>G</span>
+      <input type="number" min="0" max="255" name="g" required>
+    </label>
 
-  <label>
-    <span>B</span>
-    <input type="number" min="0" max="255" name="b">
-  </label>
+    <label>
+      <span>B</span>
+      <input type="number" min="0" max="255" name="b" required>
+    </label>
 
-  <label>
-    <span>A</span>
-    <input type="number" min="0" max="1" step="0.05" name="a">
-  </label>
+    <label>
+      <span>A</span>
+      <input type="number" min="0" max="1" step="0.05" name="a">
+    </label>
 
-  <label>
-    <span>Hex</span>
-    <input type="text" name="hex">
-  </label>
+    <label>
+      <span>Hex</span>
+      <input type="text" name="hex">
+    </label>
 
-  <div class="preview">
-    <div class="inner">
-      &nbsp;
+    <div class="preview">
+      <div class="inner">
+        &nbsp;
+      </div>
     </div>
-  </div>
 
-  <button class="save">Save</button>
+    <button class="save">Save</button>
+  </form>
 </div>

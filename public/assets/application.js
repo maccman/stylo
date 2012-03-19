@@ -11186,6 +11186,25 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
       return Object.create(this);
     };
 
+    Color.prototype.set = function(values) {
+      var key, value, _results;
+      _results = [];
+      for (key in values) {
+        value = values[key];
+        _results.push(this[key] = value);
+      }
+      return _results;
+    };
+
+    Color.prototype.rgb = function() {
+      var result;
+      return result = {
+        r: this.r,
+        g: this.g,
+        b: this.b
+      };
+    };
+
     return Color;
 
   })();
@@ -11221,8 +11240,8 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
     };
 
     Canvas.prototype.drag = function(e) {
-      this.el.bind('mousemove', this.over);
-      this.el.bind('mouseup', this.drop);
+      this.el.mousemove(this.over);
+      $(document).mouseup(this.drop);
       return this.over(e);
     };
 
@@ -11236,7 +11255,7 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
     Canvas.prototype.drop = function() {
       this.el.unbind('mousemove', this.over);
-      return this.el.unbind('mouseup', this.drop);
+      return $(document).unbind('mouseup', this.drop);
     };
 
     return Canvas;
@@ -11413,7 +11432,8 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
     ColorPicker.prototype.width = 390;
 
     ColorPicker.prototype.events = {
-      'click .save': 'save'
+      'click .save': 'save',
+      'form submit': 'save'
     };
 
     function ColorPicker() {
@@ -11438,11 +11458,11 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
         color: this.color
       });
       this.gradient.bind('change', function(color) {
-        _this.color = color;
+        _this.color.set(color.rgb());
         return _this.display.setColor(_this.color);
       });
       this.spectrum.bind('change', function(color) {
-        _this.color = color;
+        _this.color.set(color.rgb());
         _this.gradient.setColor(_this.color);
         return _this.display.setColor(_this.color);
       });
@@ -11454,12 +11474,13 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
     ColorPicker.prototype.setColor = function(color) {
       this.color = color;
-      this.display.setColor(color);
-      this.gradient.setColor(color);
-      return this.spectrum.setColor(color);
+      this.display.setColor(this.color);
+      this.gradient.setColor(this.color);
+      return this.spectrum.setColor(this.color);
     };
 
-    ColorPicker.prototype.save = function() {
+    ColorPicker.prototype.save = function(e) {
+      e.preventDefault();
       this.trigger('change', this.color);
       return this.close();
     };
@@ -11586,7 +11607,7 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
     (function() {
       (function() {
       
-        __out.push('<div class="controls">\n  <label>\n    <span>R</span>\n    <input type="number" min="0" max="255" name="r">\n  </label>\n\n  <label>\n    <span>G</span>\n    <input type="number" min="0" max="255" name="g">\n  </label>\n\n  <label>\n    <span>B</span>\n    <input type="number" min="0" max="255" name="b">\n  </label>\n\n  <label>\n    <span>A</span>\n    <input type="number" min="0" max="1" step="0.05" name="a">\n  </label>\n\n  <label>\n    <span>Hex</span>\n    <input type="text" name="hex">\n  </label>\n\n  <div class="preview">\n    <div class="inner">\n      &nbsp;\n    </div>\n  </div>\n\n  <button class="save">Save</button>\n</div>\n');
+        __out.push('<div class="controls">\n  <form>\n    <label>\n      <span>R</span>\n      <input type="number" min="0" max="255" name="r" required  autofocus>\n    </label>\n\n    <label>\n      <span>G</span>\n      <input type="number" min="0" max="255" name="g" required>\n    </label>\n\n    <label>\n      <span>B</span>\n      <input type="number" min="0" max="255" name="b" required>\n    </label>\n\n    <label>\n      <span>A</span>\n      <input type="number" min="0" max="1" step="0.05" name="a">\n    </label>\n\n    <label>\n      <span>Hex</span>\n      <input type="text" name="hex">\n    </label>\n\n    <div class="preview">\n      <div class="inner">\n        &nbsp;\n      </div>\n    </div>\n\n    <button class="save">Save</button>\n  </form>\n</div>\n');
       
       }).call(this);
       

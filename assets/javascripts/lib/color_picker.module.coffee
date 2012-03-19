@@ -12,9 +12,9 @@ class Color
             hex.charAt(1) + hex.charAt(1) +
             hex.charAt(2) + hex.charAt(2)
 
-    r = hex.substring(0,2)
-    g = hex.substring(2,4)
-    b = hex.substring(4,6)
+    r = parseInt(hex.substring(0,2), 16)
+    g = parseInt(hex.substring(2,4), 16)
+    b = parseInt(hex.substring(4,6), 16)
 
     new this(r, g, b)
 
@@ -29,9 +29,9 @@ class Color
       new this(rgba.split(/\s*,\s*/)...)
 
   constructor: (r, g, b, a = 1) ->
-    @r = parseInt(r, 16)
-    @g = parseInt(g, 16)
-    @b = parseInt(b, 16)
+    @r = parseInt(r, 10)
+    @g = parseInt(g, 10)
+    @b = parseInt(b, 10)
     @a = parseInt(a, 10)
 
   toHex: ->

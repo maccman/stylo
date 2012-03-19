@@ -11143,9 +11143,9 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
       if (hex.length === 3) {
         hex = hex.charAt(0) + hex.charAt(0) + hex.charAt(1) + hex.charAt(1) + hex.charAt(2) + hex.charAt(2);
       }
-      r = hex.substring(0, 2);
-      g = hex.substring(2, 4);
-      b = hex.substring(4, 6);
+      r = parseInt(hex.substring(0, 2), 16);
+      g = parseInt(hex.substring(2, 4), 16);
+      b = parseInt(hex.substring(4, 6), 16);
       return new this(r, g, b);
     };
 
@@ -11166,9 +11166,9 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
     function Color(r, g, b, a) {
       if (a == null) a = 1;
-      this.r = parseInt(r, 16);
-      this.g = parseInt(g, 16);
-      this.b = parseInt(b, 16);
+      this.r = parseInt(r, 10);
+      this.g = parseInt(g, 10);
+      this.b = parseInt(b, 10);
       this.a = parseInt(a, 10);
     }
 

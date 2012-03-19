@@ -9,12 +9,14 @@ Phase 1:
 * ✓ Select
 * ✓ Select multiple items
 * ✓ Toolbar menu
-* ✓ Color picker
 * Inspector panel (Element/Text/Ruler)
+
+Fix white part of color picker
 
 Phase 2:
 
 * ✓ Stage snapping
+* ✓ Color picker
 * Copy paste
 * Undo/redo
 * Resizing snapping
@@ -22,7 +24,6 @@ Phase 2:
 * Canvas snapping
 * Pen tool
 * Layers
-* Color picker
 * Scaling stage & size
 * Z-index
 * Keyboard shortcuts

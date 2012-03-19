@@ -5,9 +5,13 @@ class Background extends Spine.Controller
 
   elements:
     '.preview .inner': '$preview'
+    'select': '$select'
+    '.option': '$options'
+    '.option.color': '$color'
 
   events:
     'click .preview': 'showColorPicker'
+    'change select': 'select'
 
   styles: [
     'background',
@@ -29,11 +33,18 @@ class Background extends Spine.Controller
 
     @html JST['app/views/inspector/background'](this)
 
-    if @values.background
-      @$preview.css(background: @values.background)
+    @$options.hide()
+
+    # TODO - check bgimg
+
+    if @values.backgroundColor
+      @$select.val('color').change()
+      @$preview.css(backgroundColor: @values.backgroundColor)
 
   showColorPicker: (e) ->
     color  = @stage.selection.get('backgroundColor')
+    color  = ColorPicker.Color.fromString(color)
+    color  = false if color.isTransparent()
 
     picker = new ColorPicker(color: color)
 
@@ -46,5 +57,13 @@ class Background extends Spine.Controller
       @render()
 
     picker.open(@$preview.offset())
+
+  select: ->
+    @$options.hide()
+    switch @$select.val()
+      when 'color'
+        @$color.show()
+      when 'none'
+        @stage.selection.set('background', 'none')
 
 module.exports = Background

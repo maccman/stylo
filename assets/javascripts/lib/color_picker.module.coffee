@@ -12,9 +12,9 @@ class Color
             hex.charAt(1) + hex.charAt(1) +
             hex.charAt(2) + hex.charAt(2)
 
-    r = parseInt(hex.substring(0,2), 16)
-    g = parseInt(hex.substring(2,4), 16)
-    b = parseInt(hex.substring(4,6), 16)
+    r = hex.substring(0,2)
+    g = hex.substring(2,4)
+    b = hex.substring(4,6)
 
     new this(r, g, b)
 
@@ -28,12 +28,19 @@ class Color
     else if rgba = match[2]
       new this(rgba.split(/\s*,\s*/)...)
 
-  constructor: (@r, @g, @b, @a = 1) ->
+  constructor: (r, g, b, a = 1) ->
+    @r = parseInt(r, 16)
+    @g = parseInt(g, 16)
+    @b = parseInt(b, 16)
+    @a = parseInt(a, 10)
 
   toHex: ->
     a = (@b | @g << 8 | @r << 16).toString(16)
     a = '#' + '000000'.substr(0, 6 - a.length) + a
     a.toUpperCase()
+
+  isTransparent: ->
+    @a is 0
 
   toString: ->
     "rgba(#{@r},#{@g},#{@b},#{@a})"
@@ -266,3 +273,4 @@ class ColorPicker extends Popup
     @trigger 'cancel'
 
 module.exports = ColorPicker
+module.exports.Color = Color

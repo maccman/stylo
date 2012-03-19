@@ -63,6 +63,7 @@ class Element extends Spine.Controller
 
   selected: (bool) =>
     @el.toggleClass('selected', bool)
+    @el.attr('contenteditable', false)
     @resizing.toggle(bool)
 
   isSelected: ->

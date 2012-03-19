@@ -11,19 +11,17 @@
     </select>
   </label>
 
-  <div class="preview">
-    <div class="inner"></div>
+  <div class="option color">
+    <div class="preview">
+      <div class="inner"></div>
+    </div>
   </div>
 
-  <div class="color hidden">
+  <div class="option gradient">
 
   </div>
 
-  <div class="gradient hidden">
-
-  </div>
-
-  <div class="image hidden">
+  <div class="option image">
 
   </div>
 </article>

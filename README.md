@@ -9,6 +9,7 @@ Phase 1:
 * ✓ Select
 * ✓ Select multiple items
 * ✓ Toolbar menu
+* ✓ Color picker
 * Inspector panel (Element/Text/Ruler)
 
 Phase 2:
@@ -112,7 +113,4 @@ http://10k.aneventapart.com/2/Uploads/579/
 http://10k.aneventapart.com/2/Uploads/504/
 
 AN EASY WAY TO CHOOSE COLORS - I.E. BURN ETC
-
 Video of desiging various interfaces = include Stylo.
-
-Don't stopPropogation on draggable.

@@ -11143,9 +11143,9 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
       if (hex.length === 3) {
         hex = hex.charAt(0) + hex.charAt(0) + hex.charAt(1) + hex.charAt(1) + hex.charAt(2) + hex.charAt(2);
       }
-      r = parseInt(hex.substring(0, 2), 16);
-      g = parseInt(hex.substring(2, 4), 16);
-      b = parseInt(hex.substring(4, 6), 16);
+      r = hex.substring(0, 2);
+      g = hex.substring(2, 4);
+      b = hex.substring(4, 6);
       return new this(r, g, b);
     };
 
@@ -11165,10 +11165,11 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
     };
 
     function Color(r, g, b, a) {
-      this.r = r;
-      this.g = g;
-      this.b = b;
-      this.a = a != null ? a : 1;
+      if (a == null) a = 1;
+      this.r = parseInt(r, 16);
+      this.g = parseInt(g, 16);
+      this.b = parseInt(b, 16);
+      this.a = parseInt(a, 10);
     }
 
     Color.prototype.toHex = function() {
@@ -11176,6 +11177,10 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
       a = (this.b | this.g << 8 | this.r << 16).toString(16);
       a = '#' + '000000'.substr(0, 6 - a.length) + a;
       return a.toUpperCase();
+    };
+
+    Color.prototype.isTransparent = function() {
+      return this.a === 0;
     };
 
     Color.prototype.toString = function() {
@@ -11514,6 +11519,8 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
   module.exports = ColorPicker;
 
+  module.exports.Color = Color;
+
 }).call(this);
 ;}});this.require.define({"lib/popup":function(exports, require, module){(function() {
   var Popup,
@@ -11630,7 +11637,7 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
     (function() {
       (function() {
       
-        __out.push('<div class="controls">\n  <form>\n    <label>\n      <span>R</span>\n      <input type="number" min="0" max="255" name="r" required  autofocus>\n    </label>\n\n    <label>\n      <span>G</span>\n      <input type="number" min="0" max="255" name="g" required>\n    </label>\n\n    <label>\n      <span>B</span>\n      <input type="number" min="0" max="255" name="b" required>\n    </label>\n\n    <label>\n      <span>A</span>\n      <input type="number" min="0" max="1" step="0.05" name="a">\n    </label>\n\n    <label>\n      <span>Hex</span>\n      <input type="text" name="hex">\n    </label>\n\n    <div class="preview">\n      <div class="inner">\n        &nbsp;\n      </div>\n      <div class="original">\n        &nbsp;\n      </div>\n    </div>\n\n    <button class="cancel">Cancel</button>\n    <button class="save">Save</button>\n  </form>\n</div>\n');
+        __out.push('<div class="controls">\n  <form>\n    <label>\n      <span>R</span>\n      <input type="number" min="0" max="255" name="r" required  autofocus>\n    </label>\n\n    <label>\n      <span>G</span>\n      <input type="number" min="0" max="255" name="g" required>\n    </label>\n\n    <label>\n      <span>B</span>\n      <input type="number" min="0" max="255" name="b" required>\n    </label>\n\n    <label>\n      <span>A</span>\n      <input type="number" min="0" max="1" step="0.05" name="a">\n    </label>\n\n    <label>\n      <span>Hex</span>\n      <input type="text" name="hex">\n    </label>\n\n    <div class="preview">\n      <div class="inner">\n        &nbsp;\n      </div>\n      <div class="original">\n        &nbsp;\n      </div>\n    </div>\n\n    <button type="button" class="cancel">Cancel</button>\n    <button class="save">Save</button>\n  </form>\n</div>\n');
       
       }).call(this);
       
@@ -11792,6 +11799,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 
     Element.prototype.selected = function(bool) {
       this.el.toggleClass('selected', bool);
+      this.el.attr('contenteditable', false);
       return this.resizing.toggle(bool);
     };
 
@@ -12291,11 +12299,15 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
     Background.prototype.className = 'background';
 
     Background.prototype.elements = {
-      '.preview .inner': '$preview'
+      '.preview .inner': '$preview',
+      'select': '$select',
+      '.option': '$options',
+      '.option.color': '$color'
     };
 
     Background.prototype.events = {
-      'click .preview': 'showColorPicker'
+      'click .preview': 'showColorPicker',
+      'change select': 'select'
     };
 
     Background.prototype.styles = ['background', 'backgroundColor', 'backgroundImage', 'backgroundRepeat', 'backgroundSize'];
@@ -12314,9 +12326,11 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
         this.values[style] = this.stage.selection.get(style);
       }
       this.html(JST['app/views/inspector/background'](this));
-      if (this.values.background) {
+      this.$options.hide();
+      if (this.values.backgroundColor) {
+        this.$select.val('color').change();
         return this.$preview.css({
-          background: this.values.background
+          backgroundColor: this.values.backgroundColor
         });
       }
     };
@@ -12325,6 +12339,8 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
       var color, picker,
         _this = this;
       color = this.stage.selection.get('backgroundColor');
+      color = ColorPicker.Color.fromString(color);
+      if (color.isTransparent()) color = false;
       picker = new ColorPicker({
         color: color
       });
@@ -12337,6 +12353,16 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
         return _this.render();
       });
       return picker.open(this.$preview.offset());
+    };
+
+    Background.prototype.select = function() {
+      this.$options.hide();
+      switch (this.$select.val()) {
+        case 'color':
+          return this.$color.show();
+        case 'none':
+          return this.stage.selection.set('background', 'none');
+      }
     };
 
     return Background;
@@ -13448,7 +13474,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
     (function() {
       (function() {
       
-        __out.push('<h3>Background</h3>\n\n<article>\n  <label>\n    <span>Fill Style</span>\n    <select name="style">\n      <option value="none">None</option>\n      <option value="color">Color</option>\n      <option value="gradient">Gradient</option>\n      <option value="image">Image</option>\n    </select>\n  </label>\n\n  <div class="preview">\n    <div class="inner"></div>\n  </div>\n\n  <div class="color hidden">\n\n  </div>\n\n  <div class="gradient hidden">\n\n  </div>\n\n  <div class="image hidden">\n\n  </div>\n</article>\n');
+        __out.push('<h3>Background</h3>\n\n<article>\n  <label>\n    <span>Fill Style</span>\n    <select name="style">\n      <option value="none">None</option>\n      <option value="color">Color</option>\n      <option value="gradient">Gradient</option>\n      <option value="image">Image</option>\n    </select>\n  </label>\n\n  <div class="option color">\n    <div class="preview">\n      <div class="inner"></div>\n    </div>\n  </div>\n\n  <div class="option gradient">\n\n  </div>\n\n  <div class="option image">\n\n  </div>\n</article>\n');
       
       }).call(this);
       

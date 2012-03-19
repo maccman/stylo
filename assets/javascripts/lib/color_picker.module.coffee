@@ -38,9 +38,6 @@ class Color
   toString: ->
     "rgba(#{@r},#{@g},#{@b},#{@a})"
 
-  dup: ->
-    Object.create(this)
-
   set: (values) ->
     @[key] = value for key, value of values
 
@@ -49,6 +46,9 @@ class Color
       r: @r
       g: @g
       b: @b
+
+  clone: ->
+    Object.create(this)
 
 class Canvas extends Spine.Controller
   tag: 'canvas'
@@ -99,7 +99,7 @@ class Gradient extends Canvas
     @render()
 
   colorWithAlpha: (a) ->
-    color = @color.dup()
+    color = @color.clone()
     color.a = a
     color
 
@@ -168,6 +168,7 @@ class Display extends Spine.Controller
   elements:
     'input[name=hex]': '$hex'
     '.preview .inner': '$preview'
+    '.preview .original': '$original'
 
   events:
     'change input:not([name=hex])': 'change'
@@ -181,6 +182,9 @@ class Display extends Spine.Controller
 
   render: ->
     @html JST['lib/views/color_picker'](this)
+
+    if @original
+      @$original.css(background: @original.toString())
 
   setColor: (@color) ->
     for input in @$('input')
@@ -208,6 +212,7 @@ class ColorPicker extends Popup
 
   events:
     'click .save': 'save'
+    'click .cancel': 'cancel'
     'form submit': 'save'
 
   constructor: ->
@@ -215,6 +220,7 @@ class ColorPicker extends Popup
     @color or= new Color(255, 0, 0)
     unless @color instanceof Color
       @color = Color.fromString(@color)
+    @original = @color.clone()
     @render()
 
   render: ->
@@ -222,16 +228,18 @@ class ColorPicker extends Popup
 
     @gradient = new Gradient(color: @color)
     @spectrum = new Spectrum(color: @color)
-    @display  = new Display(color: @color)
+    @display  = new Display(color: @color, original: @original)
 
     @gradient.bind 'change', (color) =>
       @color.set(color.rgb())
       @display.setColor(@color)
+      @change()
 
     @spectrum.bind 'change', (color) =>
       @color.set(color.rgb())
       @gradient.setColor(@color)
       @display.setColor(@color)
+      @change()
 
     @display.bind 'change', (color) =>
       @setColor(color)
@@ -242,11 +250,19 @@ class ColorPicker extends Popup
     @display.setColor(@color)
     @gradient.setColor(@color)
     @spectrum.setColor(@color)
+    @change()
+
+  change: (color = @color) ->
+    @trigger 'change', color
 
   save: (e) ->
     e.preventDefault()
-
-    @trigger 'change', @color
     @close()
+    @trigger 'save', @color
+
+  cancel: (e) ->
+    e.preventDefault()
+    @close()
+    @trigger 'cancel'
 
 module.exports = ColorPicker

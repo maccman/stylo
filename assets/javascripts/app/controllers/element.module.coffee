@@ -3,19 +3,13 @@ Resizing = require('./element/resizing')
 class Element extends Spine.Controller
   defaults:
     position: 'absolute'
-    width: '100px'
-    height: '100px'
-    background: 'rgba(0, 0, 0, 0.5)'
-    left: '0'
-    top: '0'
-    minWidth: '1'
-    minHeight: '1'
 
   events:
     'mousedown': 'select'
     'dblclick':  'edit'
 
   constructor: (attrs = {}) ->
+    @el = attrs.el if 'el' of attrs
     super()
     @resizing = new Resizing(this)
     @el.addClass('element')
@@ -48,13 +42,24 @@ class Element extends Spine.Controller
     @el.css(position)
     @el.trigger('moved', this)
 
+  edit: ->
+    @el.attr('contenteditable', true)
+
+  remove: ->
+    @el.remove()
+
+  clone: ->
+    el = @el.clone()
+    el.empty()
+    new @constructor(el: el)
+
   # Selecting elements
 
   select: (e) ->
     if @isSelected()
-      @el.trigger('deselect', [this, e.shiftKey])
+      @el.trigger('deselect', [this, e?.shiftKey])
     else
-      @el.trigger('select', [this, e.shiftKey])
+      @el.trigger('select', [this, e?.shiftKey])
 
   selected: (bool) =>
     @el.toggleClass('selected', bool)
@@ -81,11 +86,5 @@ class Element extends Spine.Controller
             return true
 
     false
-
-  edit: ->
-    @el.attr('contenteditable', true)
-
-  remove: ->
-    @el.remove()
 
 module.exports = Element

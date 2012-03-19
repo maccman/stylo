@@ -18,6 +18,11 @@ class Dragging extends Spine.Controller
     super(el: @stage.el)
 
   listen: (e) =>
+    # Copy elements when alt dragging
+    if e.altKey
+      clones = @stage.cloneSelected()
+      @stage.selection.refresh(clones)
+
     @dragPosition = {left: e.pageX, top: e.pageY}
 
     @el.mousemove(@drag)

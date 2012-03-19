@@ -11182,10 +11182,6 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
       return "rgba(" + this.r + "," + this.g + "," + this.b + "," + this.a + ")";
     };
 
-    Color.prototype.dup = function() {
-      return Object.create(this);
-    };
-
     Color.prototype.set = function(values) {
       var key, value, _results;
       _results = [];
@@ -11203,6 +11199,10 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
         g: this.g,
         b: this.b
       };
+    };
+
+    Color.prototype.clone = function() {
+      return Object.create(this);
     };
 
     return Color;
@@ -11285,7 +11285,7 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
     Gradient.prototype.colorWithAlpha = function(a) {
       var color;
-      color = this.color.dup();
+      color = this.color.clone();
       color.a = a;
       return color;
     };
@@ -11367,7 +11367,8 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
     Display.prototype.elements = {
       'input[name=hex]': '$hex',
-      '.preview .inner': '$preview'
+      '.preview .inner': '$preview',
+      '.preview .original': '$original'
     };
 
     Display.prototype.events = {
@@ -11383,7 +11384,12 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
     }
 
     Display.prototype.render = function() {
-      return this.html(JST['lib/views/color_picker'](this));
+      this.html(JST['lib/views/color_picker'](this));
+      if (this.original) {
+        return this.$original.css({
+          background: this.original.toString()
+        });
+      }
     };
 
     Display.prototype.setColor = function(color) {
@@ -11433,6 +11439,7 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
     ColorPicker.prototype.events = {
       'click .save': 'save',
+      'click .cancel': 'cancel',
       'form submit': 'save'
     };
 
@@ -11442,6 +11449,7 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
       if (!(this.color instanceof Color)) {
         this.color = Color.fromString(this.color);
       }
+      this.original = this.color.clone();
       this.render();
     }
 
@@ -11455,16 +11463,19 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
         color: this.color
       });
       this.display = new Display({
-        color: this.color
+        color: this.color,
+        original: this.original
       });
       this.gradient.bind('change', function(color) {
         _this.color.set(color.rgb());
-        return _this.display.setColor(_this.color);
+        _this.display.setColor(_this.color);
+        return _this.change();
       });
       this.spectrum.bind('change', function(color) {
         _this.color.set(color.rgb());
         _this.gradient.setColor(_this.color);
-        return _this.display.setColor(_this.color);
+        _this.display.setColor(_this.color);
+        return _this.change();
       });
       this.display.bind('change', function(color) {
         return _this.setColor(color);
@@ -11476,13 +11487,25 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
       this.color = color;
       this.display.setColor(this.color);
       this.gradient.setColor(this.color);
-      return this.spectrum.setColor(this.color);
+      this.spectrum.setColor(this.color);
+      return this.change();
+    };
+
+    ColorPicker.prototype.change = function(color) {
+      if (color == null) color = this.color;
+      return this.trigger('change', color);
     };
 
     ColorPicker.prototype.save = function(e) {
       e.preventDefault();
-      this.trigger('change', this.color);
-      return this.close();
+      this.close();
+      return this.trigger('save', this.color);
+    };
+
+    ColorPicker.prototype.cancel = function(e) {
+      e.preventDefault();
+      this.close();
+      return this.trigger('cancel');
     };
 
     return ColorPicker;
@@ -11607,7 +11630,7 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
     (function() {
       (function() {
       
-        __out.push('<div class="controls">\n  <form>\n    <label>\n      <span>R</span>\n      <input type="number" min="0" max="255" name="r" required  autofocus>\n    </label>\n\n    <label>\n      <span>G</span>\n      <input type="number" min="0" max="255" name="g" required>\n    </label>\n\n    <label>\n      <span>B</span>\n      <input type="number" min="0" max="255" name="b" required>\n    </label>\n\n    <label>\n      <span>A</span>\n      <input type="number" min="0" max="1" step="0.05" name="a">\n    </label>\n\n    <label>\n      <span>Hex</span>\n      <input type="text" name="hex">\n    </label>\n\n    <div class="preview">\n      <div class="inner">\n        &nbsp;\n      </div>\n    </div>\n\n    <button class="save">Save</button>\n  </form>\n</div>\n');
+        __out.push('<div class="controls">\n  <form>\n    <label>\n      <span>R</span>\n      <input type="number" min="0" max="255" name="r" required  autofocus>\n    </label>\n\n    <label>\n      <span>G</span>\n      <input type="number" min="0" max="255" name="g" required>\n    </label>\n\n    <label>\n      <span>B</span>\n      <input type="number" min="0" max="255" name="b" required>\n    </label>\n\n    <label>\n      <span>A</span>\n      <input type="number" min="0" max="1" step="0.05" name="a">\n    </label>\n\n    <label>\n      <span>Hex</span>\n      <input type="text" name="hex">\n    </label>\n\n    <div class="preview">\n      <div class="inner">\n        &nbsp;\n      </div>\n      <div class="original">\n        &nbsp;\n      </div>\n    </div>\n\n    <button class="cancel">Cancel</button>\n    <button class="save">Save</button>\n  </form>\n</div>\n');
       
       }).call(this);
       
@@ -11685,14 +11708,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
     __extends(Element, _super);
 
     Element.prototype.defaults = {
-      position: 'absolute',
-      width: '100px',
-      height: '100px',
-      background: 'rgba(0, 0, 0, 0.5)',
-      left: '0',
-      top: '0',
-      minWidth: '1',
-      minHeight: '1'
+      position: 'absolute'
     };
 
     Element.prototype.events = {
@@ -11703,6 +11719,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
     function Element(attrs) {
       if (attrs == null) attrs = {};
       this.selected = __bind(this.selected, this);
+      if ('el' in attrs) this.el = attrs.el;
       Element.__super__.constructor.call(this);
       this.resizing = new Resizing(this);
       this.el.addClass('element');
@@ -11748,11 +11765,28 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
       return this.el.trigger('moved', this);
     };
 
+    Element.prototype.edit = function() {
+      return this.el.attr('contenteditable', true);
+    };
+
+    Element.prototype.remove = function() {
+      return this.el.remove();
+    };
+
+    Element.prototype.clone = function() {
+      var el;
+      el = this.el.clone();
+      el.empty();
+      return new this.constructor({
+        el: el
+      });
+    };
+
     Element.prototype.select = function(e) {
       if (this.isSelected()) {
-        return this.el.trigger('deselect', [this, e.shiftKey]);
+        return this.el.trigger('deselect', [this, e != null ? e.shiftKey : void 0]);
       } else {
-        return this.el.trigger('select', [this, e.shiftKey]);
+        return this.el.trigger('select', [this, e != null ? e.shiftKey : void 0]);
       }
     };
 
@@ -11780,14 +11814,6 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
         return true;
       }
       return false;
-    };
-
-    Element.prototype.edit = function() {
-      return this.el.attr('contenteditable', true);
-    };
-
-    Element.prototype.remove = function() {
-      return this.el.remove();
     };
 
     return Element;
@@ -12306,6 +12332,10 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
         _this.stage.selection.set('background', color.toString());
         return _this.render();
       });
+      picker.bind('cancel', function() {
+        _this.stage.selection.set('background', color.toString());
+        return _this.render();
+      });
       return picker.open(this.$preview.offset());
     };
 
@@ -12507,6 +12537,25 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
       return _results;
     };
 
+    Stage.prototype.cloneSelected = function() {
+      var clones, el, _i, _len;
+      clones = (function() {
+        var _i, _len, _ref, _results;
+        _ref = this.selection.elements;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          el = _ref[_i];
+          _results.push(el.clone());
+        }
+        return _results;
+      }).call(this);
+      for (_i = 0, _len = clones.length; _i < _len; _i++) {
+        el = clones[_i];
+        this.add(el);
+      }
+      return clones;
+    };
+
     Stage.prototype.select = function(e, element, modifier) {
       if (!this.selection.isMultiple() && !modifier) this.selection.clear();
       return this.selection.add(element);
@@ -12606,6 +12655,11 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
     }
 
     Dragging.prototype.listen = function(e) {
+      var clones;
+      if (e.altKey) {
+        clones = this.stage.cloneSelected();
+        this.stage.selection.refresh(clones);
+      }
       this.dragPosition = {
         left: e.pageX,
         top: e.pageY

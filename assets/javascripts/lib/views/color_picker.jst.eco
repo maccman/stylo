@@ -29,8 +29,12 @@
       <div class="inner">
         &nbsp;
       </div>
+      <div class="original">
+        &nbsp;
+      </div>
     </div>
 
+    <button class="cancel">Cancel</button>
     <button class="save">Save</button>
   </form>
 </div>

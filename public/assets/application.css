@@ -59,14 +59,14 @@ body {
   background: url("bg-grid.png") repeat;
 }
 .colorPicker .preview {
-  margin: 5px 0;
+  margin: 5px 0 10px;
 }
 .colorPicker .preview,
 .colorPicker .preview .inner {
-  height: 60px;
+  height: 55px;
 }
-.colorPicker button {
-  float: right;
+.colorPicker .original {
+  height: 5px;
 }
 #app .header {
   height: 35px;
@@ -262,6 +262,9 @@ body {
 }
 #app .stage .element {
   outline: none;
+  background: rgba(0,0,0,0.50);
+  width: 100px;
+  height: 100px;
 }
 #app .stage .resizing .thumb {
   position: absolute;

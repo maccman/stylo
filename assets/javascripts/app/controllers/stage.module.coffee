@@ -56,6 +56,11 @@ class Stage extends Spine.Controller
   selectAll: ->
     @selection.add(el) for el in @elements
 
+  cloneSelected: ->
+    clones = (el.clone() for el in @selection.elements)
+    @add(el) for el in clones
+    clones
+
   # Selecting elements
 
   select: (e, element, modifier) =>

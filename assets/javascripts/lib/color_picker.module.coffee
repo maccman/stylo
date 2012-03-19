@@ -32,7 +32,7 @@ class Color
     @r = parseInt(r, 10)
     @g = parseInt(g, 10)
     @b = parseInt(b, 10)
-    @a = parseInt(a, 10)
+    @a = parseFloat(a)
 
   toHex: ->
     a = (@b | @g << 8 | @r << 16).toString(16)
@@ -83,10 +83,12 @@ class Canvas extends Spine.Controller
     @over(e)
 
   over: (e) =>
-     offset = @el.offset()
-     x = e.pageX - offset.left
-     y = e.pageY - offset.top
-     @trigger('change', @val(x, y))
+    e.preventDefault()
+
+    offset = @el.offset()
+    x = e.pageX - offset.left
+    y = e.pageY - offset.top
+    @trigger('change', @val(x, y))
 
   drop: =>
     @el.unbind('mousemove', @over)
@@ -174,6 +176,10 @@ class Display extends Spine.Controller
 
   elements:
     'input[name=hex]': '$hex'
+    'input[name=r]': '$r'
+    'input[name=g]': '$g'
+    'input[name=b]': '$b'
+    'input[name=a]': '$a'
     '.preview .inner': '$preview'
     '.preview .original': '$original'
 
@@ -194,17 +200,24 @@ class Display extends Spine.Controller
       @$original.css(background: @original.toString())
 
   setColor: (@color) ->
-    for input in @$('input')
-      input.value = @color[input.name]
+    @$r.val @color.r
+    @$g.val @color.g
+    @$b.val @color.b
+
+    @$a.val @color.a * 100
     @$hex.val @color.toHex()
     @$preview.css(background: @color.toString())
 
   change: (e) ->
     e.preventDefault()
 
-    color = new Color
-    for input in @$('input')
-      color[input.name] = input.value
+    color = new Color(
+      @$r.val(),
+      @$g.val(),
+      @$b.val(),
+      parseFloat(@$a.val()) / 100
+    )
+
     @trigger 'change', color
 
   changeHex: (e) ->

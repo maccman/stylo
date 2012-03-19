@@ -10,6 +10,15 @@ Phase 1:
 * ✓ Select multiple items
 * ✓ Toolbar menu
 * Inspector panel (Element/Text/Ruler)
+  * Background
+  * Border
+  * Shadow
+  * Font alignment
+  * Font family/size/style/color
+  * Text-shadow
+  * Text-spacing
+  * Rotation
+  * ✓ Opacity
 
 Fix white part of color picker
 

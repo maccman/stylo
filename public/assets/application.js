@@ -11169,7 +11169,7 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
       this.r = parseInt(r, 10);
       this.g = parseInt(g, 10);
       this.b = parseInt(b, 10);
-      this.a = parseInt(a, 10);
+      this.a = parseFloat(a);
     }
 
     Color.prototype.toHex = function() {
@@ -11252,6 +11252,7 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
     Canvas.prototype.over = function(e) {
       var offset, x, y;
+      e.preventDefault();
       offset = this.el.offset();
       x = e.pageX - offset.left;
       y = e.pageY - offset.top;
@@ -11372,6 +11373,10 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
     Display.prototype.elements = {
       'input[name=hex]': '$hex',
+      'input[name=r]': '$r',
+      'input[name=g]': '$g',
+      'input[name=b]': '$b',
+      'input[name=a]': '$a',
       '.preview .inner': '$preview',
       '.preview .original': '$original'
     };
@@ -11398,13 +11403,11 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
     };
 
     Display.prototype.setColor = function(color) {
-      var input, _i, _len, _ref;
       this.color = color;
-      _ref = this.$('input');
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        input = _ref[_i];
-        input.value = this.color[input.name];
-      }
+      this.$r.val(this.color.r);
+      this.$g.val(this.color.g);
+      this.$b.val(this.color.b);
+      this.$a.val(this.color.a * 100);
       this.$hex.val(this.color.toHex());
       return this.$preview.css({
         background: this.color.toString()
@@ -11412,14 +11415,9 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
     };
 
     Display.prototype.change = function(e) {
-      var color, input, _i, _len, _ref;
+      var color;
       e.preventDefault();
-      color = new Color;
-      _ref = this.$('input');
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        input = _ref[_i];
-        color[input.name] = input.value;
-      }
+      color = new Color(this.$r.val(), this.$g.val(), this.$b.val(), parseFloat(this.$a.val()) / 100);
       return this.trigger('change', color);
     };
 
@@ -11637,7 +11635,7 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
     (function() {
       (function() {
       
-        __out.push('<div class="controls">\n  <form>\n    <label>\n      <span>R</span>\n      <input type="number" min="0" max="255" name="r" required  autofocus>\n    </label>\n\n    <label>\n      <span>G</span>\n      <input type="number" min="0" max="255" name="g" required>\n    </label>\n\n    <label>\n      <span>B</span>\n      <input type="number" min="0" max="255" name="b" required>\n    </label>\n\n    <label>\n      <span>A</span>\n      <input type="number" min="0" max="1" step="0.05" name="a">\n    </label>\n\n    <label>\n      <span>Hex</span>\n      <input type="text" name="hex">\n    </label>\n\n    <div class="preview">\n      <div class="inner">\n        &nbsp;\n      </div>\n      <div class="original">\n        &nbsp;\n      </div>\n    </div>\n\n    <button type="button" class="cancel">Cancel</button>\n    <button class="save">Save</button>\n  </form>\n</div>\n');
+        __out.push('<div class="controls">\n  <form>\n    <label>\n      <span>R</span>\n      <input type="number" min="0" max="255" name="r" required autofocus>\n    </label>\n\n    <label>\n      <span>G</span>\n      <input type="number" min="0" max="255" name="g" required>\n    </label>\n\n    <label>\n      <span>B</span>\n      <input type="number" min="0" max="255" name="b" required>\n    </label>\n\n    <label>\n      <span>A</span>\n      <input type="number" min="0" max="100" step="1" name="a">%\n    </label>\n\n    <label>\n      <span>Hex</span>\n      <input type="text" name="hex">\n    </label>\n\n    <div class="preview">\n      <div class="inner">\n        &nbsp;\n      </div>\n      <div class="original">\n        &nbsp;\n      </div>\n    </div>\n\n    <button type="button" class="cancel">Cancel</button>\n    <button class="save">Save</button>\n  </form>\n</div>\n');
       
       }).call(this);
       

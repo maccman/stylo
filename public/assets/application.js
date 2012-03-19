@@ -11220,9 +11220,10 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
       return new Color(data[0], data[1], data[2]);
     };
 
-    Canvas.prototype.drag = function() {
+    Canvas.prototype.drag = function(e) {
       this.el.bind('mousemove', this.over);
-      return this.el.bind('mouseup', this.drop);
+      this.el.bind('mouseup', this.drop);
+      return this.over(e);
     };
 
     Canvas.prototype.over = function(e) {
@@ -11409,9 +11410,18 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
     ColorPicker.prototype.className = 'colorPicker';
 
+    ColorPicker.prototype.width = 390;
+
+    ColorPicker.prototype.events = {
+      'click .save': 'save'
+    };
+
     function ColorPicker() {
       ColorPicker.__super__.constructor.apply(this, arguments);
       this.color || (this.color = new Color(255, 0, 0));
+      if (!(this.color instanceof Color)) {
+        this.color = Color.fromString(this.color);
+      }
       this.render();
     }
 
@@ -11449,6 +11459,11 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
       return this.spectrum.setColor(color);
     };
 
+    ColorPicker.prototype.save = function() {
+      this.trigger('change', this.color);
+      return this.close();
+    };
+
     return ColorPicker;
 
   })(Popup);
@@ -11458,6 +11473,7 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 }).call(this);
 ;}});this.require.define({"lib/popup":function(exports, require, module){(function() {
   var Popup,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
@@ -11465,20 +11481,26 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
     __extends(Popup, _super);
 
-    Popup.show = function() {
+    Popup.open = function() {
       var _ref;
-      return (_ref = new this).show.apply(_ref, arguments);
+      return (_ref = new this).open.apply(_ref, arguments);
+    };
+
+    Popup.prototype.width = 350;
+
+    Popup.prototype.events = {
+      'click .close': 'close'
     };
 
     function Popup() {
-      Popup.__super__.constructor.apply(this, arguments);
+      this.remove = __bind(this.remove, this);      Popup.__super__.constructor.apply(this, arguments);
       this.el.addClass('popup');
       this.el.css({
         position: 'absolute'
       }).hide();
     }
 
-    Popup.prototype.show = function(position) {
+    Popup.prototype.open = function(position) {
       var left, top;
       if (position == null) {
         position = {
@@ -11488,20 +11510,31 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
       }
       left = position.left || position.clientX;
       top = position.top || position.clientY;
+      left -= this.width + 10;
+      top -= 15;
       this.el.css({
         left: left,
         top: top
       });
       $('body').append(this.el);
-      return this.el.gfxRaisedIn();
+      this.el.gfxRaisedIn();
+      return this.delay(function() {
+        return $('body').click(this.remove);
+      });
     };
 
-    Popup.prototype.hide = function() {
+    Popup.prototype.close = function() {
       var _this = this;
+      $('body').unbind('click', this.remove);
       this.el.gfxRaisedOut();
       return this.el.queueNext(function() {
-        return _this.el.remove();
+        _this.el.remove();
+        return _this.trigger('hide');
       });
+    };
+
+    Popup.prototype.remove = function(e) {
+      if (!$(e.target).closest(this.el).length) return this.close();
     };
 
     return Popup;
@@ -11553,7 +11586,7 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
     (function() {
       (function() {
       
-        __out.push('<label>\n  <span>R</span>\n  <input type="number" min="0" max="255" name="r">\n</label>\n\n<label>\n  <span>G</span>\n  <input type="number" min="0" max="255" name="g">\n</label>\n\n<label>\n  <span>B</span>\n  <input type="number" min="0" max="255" name="b">\n</label>\n\n<label>\n  <span>A</span>\n  <input type="number" min="0" max="1" step="0.05" name="a">\n</label>\n\n<label>\n  <span>Hex</span>\n  <input type="text" name="hex">\n</label>\n\n<div class="preview">\n  <div class="inner"></div>\n</div>\n');
+        __out.push('<div class="controls">\n  <label>\n    <span>R</span>\n    <input type="number" min="0" max="255" name="r">\n  </label>\n\n  <label>\n    <span>G</span>\n    <input type="number" min="0" max="255" name="g">\n  </label>\n\n  <label>\n    <span>B</span>\n    <input type="number" min="0" max="255" name="b">\n  </label>\n\n  <label>\n    <span>A</span>\n    <input type="number" min="0" max="1" step="0.05" name="a">\n  </label>\n\n  <label>\n    <span>Hex</span>\n    <input type="text" name="hex">\n  </label>\n\n  <div class="preview">\n    <div class="inner">\n      &nbsp;\n    </div>\n  </div>\n\n  <button class="save">Save</button>\n</div>\n');
       
       }).call(this);
       
@@ -12241,8 +12274,18 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
       }
     };
 
-    Background.prototype.showColorPicker = function() {
-      return ColorPicker.show();
+    Background.prototype.showColorPicker = function(e) {
+      var color, picker,
+        _this = this;
+      color = this.stage.selection.get('backgroundColor');
+      picker = new ColorPicker({
+        color: color
+      });
+      picker.bind('change', function(color) {
+        _this.stage.selection.set('background', color.toString());
+        return _this.render();
+      });
+      return picker.open(this.$preview.offset());
     };
 
     return Background;
@@ -12542,8 +12585,6 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
     }
 
     Dragging.prototype.listen = function(e) {
-      e.preventDefault();
-      e.stopPropagation();
       this.dragPosition = {
         left: e.pageX,
         top: e.pageY
@@ -12867,20 +12908,21 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 
     SelectArea.prototype.listen = function(e) {
       var _ref;
-      e.preventDefault();
-      e.stopPropagation();
-      if ((_ref = this.$selectArea) != null) _ref.remove();
+      if (e.target !== e.currentTarget) return;
+      if ((_ref = this.selectArea) != null) _ref.remove();
       this.offset = this.el.offset();
-      this.$selectArea = new Area(e.clientX - this.offset.left, e.clientY - this.offset.top);
-      this.append(this.$selectArea);
       $(this.el).mousemove(this.drag);
       return $(this.el).mouseup(this.drop);
     };
 
     SelectArea.prototype.drag = function(e) {
       var area, element, _i, _len, _ref, _results;
-      this.$selectArea.resize(e.clientX - this.offset.left, e.clientY - this.offset.top);
-      area = this.$selectArea.area();
+      if (!this.selectArea) {
+        this.selectArea = new Area(e.clientX - this.offset.left + 1, e.clientY - this.offset.top + 1);
+        this.append(this.selectArea);
+      }
+      this.selectArea.resize(e.clientX - this.offset.left, e.clientY - this.offset.top);
+      area = this.selectArea.area();
       _ref = this.stage.elements;
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -12895,7 +12937,9 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
     };
 
     SelectArea.prototype.drop = function(e) {
-      this.$selectArea.remove();
+      var _ref;
+      if ((_ref = this.selectArea) != null) _ref.remove();
+      this.selectArea = null;
       $(this.el).unbind('mousemove', this.drag);
       return $(this.el).unbind('mouseup', this.drop);
     };

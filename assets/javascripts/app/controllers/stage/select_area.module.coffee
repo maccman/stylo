@@ -38,31 +38,34 @@ class SelectArea extends Spine.Controller
     super(el: @stage.el)
 
   listen: (e) =>
-    e.preventDefault()
-    e.stopPropagation()
+    # Only listen to mousedown's on the stage
+    return if e.target isnt e.currentTarget
 
-    @$selectArea?.remove()
-
-    # Mouse events need to be offset
-    # by the height of the header
-    @offset      = @el.offset()
-    @$selectArea = new Area(
-      e.clientX - @offset.left,
-      e.clientY - @offset.top
-    )
-
-    @append(@$selectArea)
+    @selectArea?.remove()
+    @offset = @el.offset()
 
     $(@el).mousemove(@drag)
     $(@el).mouseup(@drop)
 
   drag: (e) =>
-    @$selectArea.resize(
+    # Mouse events need to be offset
+    # by the height of the header,
+    # We also offset by 1, so it doesn't
+    # mess up click events
+    unless @selectArea
+      @selectArea = new Area(
+        e.clientX - @offset.left + 1,
+        e.clientY - @offset.top  + 1
+      )
+
+      @append(@selectArea)
+
+    @selectArea.resize(
       e.clientX - @offset.left,
       e.clientY - @offset.top
     )
 
-    area = @$selectArea.area()
+    area = @selectArea.area()
 
     for element in @stage.elements
       if element.inArea(area)
@@ -71,7 +74,8 @@ class SelectArea extends Spine.Controller
         @stage.selection.remove(element)
 
   drop: (e) =>
-    @$selectArea.remove()
+    @selectArea?.remove()
+    @selectArea = null
     $(@el).unbind('mousemove', @drag)
     $(@el).unbind('mouseup', @drop)
 

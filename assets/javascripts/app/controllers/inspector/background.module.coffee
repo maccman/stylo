@@ -32,7 +32,12 @@ class Background extends Spine.Controller
     if @values.background
       @$preview.css(background: @values.background)
 
-  showColorPicker: ->
-    ColorPicker.show()
+  showColorPicker: (e) ->
+    color  = @stage.selection.get('backgroundColor')
+    picker = new ColorPicker(color: color)
+    picker.bind 'change', (color) =>
+      @stage.selection.set('background', color.toString())
+      @render()
+    picker.open(@$preview.offset())
 
 module.exports = Background

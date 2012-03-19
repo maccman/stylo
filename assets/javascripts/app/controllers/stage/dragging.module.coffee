@@ -18,9 +18,6 @@ class Dragging extends Spine.Controller
     super(el: @stage.el)
 
   listen: (e) =>
-    e.preventDefault()
-    e.stopPropagation()
-
     @dragPosition = {left: e.pageX, top: e.pageY}
 
     @el.mousemove(@drag)

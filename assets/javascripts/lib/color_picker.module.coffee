@@ -61,9 +61,10 @@ class Canvas extends Spine.Controller
      data = @ctx.getImageData(x, y, 1, 1).data
      new Color(data[0], data[1], data[2])
 
-  drag: ->
+  drag: (e) ->
     @el.bind('mousemove', @over)
     @el.bind('mouseup', @drop)
+    @over(e)
 
   over: (e) =>
      offset = @el.offset()
@@ -194,10 +195,16 @@ class Display extends Spine.Controller
 
 class ColorPicker extends Popup
   className: 'colorPicker'
+  width: 390
+
+  events:
+    'click .save': 'save'
 
   constructor: ->
     super
     @color or= new Color(255, 0, 0)
+    unless @color instanceof Color
+      @color = Color.fromString(@color)
     @render()
 
   render: ->
@@ -223,5 +230,9 @@ class ColorPicker extends Popup
     @display.setColor(color)
     @gradient.setColor(color)
     @spectrum.setColor(color)
+
+  save: ->
+    @trigger 'change', @color
+    @close()
 
 module.exports = ColorPicker

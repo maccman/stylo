@@ -16,6 +16,58 @@ body {
   font-family: 'Helvetica Neue', Helvetica, Arial Geneva, sans-serif;
   font-size: 12px;
 }
+.colorPicker {
+  -webkit-user-select: none;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-align: stretch;
+  -webkit-box-pack: start;
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  -moz-box-align: stretch;
+  -moz-box-pack: start;
+  padding: 6px;
+}
+.colorPicker canvas {
+  display: block;
+}
+.colorPicker label {
+  display: block;
+  overflow: hidden;
+}
+.colorPicker label span {
+  display: block;
+  float: left;
+  width: 30px;
+  line-height: 25px;
+}
+.colorPicker label span:after {
+  content: ':';
+}
+.colorPicker label input {
+  width: 60px;
+}
+.colorPicker .spectrum,
+.colorPicker .gradient {
+  cursor: pointer;
+}
+.colorPicker .spectrum {
+  margin: 0 6px 0 0;
+}
+.colorPicker .preview {
+  background: url("bg-grid.png") repeat;
+}
+.colorPicker .preview {
+  margin: 5px 0;
+}
+.colorPicker .preview,
+.colorPicker .preview .inner {
+  height: 60px;
+}
+.colorPicker button {
+  float: right;
+}
 #app .header {
   height: 35px;
   line-height: 35px;
@@ -182,6 +234,17 @@ body {
 #app .inspector .opacity label input[type=number] {
   width: 45px;
 }
+.popup {
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  padding: 5px;
+  border: 1px solid #d1d1d1;
+  background: #fff;
+  -moz-box-shadow: 0 1px 2px rgba(0,0,0,0.20);
+  -webkit-box-shadow: 0 1px 2px rgba(0,0,0,0.20);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.20);
+}
 #app .stage {
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -196,6 +259,9 @@ body {
   position: relative;
   overflow: auto;
   margin-right: 220px;
+}
+#app .stage .element {
+  outline: none;
 }
 #app .stage .resizing .thumb {
   position: absolute;

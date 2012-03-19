@@ -1,0 +1,56 @@
+@import 'mixins'
+
+.colorPicker {
+  -webkit-user-select: none
+  overflow: hidden
+  hbox()
+  padding: 6px
+
+  canvas {
+    display: block
+  }
+
+  label {
+    display: block
+    overflow: hidden
+
+    span {
+      display: block
+      float: left
+      width: 30px
+      line-height: 25px
+
+      &:after {
+        content: ':'
+      }
+    }
+
+    input {
+      width: 60px
+    }
+  }
+
+  .spectrum, .gradient {
+    cursor: pointer
+  }
+
+  .spectrum {
+    margin: 0 6px 0 0
+  }
+
+  .preview {
+    background: url(bg-grid.png) repeat
+  }
+
+  .preview {
+    margin: 5px 0
+  }
+
+  .preview, .preview .inner {
+    height: 60px
+  }
+
+  button {
+    float: right
+  }
+}

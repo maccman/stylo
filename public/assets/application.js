@@ -12269,9 +12269,6 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
       this.append(new Background({
         stage: this.stage
       }));
-      this.append(new Border({
-        stage: this.stage
-      }));
       return this.append(new Opacity({
         stage: this.stage
       }));

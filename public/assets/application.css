@@ -56,7 +56,7 @@ body {
   margin: 0 6px 0 0;
 }
 .colorPicker .preview {
-  background: url("bg-grid.png") repeat;
+  background: url("grid.png") repeat;
 }
 .colorPicker .preview {
   margin: 5px 0 10px;
@@ -215,7 +215,7 @@ body {
   padding: 3px;
   cursor: pointer;
   margin: 5px 0 0 60px;
-  background: url("bg-grid.png") repeat;
+  background: url("grid.png") repeat;
 }
 #app .inspector .background .preview,
 #app .inspector .background .preview .inner {

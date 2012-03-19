@@ -13,7 +13,7 @@ class Inspector extends Spine.Controller
   render: =>
     @el.empty()
     @append(new Background(stage: @stage))
-    @append(new Border(stage: @stage))
+    # @append(new Border(stage: @stage))
     @append(new Opacity(stage: @stage))
 
 module.exports = Inspector

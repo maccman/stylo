@@ -43,8 +43,9 @@ class Background extends Spine.Controller
 
   showColorPicker: (e) ->
     color  = @stage.selection.get('backgroundColor')
-    color  = ColorPicker.Color.fromString(color)
-    color  = false if color.isTransparent()
+    if color
+      color = ColorPicker.Color.fromString(color)
+      color = false if color.isTransparent()
 
     picker = new ColorPicker(color: color)
 

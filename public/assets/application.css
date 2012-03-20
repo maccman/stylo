@@ -68,6 +68,9 @@ body {
 .colorPicker .original {
   height: 5px;
 }
+.colorPicker button.save {
+  float: right;
+}
 #app .header {
   height: 35px;
   line-height: 35px;
@@ -198,45 +201,60 @@ body {
   text-shadow: 0px 1px 0px rgba(255,255,255,0.80);
 }
 #app .inspector article {
+  overflow: hidden;
   padding: 8px 8px 10px 8px;
+}
+#app .inspector label {
+  display: block;
+}
+#app .inspector label span {
+  display: inline-block;
+  width: 30px;
 }
 #app .inspector label span:after {
   content: ":";
 }
+#app .inspector label input {
+  margin: 3px;
+}
 #app .inspector input[disabled] {
   opacity: 0.8;
+}
+#app .inspector input[type=number] {
+  width: 45px;
+}
+#app .inspector .preview {
+  border: 1px solid rgba(0,0,0,0.30);
+  padding: 3px;
+  cursor: pointer;
+  margin: 5px 0 0 0;
+  background: url("grid.png") repeat;
+}
+#app .inspector .preview,
+#app .inspector .preview .inner {
+  width: 30px;
+  height: 30px;
 }
 #app .inspector .background select {
   width: 130px;
   margin-left: 5px;
 }
 #app .inspector .background .preview {
-  border: 1px solid rgba(0,0,0,0.30);
-  padding: 3px;
-  cursor: pointer;
   margin: 5px 0 0 60px;
-  background: url("grid.png") repeat;
 }
-#app .inspector .background .preview,
-#app .inspector .background .preview .inner {
-  width: 30px;
-  height: 30px;
-}
-#app .inspector .opacity label {
-  width: 100%;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-}
-#app .inspector .opacity label input {
-  display: block;
-  float: left;
+#app .inspector .background span {
+  width: 50px;
 }
 #app .inspector .opacity label input[type=range] {
   margin: 5px 5px 0 0;
 }
-#app .inspector .opacity label input[type=number] {
-  width: 45px;
+#app .inspector .shadow .positionPicker {
+  width: 50px;
+  height: 50px;
+  background: #fff url("crosshairs.png") no-repeat;
+  border: 1px solid rgba(0,0,0,0.30);
+  cursor: pointer;
+  margin: 10px;
 }
 .popup {
   -moz-border-radius: 4px;

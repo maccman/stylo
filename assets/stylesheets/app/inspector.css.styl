@@ -23,15 +23,46 @@
   }
 
   article {
+    overflow: hidden
     padding: 8px 8px 10px 8px
   }
 
-  label span:after {
-    content: ":"
+  label {
+    display: block
+
+    span {
+      display: inline-block
+      width: 30px
+    }
+
+    span:after {
+      content: ":"
+    }
+
+    input {
+      margin: 3px
+    }
   }
 
   input[disabled] {
     opacity: 0.8
+  }
+
+  input[type=number] {
+    width: 45px
+  }
+
+  .preview {
+    border: 1px solid rgba(0, 0, 0, 0.3)
+    padding: 3px
+    cursor: pointer
+    margin: 5px 0 0 0
+    background: url(grid.png) repeat
+  }
+
+  .preview, .preview .inner {
+    width: 30px
+    height: 30px
   }
 
   .background {
@@ -41,34 +72,29 @@
     }
 
     .preview {
-      border: 1px solid rgba(0, 0, 0, 0.3)
-      padding: 3px
-      cursor: pointer
       margin: 5px 0 0 60px
-      background: url(grid.png) repeat
     }
 
-    .preview, .preview .inner {
-      width: 30px
-      height: 30px
+    span {
+      width: 50px
     }
   }
 
   .opacity label {
-    width: 100%
-    border-box()
-
-    input {
-      display: block
-      float: left
-    }
-
     input[type=range] {
       margin: 5px 5px 0 0
     }
 
-    input[type=number] {
-      width: 45px
+  }
+
+  .shadow {
+    .positionPicker {
+      width: 50px
+      height: 50px
+      background: #FFF url(crosshairs.png) no-repeat
+      border: 1px solid rgba(0, 0, 0, 0.3)
+      cursor: pointer
+      margin: 10px
     }
   }
 }

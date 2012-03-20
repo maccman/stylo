@@ -16,8 +16,8 @@ class Popup extends Spine.Controller
     left = position.left or position.clientX
     top  = position.top  or position.clientY
 
-    left -= @width + 10
-    top  -= 15
+    left -= @width + 17
+    top  -= 5
 
     @el.css(left: left, top: top)
     $('body').append(@el)

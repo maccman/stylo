@@ -10,9 +10,9 @@ Phase 1:
 * ✓ Select multiple items
 * ✓ Toolbar menu
 * Inspector panel (Element/Text/Ruler)
-  * Background
+  * 1/2 Background
   * Border
-  * Shadow
+  * 1/2 Shadow
   * Font alignment
   * Font family/size/style/color
   * Text-shadow
@@ -27,7 +27,7 @@ Phase 2:
 * ✓ Stage snapping
 * ✓ Color picker
 * Copy paste
-* Undo/redo
+* Undo/redo (on set())
 * Resizing snapping
 * Element snapping
 * Canvas snapping
@@ -124,3 +124,4 @@ http://10k.aneventapart.com/2/Uploads/504/
 
 AN EASY WAY TO CHOOSE COLORS - I.E. BURN ETC
 Video of desiging various interfaces = include Stylo.
+Tool to generate noise.

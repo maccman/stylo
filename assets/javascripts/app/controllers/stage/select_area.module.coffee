@@ -41,6 +41,8 @@ class SelectArea extends Spine.Controller
     # Only listen to mousedown's on the stage
     return if e.target isnt e.currentTarget
 
+    e.preventDefault()
+
     @selectArea?.remove()
     @offset = @el.offset()
 

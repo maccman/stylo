@@ -18,6 +18,8 @@ class Dragging extends Spine.Controller
     super(el: @stage.el)
 
   listen: (e) =>
+    e.preventDefault()
+
     # Copy elements when alt dragging
     if e.altKey
       clones = @stage.cloneSelected()

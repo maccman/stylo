@@ -11710,23 +11710,46 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
     __extends(PositionPicker, _super);
 
-    function PositionPicker() {
-      this.drop = __bind(this.drop, this);
-      this.over = __bind(this.over, this);
-      PositionPicker.__super__.constructor.apply(this, arguments);
-    }
-
     PositionPicker.prototype.className = 'positionPicker';
 
     PositionPicker.prototype.events = {
       'mousedown': 'drag'
     };
 
+    PositionPicker.prototype.width = 50;
+
+    PositionPicker.prototype.height = 50;
+
+    function PositionPicker() {
+      this.drop = __bind(this.drop, this);
+      this.over = __bind(this.over, this);      PositionPicker.__super__.constructor.apply(this, arguments);
+      this.el.css({
+        width: this.width,
+        height: this.height
+      });
+      this.ball = $('<div />').addClass('ball');
+      this.append(this.ball);
+      this.ball.css({
+        left: '50%',
+        top: '50%'
+      });
+    }
+
+    PositionPicker.prototype.change = function(position) {
+      var left, top;
+      left = position.left + this.width / 2;
+      left = Math.max(Math.min(left, this.width), 0);
+      top = position.top + this.height / 2;
+      top = Math.max(Math.min(top, this.height), 0);
+      return this.ball.css({
+        left: left,
+        top: top
+      });
+    };
+
     PositionPicker.prototype.drag = function(e) {
       if (this.disabled) return;
       this.offset = $(this.el).offset();
-      this.offset.left += $(this.el).width() / 2;
-      this.offset.top += $(this.el).height() / 2;
       $(document).mousemove(this.over);
       $(document).mouseup(this.drop);
       return this.over(e);
@@ -11736,9 +11759,10 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
       var difference;
       e.preventDefault();
       difference = {
-        left: e.pageX - this.offset.left,
-        top: e.pageY - this.offset.top
+        left: e.pageX - this.offset.left - (this.width / 2),
+        top: e.pageY - this.offset.top - (this.height / 2)
       };
+      this.change(difference);
       return this.trigger('change', difference);
     };
 
@@ -12400,7 +12424,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 
 }).call(this);
 ;}});this.require.define({"app/controllers/inspector":function(exports, require, module){(function() {
-  var Background, Border, Inspector, Opacity, Shadow,
+  var Background, Border, BoxShadow, Inspector, Opacity, TextShadow,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -12411,7 +12435,9 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 
   Opacity = require('./inspector/opacity');
 
-  Shadow = require('./inspector/shadow');
+  BoxShadow = require('./inspector/box_shadow');
+
+  TextShadow = require('./inspector/text_shadow');
 
   Inspector = (function(_super) {
 
@@ -12433,7 +12459,10 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
       this.append(new Opacity({
         stage: this.stage
       }));
-      return this.append(new Shadow({
+      this.append(new BoxShadow({
+        stage: this.stage
+      }));
+      return this.append(new TextShadow({
         stage: this.stage
       }));
     };
@@ -12572,6 +12601,109 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = Border;
 
 }).call(this);
+;}});this.require.define({"app/controllers/inspector/box_shadow":function(exports, require, module){(function() {
+  var BoxShadow, ColorPicker, PositionPicker, Shadow,
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  Shadow = require('app/models/properties/shadow');
+
+  ColorPicker = require('lib/color_picker');
+
+  PositionPicker = require('lib/position_picker');
+
+  BoxShadow = (function(_super) {
+
+    __extends(BoxShadow, _super);
+
+    BoxShadow.prototype.className = 'shadow';
+
+    BoxShadow.prototype.events = {
+      'change input': 'change',
+      'click .preview': 'showColorPicker'
+    };
+
+    BoxShadow.prototype.elements = {
+      'input[name=x]': '$x',
+      'input[name=y]': '$y',
+      'input[name=blur]': '$blur',
+      '.preview .inner': '$preview'
+    };
+
+    function BoxShadow() {
+      var _this = this;
+      BoxShadow.__super__.constructor.apply(this, arguments);
+      this.positionPicker = new PositionPicker;
+      this.positionPicker.bind('change', function(position) {
+        _this.shadow.x = position.left;
+        _this.shadow.y = position.top;
+        _this.stage.selection.set('boxShadow', _this.shadow.toString());
+        return _this.update();
+      });
+      this.render();
+    }
+
+    BoxShadow.prototype.render = function() {
+      var _ref;
+      this.disabled = !this.stage.selection.isAny();
+      this.shadow = this.stage.selection.get('boxShadow');
+      if (this.shadow) this.shadow = Shadow.fromString(this.shadow)[0];
+      this.shadow || (this.shadow = new Shadow);
+      this.html(JST['app/views/inspector/box_shadow'](this));
+      this.$('input').attr('disabled', this.disabled);
+      this.$preview.css('background', (_ref = this.shadow) != null ? _ref.color.toString() : void 0);
+      this.positionPicker.disabled = this.disabled;
+      this.positionPicker.change({
+        left: this.shadow.x,
+        top: this.shadow.y
+      });
+      return this.append(this.positionPicker);
+    };
+
+    BoxShadow.prototype.update = function() {
+      var _ref;
+      this.$('input').attr('disabled', this.disabled);
+      this.$preview.css('background', (_ref = this.shadow) != null ? _ref.color.toString() : void 0);
+      this.$x.val(this.shadow.x);
+      this.$y.val(this.shadow.y);
+      return this.$blur.val(this.shadow.blur);
+    };
+
+    BoxShadow.prototype.showColorPicker = function(e) {
+      var color, picker, _ref,
+        _this = this;
+      if (this.disabled) return;
+      color = (_ref = this.shadow) != null ? _ref.color : void 0;
+      picker = new ColorPicker({
+        color: color
+      });
+      picker.bind('change', function(color) {
+        _this.shadow.color = color;
+        _this.change();
+        return _this.update();
+      });
+      picker.bind('cancel', function() {
+        _this.shadow.color = color;
+        _this.change();
+        return _this.update();
+      });
+      return picker.open(this.$preview.offset());
+    };
+
+    BoxShadow.prototype.change = function() {
+      this.shadow.x = parseFloat(this.$x.val());
+      this.shadow.y = parseFloat(this.$y.val());
+      this.shadow.blur = parseFloat(this.$blur.val());
+      return this.stage.selection.set('boxShadow', this.shadow.toString());
+    };
+
+    return BoxShadow;
+
+  })(Spine.Controller);
+
+  module.exports = BoxShadow;
+
+}).call(this);
 ;}});this.require.define({"app/controllers/inspector/opacity":function(exports, require, module){(function() {
   var Opacity,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
@@ -12615,131 +12747,66 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = Opacity;
 
 }).call(this);
-;}});this.require.define({"app/controllers/inspector/shadow":function(exports, require, module){(function() {
-  var BoxShadow, Color, ColorPicker, PositionPicker, Shadow,
+;}});this.require.define({"app/controllers/inspector/text_shadow":function(exports, require, module){(function() {
+  var ColorPicker, PositionPicker, Shadow, TextShadow,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  ColorPicker = require('lib/color_picker');
+  Shadow = require('app/models/properties/shadow');
 
-  Color = ColorPicker.Color;
+  ColorPicker = require('lib/color_picker');
 
   PositionPicker = require('lib/position_picker');
 
-  BoxShadow = (function() {
+  TextShadow = (function(_super) {
 
-    BoxShadow.fromString = function(str) {
-      var color, colors, i, inset, p, parts, properties, property, shadows, _len;
-      shadows = [];
-      colors = [];
-      while (color = Color.fromString(str)) {
-        colors.push(color);
-        str = str.replace(Color.regex, '');
-      }
-      properties = str.split(',');
-      for (i = 0, _len = properties.length; i < _len; i++) {
-        property = properties[i];
-        color = colors[i];
-        inset = this.insetRegex.test(property);
-        parts = property.split(' ');
-        parts = (function() {
-          var _i, _len2, _results;
-          _results = [];
-          for (_i = 0, _len2 = parts.length; _i < _len2; _i++) {
-            p = parts[_i];
-            if (p !== '') _results.push(parseFloat(p));
-          }
-          return _results;
-        })();
-        shadows.push(new this({
-          x: parts[0],
-          y: parts[1],
-          blur: parts[2],
-          spread: parts[3],
-          inset: inset,
-          color: color
-        }));
-      }
-      return shadows;
-    };
+    __extends(TextShadow, _super);
 
-    BoxShadow.insetRegex = /inset/;
+    TextShadow.prototype.className = 'textShadow';
 
-    function BoxShadow(properties) {
-      var k, v;
-      if (properties == null) properties = {};
-      for (k in properties) {
-        v = properties[k];
-        this[k] = v;
-      }
-      this.x || (this.x = 0);
-      this.y || (this.y = 0);
-      this.blur || (this.blur = 0);
-      this.spread || (this.spread = 0);
-      this.color || (this.color = new Color(0, 0, 0, 0.3));
-    }
-
-    BoxShadow.prototype.toString = function() {
-      var result;
-      result = [];
-      if (this.inset) result.push('inset');
-      result.push(this.x + 'px');
-      result.push(this.y + 'px');
-      result.push(this.blur + 'px');
-      result.push(this.spread + 'px');
-      result.push(this.color.toString());
-      return result.join(' ');
-    };
-
-    return BoxShadow;
-
-  })();
-
-  Shadow = (function(_super) {
-
-    __extends(Shadow, _super);
-
-    Shadow.prototype.className = 'shadow';
-
-    Shadow.prototype.events = {
+    TextShadow.prototype.events = {
       'change input': 'change',
       'click .preview': 'showColorPicker'
     };
 
-    Shadow.prototype.elements = {
+    TextShadow.prototype.elements = {
       'input[name=x]': '$x',
       'input[name=y]': '$y',
       'input[name=blur]': '$blur',
       '.preview .inner': '$preview'
     };
 
-    function Shadow() {
+    function TextShadow() {
       var _this = this;
-      Shadow.__super__.constructor.apply(this, arguments);
+      TextShadow.__super__.constructor.apply(this, arguments);
       this.positionPicker = new PositionPicker;
       this.positionPicker.bind('change', function(position) {
         _this.shadow.x = position.left;
         _this.shadow.y = position.top;
-        _this.stage.selection.set('boxShadow', _this.shadow.toString());
+        _this.stage.selection.set('textShadow', _this.shadow.toString());
         return _this.update();
       });
       this.render();
     }
 
-    Shadow.prototype.render = function() {
+    TextShadow.prototype.render = function() {
       var _ref;
       this.disabled = !this.stage.selection.isAny();
-      this.shadow = this.stage.selection.get('boxShadow');
-      if (this.shadow) this.shadow = BoxShadow.fromString(this.shadow)[0];
-      this.shadow || (this.shadow = new BoxShadow);
-      this.html(JST['app/views/inspector/shadow'](this));
+      this.shadow = this.stage.selection.get('textShadow');
+      if (this.shadow) this.shadow = Shadow.fromString(this.shadow)[0];
+      this.shadow || (this.shadow = new Shadow);
+      this.html(JST['app/views/inspector/text_shadow'](this));
       this.$('input').attr('disabled', this.disabled);
       this.$preview.css('background', (_ref = this.shadow) != null ? _ref.color.toString() : void 0);
       this.positionPicker.disabled = this.disabled;
+      this.positionPicker.change({
+        left: this.shadow.x,
+        top: this.shadow.y
+      });
       return this.append(this.positionPicker);
     };
 
-    Shadow.prototype.update = function() {
+    TextShadow.prototype.update = function() {
       var _ref;
       this.$('input').attr('disabled', this.disabled);
       this.$preview.css('background', (_ref = this.shadow) != null ? _ref.color.toString() : void 0);
@@ -12748,7 +12815,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
       return this.$blur.val(this.shadow.blur);
     };
 
-    Shadow.prototype.showColorPicker = function(e) {
+    TextShadow.prototype.showColorPicker = function(e) {
       var color, picker, _ref,
         _this = this;
       if (this.disabled) return;
@@ -12769,20 +12836,18 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
       return picker.open(this.$preview.offset());
     };
 
-    Shadow.prototype.change = function() {
+    TextShadow.prototype.change = function() {
       this.shadow.x = parseFloat(this.$x.val());
       this.shadow.y = parseFloat(this.$y.val());
       this.shadow.blur = parseFloat(this.$blur.val());
-      return this.stage.selection.set('boxShadow', this.shadow.toString());
+      return this.stage.selection.set('textShadow', this.shadow.toString());
     };
 
-    return Shadow;
+    return TextShadow;
 
   })(Spine.Controller);
 
-  module.exports = Shadow;
-
-  module.exports.BoxShadow = BoxShadow;
+  module.exports = TextShadow;
 
 }).call(this);
 ;}});this.require.define({"app/controllers/stage":function(exports, require, module){(function() {
@@ -13024,8 +13089,8 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
         left: e.pageX,
         top: e.pageY
       };
-      this.el.mousemove(this.drag);
-      return this.el.mouseup(this.drop);
+      $(document).mousemove(this.drag);
+      return $(document).mouseup(this.drop);
     };
 
     Dragging.prototype.drag = function(e) {
@@ -13047,8 +13112,8 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 
     Dragging.prototype.drop = function(e) {
       var _ref;
-      this.el.unbind('mousemove', this.drag);
-      this.el.unbind('mouseup', this.drop);
+      $(document).unbind('mousemove', this.drag);
+      $(document).unbind('mouseup', this.drop);
       this.el.trigger('dragging.end');
       if ((_ref = this.coordTitle) != null) _ref.remove();
       return this.coordTitle = null;
@@ -13716,6 +13781,91 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = App;
 
 }).call(this);
+;}});this.require.define({"app/models/properties/color":function(exports, require, module){(function() {
+  var Color, ColorPicker;
+
+  ColorPicker = require('lib/color_picker');
+
+  Color = ColorPicker.Color;
+
+  module.exports = Color;
+
+}).call(this);
+;}});this.require.define({"app/models/properties/shadow":function(exports, require, module){(function() {
+  var Color, Shadow;
+
+  Color = require('./color');
+
+  Shadow = (function() {
+
+    Shadow.fromString = function(str) {
+      var color, colors, i, inset, p, parts, properties, property, shadows, _len;
+      shadows = [];
+      colors = [];
+      while (color = Color.fromString(str)) {
+        colors.push(color);
+        str = str.replace(Color.regex, '');
+      }
+      properties = str.split(',');
+      for (i = 0, _len = properties.length; i < _len; i++) {
+        property = properties[i];
+        color = colors[i];
+        inset = this.insetRegex.test(property);
+        parts = property.split(' ');
+        parts = (function() {
+          var _i, _len2, _results;
+          _results = [];
+          for (_i = 0, _len2 = parts.length; _i < _len2; _i++) {
+            p = parts[_i];
+            if (p !== '') _results.push(parseFloat(p));
+          }
+          return _results;
+        })();
+        shadows.push(new this({
+          x: parts[0],
+          y: parts[1],
+          blur: parts[2],
+          spread: parts[3],
+          inset: inset,
+          color: color
+        }));
+      }
+      return shadows;
+    };
+
+    Shadow.insetRegex = /inset/;
+
+    function Shadow(properties) {
+      var k, v;
+      if (properties == null) properties = {};
+      for (k in properties) {
+        v = properties[k];
+        this[k] = v;
+      }
+      this.x || (this.x = 0);
+      this.y || (this.y = 0);
+      this.color || (this.color = new Color(0, 0, 0, 0.3));
+    }
+
+    Shadow.prototype.toString = function() {
+      var result;
+      result = [];
+      if (this.inset) result.push('inset');
+      result.push(this.x + 'px');
+      result.push(this.y + 'px');
+      if (this.blur != null) result.push(this.blur + 'px');
+      if (this.spread != null) result.push(this.spread + 'px');
+      result.push(this.color.toString());
+      return result.join(' ');
+    };
+
+    return Shadow;
+
+  })();
+
+  module.exports = Shadow;
+
+}).call(this);
 ;}});(function() {
   this.JST || (this.JST = {});
   this.JST["app/views/header"] = function(__obj) {
@@ -13871,6 +14021,70 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 }).call(this);
 (function() {
   this.JST || (this.JST = {});
+  this.JST["app/views/inspector/box_shadow"] = function(__obj) {
+    if (!__obj) __obj = {};
+    var __out = [], __capture = function(callback) {
+      var out = __out, result;
+      __out = [];
+      callback.call(this);
+      result = __out.join('');
+      __out = out;
+      return __safe(result);
+    }, __sanitize = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else if (typeof value !== 'undefined' && value != null) {
+        return __escape(value);
+      } else {
+        return '';
+      }
+    }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+    __safe = __obj.safe = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else {
+        if (!(typeof value !== 'undefined' && value != null)) value = '';
+        var result = new String(value);
+        result.ecoSafe = true;
+        return result;
+      }
+    };
+    if (!__escape) {
+      __escape = __obj.escape = function(value) {
+        return ('' + value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      };
+    }
+    (function() {
+      (function() {
+        var _ref, _ref2, _ref3;
+      
+        __out.push('<h3>Shadow</h3>\n\n<article>\n  <label>\n    <span>X</span>\n    <input type="number" name="x" value="');
+      
+        __out.push(__sanitize((_ref = this.shadow) != null ? _ref.x : void 0));
+      
+        __out.push('">px\n  </label>\n\n  <label>\n    <span>Y</span>\n    <input type="number" name="y" value="');
+      
+        __out.push(__sanitize((_ref2 = this.shadow) != null ? _ref2.y : void 0));
+      
+        __out.push('">px\n  </label>\n\n  <label>\n    <span>Blur</span>\n    <input type="number" name="blur" value="');
+      
+        __out.push(__sanitize((_ref3 = this.shadow) != null ? _ref3.blur : void 0));
+      
+        __out.push('">px\n  </label>\n\n  <div class="preview"><div class="inner"></div></div>\n</article>\n');
+      
+      }).call(this);
+      
+    }).call(__obj);
+    __obj.safe = __objSafe, __obj.escape = __escape;
+    return __out.join('');
+  };
+}).call(this);
+(function() {
+  this.JST || (this.JST = {});
   this.JST["app/views/inspector/opacity"] = function(__obj) {
     if (!__obj) __obj = {};
     var __out = [], __capture = function(callback) {
@@ -13938,7 +14152,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 }).call(this);
 (function() {
   this.JST || (this.JST = {});
-  this.JST["app/views/inspector/shadow"] = function(__obj) {
+  this.JST["app/views/inspector/text_shadow"] = function(__obj) {
     if (!__obj) __obj = {};
     var __out = [], __capture = function(callback) {
       var out = __out, result;
@@ -13979,7 +14193,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
       (function() {
         var _ref, _ref2, _ref3;
       
-        __out.push('<h3>Shadow</h3>\n\n<article>\n  <label>\n    <span>X</span>\n    <input type="number" name="x" value="');
+        __out.push('<h3>Text Shadow</h3>\n\n<article>\n  <label>\n    <span>X</span>\n    <input type="number" name="x" value="');
       
         __out.push(__sanitize((_ref = this.shadow) != null ? _ref.x : void 0));
       

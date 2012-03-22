@@ -10,17 +10,15 @@ Phase 1:
 * ✓ Select multiple items
 * ✓ Toolbar menu
 * Inspector panel (Element/Text/Ruler)
-  * 1/2 Background
+  * ½ Background
   * Border
-  * 1/2 Shadow
+  * ½ Shadow
   * Font alignment
   * Font family/size/style/color
-  * Text-shadow
+  * ✓ Text-shadow
   * Text-spacing
   * Rotation
   * ✓ Opacity
-
-Fix white part of color picker
 
 Phase 2:
 
@@ -65,7 +63,7 @@ Two types of snapping:
 
 * Triangle
 * ✓ Rectangle
-* Ellipsis
+* ✓ Ellipsis
 * Form elements
 * Text
 * Image

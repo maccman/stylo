@@ -1,0 +1,20 @@
+<h3>Text Shadow</h3>
+
+<article>
+  <label>
+    <span>X</span>
+    <input type="number" name="x" value="<%= @shadow?.x %>">px
+  </label>
+
+  <label>
+    <span>Y</span>
+    <input type="number" name="y" value="<%= @shadow?.y %>">px
+  </label>
+
+  <label>
+    <span>Blur</span>
+    <input type="number" name="blur" value="<%= @shadow?.blur %>">px
+  </label>
+
+  <div class="preview"><div class="inner"></div></div>
+</article>

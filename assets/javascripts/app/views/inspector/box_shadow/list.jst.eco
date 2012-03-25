@@ -1,0 +1,13 @@
+<div class="items">
+  <% for shadow in @shadows: %>
+    <div class="item">
+      <div class="preview" style="box-shadow: <%= shadow.toString() %>"></div>
+      <span><%= shadow.toString() %></span>
+    </div>
+  <% end %>
+</div>
+
+<footer>
+  <button class="plus">+</button>
+  <button class="minus">-</button>
+</footer>

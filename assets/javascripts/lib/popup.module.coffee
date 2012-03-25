@@ -2,17 +2,15 @@ class Popup extends Spine.Controller
   @open: ->
     (new this).open(arguments...)
 
-  width: 350
-
-  events:
-    'click .close': 'close'
+  width: 400
 
   constructor: ->
     super
+    @el.delegate 'click', '.close', @close
     @el.addClass('popup')
     @el.css(position: 'absolute').hide()
 
-  open: (position = {left: 0, top: 0}) ->
+  open: (position = {left: 0, top: 0}) =>
     left = position.left or position.clientX
     top  = position.top  or position.clientY
 
@@ -24,10 +22,10 @@ class Popup extends Spine.Controller
     @el.gfxRaisedIn()
 
     @delay ->
-      $('body').click(@remove)
+      $('body').mousedown(@remove)
 
-  close: ->
-    $('body').unbind('click', @remove)
+  close: =>
+    $('body').unbind('mousedown', @remove)
     @el.gfxRaisedOut()
     @el.queueNext =>
       @el.remove()

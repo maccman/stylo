@@ -4,8 +4,8 @@ class PositionPicker extends Spine.Controller
   events:
     'mousedown': 'drag'
 
-  width:  50
-  height: 50
+  width:  40
+  height: 40
 
   constructor: ->
     super

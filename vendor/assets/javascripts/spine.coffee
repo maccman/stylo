@@ -72,9 +72,11 @@ class Module
     this
 
   @proxy: (func) ->
+    throw 'func required' unless func
     => func.apply(@, arguments)
 
   proxy: (func) ->
+    throw 'func required' unless func
     => func.apply(@, arguments)
 
   constructor: ->

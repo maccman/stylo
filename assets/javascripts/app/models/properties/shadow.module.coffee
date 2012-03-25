@@ -2,6 +2,9 @@ Color = require('./color')
 
 class Shadow
   @fromString: (str) ->
+    return [] unless str
+    return [] if str is 'none'
+
     shadows = []
 
     # Parse out the colors first, as they

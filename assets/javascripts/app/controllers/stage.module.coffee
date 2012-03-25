@@ -33,7 +33,7 @@ class Stage extends Spine.Controller
 
     # FIXME: Test data
     @rectangle1 = new Rectangle(left: '200px', top: '200px', background: 'url(assets/blacky.png)')
-    @rectangle2 = new Rectangle(background: 'url(assets/whitey.png)', boxShadow: '0 1px 3px rgba(0,0,0,0.4)')
+    @rectangle2 = new Rectangle(background: 'url(assets/whitey.png)', boxShadow: '0 1px 3px rgba(0,0,0,0.4), inset 0 1px #FFF')
     @ellipsis   = new Ellipsis(left: '100px', top: '100px')
 
     @add(@rectangle1, @rectangle2, @ellipsis)

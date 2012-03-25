@@ -1,20 +1,29 @@
-<h3>Shadow</h3>
-
 <article>
-  <label>
-    <span>X</span>
-    <input type="number" name="x" value="<%= @shadow?.x %>">px
-  </label>
+  <div class="hbox">
+    <div class="positionInput"></div>
 
-  <label>
-    <span>Y</span>
-    <input type="number" name="y" value="<%= @shadow?.y %>">px
-  </label>
+    <div class="vbox">
+      <label>
+        <span>X</span>
+        <input type="number" name="x" placeholder="0px">
+      </label>
 
-  <label>
-    <span>Blur</span>
-    <input type="number" name="blur" value="<%= @shadow?.blur %>">px
-  </label>
+      <label>
+        <span>Y</span>
+        <input type="number" name="y" placeholder="0px">
+      </label>
+    </div>
 
-  <div class="preview"><div class="inner"></div></div>
+    <div class="vbox">
+      <label class="blur">
+        <span>Blur</span>
+        <input type="number" name="blur" placeholder="0px">
+      </label>
+
+      <label class="color">
+        <span>Color</span>
+        <div class="colorInput"></div>
+      </label>
+    </div>
+  </div>
 </article>

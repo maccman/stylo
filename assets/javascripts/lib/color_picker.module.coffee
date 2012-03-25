@@ -1,7 +1,7 @@
 Popup = require('./popup')
 
 class Color
-  @regex: /^(?:#([0-9a-f]{3,6})|rgba?\(([^)]+)\))/
+  @regex: /(?:#([0-9a-f]{3,6})|rgba?\(([^)]+)\))/
 
   @fromHex: (hex) ->
     if hex[0] is '#'
@@ -55,7 +55,7 @@ class Color
       b: @b
 
   clone: ->
-    Object.create(this)
+    new @constructor(@r, @g, @b, @a)
 
 class Canvas extends Spine.Controller
   tag: 'canvas'
@@ -284,6 +284,66 @@ class ColorPicker extends Popup
     e.preventDefault()
     @close()
     @trigger 'cancel'
+    @trigger 'change', @original
+
+class Input extends Spine.Controller
+  className: 'colorInput'
+
+  events:
+    'click .preview': 'open'
+    'change input': 'change'
+
+  constructor: ->
+    super
+    @color or= new Color
+
+    @$preview = $('<div />').addClass('preview')
+    @$preview.css(background: @color.toString())
+
+    @$input   = $('<input type=color>')
+    @$input.val @color.toString()
+
+    @el.append @$preview, @$input
+
+  open: =>
+    @picker = new ColorPicker(color: @color)
+
+    @picker.bind 'change', (color) =>
+      @$input.val color.toString()
+      @$input.change()
+
+    @picker.open(@el.offset())
+
+  change: =>
+    @color.set Color.fromString(@$input.val())
+    @$preview.css(background: @color.toString())
+
+class Preview extends Spine.Controller
+  className: 'colorPreview'
+
+  events:
+    'click': 'open'
+
+  constructor: ->
+    super
+    @color  or= new Color
+    @picker = new ColorPicker(color: @color)
+    @inner  = $('<div />').addClass('inner')
+    @append @inner
+    @render()
+
+  render: ->
+    @inner.css(background: @color.toString())
+
+  open: =>
+    @picker.bind 'change', (color) =>
+      @color.set color
+      @trigger 'change', @color
+      @render()
+
+    @picker.open(@el.offset())
 
 module.exports = ColorPicker
 module.exports.Color = Color
+module.exports.Input = Input
+module.exports.Preview = Preview

@@ -10,7 +10,6 @@ class Background extends Spine.Controller
     '.option.color': '$color'
 
   events:
-    'click .preview': 'showColorPicker'
     'change select': 'select'
 
   styles: [

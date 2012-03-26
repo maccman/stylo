@@ -14,8 +14,6 @@ class BoxShadowEdit extends Spine.Controller
     'input[name=x]': '$x'
     'input[name=y]': '$y'
     'input[name=blur]': '$blur'
-    'input[name=color]': '$color'
-    'input[name=alpha]': '$alpha'
 
   constructor: ->
     super
@@ -62,14 +60,10 @@ class BoxShadowEdit extends Spine.Controller
     @$y.val @shadow.y
     @$blur.val @shadow.blur
 
-    @$color.val @shadow.color.toString()
-    @$alpha.val @shadow.color.a * 100
-
   inputChange: (e) ->
     @shadow.x    = parseFloat(@$x.val())
     @shadow.y    = parseFloat(@$y.val())
     @shadow.blur = parseFloat(@$blur.val()) or 0
-    @shadow.color.a = parseFloat(@$alpha.val()) / 100
 
     @trigger 'change', @shadow
     @update()

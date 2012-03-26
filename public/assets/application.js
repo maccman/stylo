@@ -12628,6 +12628,9 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 
     Inspector.prototype.render = function() {
       this.el.empty();
+      this.append(new Background({
+        stage: this.stage
+      }));
       this.append(new Opacity({
         stage: this.stage
       }));
@@ -12644,29 +12647,26 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 
 }).call(this);
 ;}});this.require.define({"app/controllers/inspector/background":function(exports, require, module){(function() {
-  var Background, ColorPicker,
+  var Background, ColorPicker, List,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   ColorPicker = require('lib/color_picker');
 
+  List = (function() {
+
+    function List() {}
+
+    return List;
+
+  })();
+
   Background = (function(_super) {
 
     __extends(Background, _super);
 
     Background.prototype.className = 'background';
-
-    Background.prototype.elements = {
-      '.preview .inner': '$preview',
-      'select': '$select',
-      '.option': '$options',
-      '.option.color': '$color'
-    };
-
-    Background.prototype.events = {
-      'change select': 'select'
-    };
 
     Background.prototype.styles = ['background', 'backgroundColor', 'backgroundImage', 'backgroundRepeat', 'backgroundSize'];
 
@@ -12683,46 +12683,8 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
         style = _ref[_i];
         this.values[style] = this.stage.selection.get(style);
       }
-      this.html(JST['app/views/inspector/background'](this));
-      this.$options.hide();
-      if (this.values.backgroundColor) {
-        this.$select.val('color').change();
-        return this.$preview.css({
-          backgroundColor: this.values.backgroundColor
-        });
-      }
-    };
-
-    Background.prototype.showColorPicker = function(e) {
-      var color, picker,
-        _this = this;
-      color = this.stage.selection.get('backgroundColor');
-      if (color) {
-        color = ColorPicker.Color.fromString(color);
-        if (color.isTransparent()) color = false;
-      }
-      picker = new ColorPicker({
-        color: color
-      });
-      picker.bind('change', function(color) {
-        _this.stage.selection.set('background', color.toString());
-        return _this.render();
-      });
-      picker.bind('cancel', function() {
-        _this.stage.selection.set('background', color.toString());
-        return _this.render();
-      });
-      return picker.open(this.$preview.offset());
-    };
-
-    Background.prototype.select = function() {
-      this.$options.hide();
-      switch (this.$select.val()) {
-        case 'color':
-          return this.$color.show();
-        case 'none':
-          return this.stage.selection.set('background', 'none');
-      }
+      this.el.empty();
+      return this.el.append('<h3>Background</h3>');
     };
 
     return Background;
@@ -12798,9 +12760,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
     BoxShadowEdit.prototype.elements = {
       'input[name=x]': '$x',
       'input[name=y]': '$y',
-      'input[name=blur]': '$blur',
-      'input[name=color]': '$color',
-      'input[name=alpha]': '$alpha'
+      'input[name=blur]': '$blur'
     };
 
     function BoxShadowEdit() {
@@ -12846,16 +12806,13 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
       });
       this.$x.val(this.shadow.x);
       this.$y.val(this.shadow.y);
-      this.$blur.val(this.shadow.blur);
-      this.$color.val(this.shadow.color.toString());
-      return this.$alpha.val(this.shadow.color.a * 100);
+      return this.$blur.val(this.shadow.blur);
     };
 
     BoxShadowEdit.prototype.inputChange = function(e) {
       this.shadow.x = parseFloat(this.$x.val());
       this.shadow.y = parseFloat(this.$y.val());
       this.shadow.blur = parseFloat(this.$blur.val()) || 0;
-      this.shadow.color.a = parseFloat(this.$alpha.val()) / 100;
       this.trigger('change', this.shadow);
       return this.update();
     };
@@ -14042,7 +13999,157 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = App;
 
 }).call(this);
-;}});this.require.define({"app/models/properties/color":function(exports, require, module){(function() {
+;}});(function() {
+  var Background, Linear, Point, Position, Radial,
+    __slice = Array.prototype.slice,
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  Position = (function() {
+
+    Position.keywords = {
+      top: 0,
+      right: 90,
+      bottom: 180,
+      left: 270
+    };
+
+    Position.angleRegex = /(\d+)deg/;
+
+    Position.fromString = function(str) {
+      var a, h, parts, v;
+      parts = str.split(' ');
+      h = this.keywords(parts[0]) || parseFloat(parts[0]) || this.keywords.top;
+      v = this.keywords(parts[1]) || parseFloat(parts[1]) || this.keywords.bottom;
+      a = this.keywords(parts[2]) || parseFloat(parts[2]) || 0;
+      return new this(x, y, a);
+    };
+
+    function Position(x, y, angle) {
+      this.x = x;
+      this.y = y;
+      this.angle = angle;
+    }
+
+    Position.prototype.toString = function() {
+      return '';
+    };
+
+    return Position;
+
+  })();
+
+  Point = (function() {
+
+    Point.fromString = function(str) {
+      var color, percent;
+      color = Color.fromString(str);
+      str = str.replace(Color.regex, '');
+      percent = parseFloat(str);
+      return new this(color, percent);
+    };
+
+    function Point(color, percent) {
+      this.color = color;
+      this.percent = percent;
+    }
+
+    return Point;
+
+  })();
+
+  Background = (function() {
+
+    function Background() {}
+
+    Background.linearRegex = /(-webkit-)?linear-gradient\((.+),?\);?/;
+
+    Background.radialRegex = /(-webkit-)?radial-gradient\((.+),?\);?/;
+
+    Background.fromString = function(str) {
+      var backgrounds, direction, match, p, params, points;
+      backgrounds = [];
+      if (str === 'none') return backgrounds;
+      while (str) {
+        if (match = str.match(this.linearRegex)) {
+          params = match[2];
+          params = params.split(',');
+          direction = Direction.fromString(params.unshift());
+          points = (function() {
+            var _i, _len, _results;
+            _results = [];
+            for (_i = 0, _len = params.length; _i < _len; _i++) {
+              p = params[_i];
+              _results.push(Point.fromString(p));
+            }
+            return _results;
+          })();
+          backgrounds.push(new Linear(direction, points));
+          str = str.replace(this.linearRegex, '');
+        } else if (match = str.match(this.radialRegex)) {
+          params = match[2];
+          params = params.split(',');
+          direction = Direction.fromString(params.unshift());
+          points = (function() {
+            var _i, _len, _results;
+            _results = [];
+            for (_i = 0, _len = params.length; _i < _len; _i++) {
+              p = params[_i];
+              _results.push(Point.fromString(p));
+            }
+            return _results;
+          })();
+          backgrounds.push((function(func, args, ctor) {
+            ctor.prototype = func.prototype;
+            var child = new ctor, result = func.apply(child, args);
+            return typeof result === "object" ? result : child;
+          })(Radial, [direction].concat(__slice.call(points)), function() {}));
+          str = str.replace(this.radialRegex, '');
+        }
+      }
+      return backgrounds;
+    };
+
+    return Background;
+
+  })();
+
+  Linear = (function(_super) {
+
+    __extends(Linear, _super);
+
+    function Linear() {
+      var points, position;
+      position = arguments[0], points = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      this.position = position;
+      this.points = points;
+    }
+
+    Linear.prototype.toString = function() {
+      return "-webkit-linear-gradient(" + (this.position.toString()) + ")";
+    };
+
+    return Linear;
+
+  })(Background);
+
+  Radial = (function(_super) {
+
+    __extends(Radial, _super);
+
+    function Radial() {
+      var points, position;
+      position = arguments[0], points = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      this.position = position;
+      this.points = points;
+    }
+
+    return Radial;
+
+  })(Background);
+
+}).call(this);
+this.require.define({"app/models/properties/color":function(exports, require, module){(function() {
   var Color, ColorPicker;
 
   ColorPicker = require('lib/color_picker');
@@ -14222,7 +14329,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
     (function() {
       (function() {
       
-        __out.push('<h3>Background</h3>\n\n<article>\n  <label>\n    <span>Fill Style</span>\n    <select name="style">\n      <option value="none">None</option>\n      <option value="color">Color</option>\n      <option value="gradient">Gradient</option>\n      <option value="image">Image</option>\n    </select>\n  </label>\n\n  <div class="option color">\n    <div class="preview">\n      <div class="inner"></div>\n    </div>\n  </div>\n\n  <div class="option gradient">\n\n  </div>\n\n  <div class="option image">\n\n  </div>\n</article>\n');
+        __out.push('\n\n<article>\n</article>\n');
       
       }).call(this);
       

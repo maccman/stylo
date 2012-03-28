@@ -481,8 +481,6 @@ body {
 #app .stage .element {
   outline: none;
   background: rgba(0,0,0,0.50);
-  width: 100px;
-  height: 100px;
 }
 #app .stage .resizing .thumb {
   position: absolute;

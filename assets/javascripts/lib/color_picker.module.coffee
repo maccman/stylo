@@ -1,7 +1,7 @@
 Popup = require('./popup')
 
 class Color
-  @regex: /(?:#([0-9a-f]{3,6})|rgba?\(([^)]+)\))/
+  @regex: /(?:#([0-9a-f]{3,6})|rgba?\(([^)]+)\))/i
 
   @fromHex: (hex) ->
     if hex[0] is '#'
@@ -26,9 +26,10 @@ class Color
       @fromHex(hex)
 
     else if rgba = match[2]
-      new this(rgba.split(/\s*,\s*/)...)
+      [r, g, b, a] = rgba.split(/\s*,\s*/)
+      new this(r, g, b, a)
 
-  constructor: (r, g, b, a = 1) ->
+  constructor: (r = 0, g = 0, b = 0, a = 1) ->
     @r = parseInt(r, 10)
     @g = parseInt(g, 10)
     @b = parseInt(b, 10)

@@ -35,8 +35,6 @@ class App < Sinatra::Base
     sprockets.register_preprocessor 'text/css', Stylus::ImportProcessor
     Stylus.paths.concat sprockets.paths
 
-    sprockets.append_path(Sprockets::CommonJS::ASSETS_PATH)
-
     sprockets.context_class.instance_eval do
       include AssetHelpers
     end

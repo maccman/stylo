@@ -1,4 +1,4 @@
-//= require commonjs
+//= require sprockets/commonjs
 //= require jquery
 //= require spine
 //= require spine/manager

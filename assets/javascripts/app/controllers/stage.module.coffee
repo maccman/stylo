@@ -8,6 +8,8 @@ KeyBindings = require('./stage/key_bindings')
 Rectangle  = require('./elements/rectangle')
 Ellipsis   = require('./elements/ellipsis')
 
+Properties = require('app/models/properties')
+
 class Stage extends Spine.Controller
   className: 'stage'
 
@@ -32,11 +34,13 @@ class Stage extends Spine.Controller
       @el.trigger('selection.change', this)
 
     # FIXME: Test data
-    @rectangle1 = new Rectangle(left: '200px', top: '200px', background: 'url(assets/blacky.png)')
-    @rectangle2 = new Rectangle(background: 'url(assets/whitey.png)', boxShadow: '0 1px 3px rgba(0,0,0,0.4), inset 0 1px #FFF')
-    @ellipsis   = new Ellipsis(left: '100px', top: '100px')
+    @rectangle1 = new Rectangle(
+      left: 200, top: 200,
+      backgroundImage: [new Properties.URL('assets/blacky.png')]
+    )
+    @rectangle2 = new Rectangle()
 
-    @add(@rectangle1, @rectangle2, @ellipsis)
+    @add(@rectangle1, @rectangle2)
 
   add: (elements...) =>
     for element in elements

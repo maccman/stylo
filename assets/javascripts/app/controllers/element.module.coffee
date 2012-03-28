@@ -3,6 +3,10 @@ Resizing = require('./element/resizing')
 class Element extends Spine.Controller
   defaults:
     position: 'absolute'
+    width: 100
+    height: 100
+    left: 0
+    top: 0
 
   events:
     'mousedown': 'select'
@@ -11,35 +15,43 @@ class Element extends Spine.Controller
   constructor: (attrs = {}) ->
     @el = attrs.el if 'el' of attrs
     super()
-    @resizing = new Resizing(this)
     @el.addClass('element')
+
+    @properties = {}
+
     @set @defaults
     @set attrs
 
+    @resizing = new Resizing(this)
+
   get: (key) ->
-    @[key]?() or @el.css(key)
+    @[key]?() or @properties[key]
 
   set: (key, value) ->
     if typeof key is 'object'
       @set(k, v) for k, v of key
     else
-      @[key]?(value) or @el.css(key, value)
+      @[key]?(value) or @properties[key] = value
+    @paint()
+
+  paint: ->
+    @el.css(@properties)
+
+  toJSON: ->
+    {properties: @properties}
 
   # Manipulating elements
 
-  rotate: (val) ->
-    @el.transform(rotate: val)
-
   resize: (area) ->
-    @el.css(area)
+    @set(area)
     @el.trigger('resized', this)
 
-  move: (toPosition) ->
-    position       = @el.position()
-    position.left += toPosition.left
-    position.top  += toPosition.top
+  moveBy: (toPosition) ->
+    area       = @area()
+    area.left += toPosition.left
+    area.top  += toPosition.top
 
-    @el.css(position)
+    @set(area)
     @el.trigger('moved', this)
 
   edit: ->
@@ -49,32 +61,32 @@ class Element extends Spine.Controller
     @el.remove()
 
   clone: ->
-    el = @el.clone()
-    el.empty()
-    new @constructor(el: el)
+    # TODO - inheritance...
+    new @constructor(@properties)
 
   # Selecting elements
 
   select: (e) ->
-    if @isSelected()
+    if @selected()
       @el.trigger('deselect', [this, e?.shiftKey])
     else
       @el.trigger('select', [this, e?.shiftKey])
 
   selected: (bool) =>
-    @el.toggleClass('selected', bool)
-    @el.attr('contenteditable', false)
-    @resizing.toggle(bool)
-
-  isSelected: ->
-    @el.hasClass('selected')
+    if bool?
+      @_selected = bool
+      @el.toggleClass('selected', bool)
+      @resizing.toggle(bool)
+    @_selected
 
   # Position & Area
 
   area: ->
-    area        = @el.position()
-    area.height = @el.height()
-    area.width  = @el.width()
+    area = {}
+    area.left   = @properties.left or 0
+    area.top    = @properties.top or 0
+    area.height = @properties.height or 0
+    area.width  = @properties.width or 0
     area
 
   inArea: (testArea) ->

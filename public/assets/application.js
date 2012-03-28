@@ -1,62 +1,61 @@
 (function() {
-  var modules = {}, cache = {};
+  if (!this.require) {
+    var modules = {}, cache = {};
 
-  if (this.require && this.require.modules) {
-    modules = this.require.modules;
+    var require = function(name, root) {
+      var path = expand(root, name), indexPath = expand(path, './index'), module, fn;
+      module   = cache[path] || cache[indexPath];
+      if (module) {
+        return module;
+      } else if (fn = modules[path] || modules[path = indexPath]) {
+        module = {id: path, exports: {}};
+        cache[path] = module.exports;
+        fn(module.exports, function(name) {
+          return require(name, dirname(path));
+        }, module);
+        return cache[path] = module.exports;
+      } else {
+        throw 'module ' + name + ' not found';
+      }
+    };
+
+    var expand = function(root, name) {
+      var results = [], parts, part;
+      // If path is relative
+      if (/^\.\.?(\/|$)/.test(name)) {
+        parts = [root, name].join('/').split('/');
+      } else {
+        parts = name.split('/');
+      }
+      for (var i = 0, length = parts.length; i < length; i++) {
+        part = parts[i];
+        if (part == '..') {
+          results.pop();
+        } else if (part != '.' && part != '') {
+          results.push(part);
+        }
+      }
+      return results.join('/');
+    };
+
+    var dirname = function(path) {
+      return path.split('/').slice(0, -1).join('/');
+    };
+
+    this.require = function(name) {
+      return require(name, '');
+    };
+
+    this.require.define = function(bundle) {
+      for (var key in bundle) {
+        modules[key] = bundle[key];
+      }
+    };
+
+    this.require.modules = modules;
+    this.require.cache   = cache;
   }
 
-  var require = function(name, root) {
-    var path = expand(root, name), indexPath = expand(path, './index'), module, fn;
-    module   = cache[path] || cache[indexPath];
-    if (module) {
-      return module;
-    } else if (fn = modules[path] || modules[path = indexPath]) {
-      module = {id: path, exports: {}};
-      cache[path] = module.exports;
-      fn(module.exports, function(name) {
-        return require(name, dirname(path));
-      }, module);
-      return cache[path] = module.exports;
-    } else {
-      throw 'module ' + name + ' not found';
-    }
-  };
-
-  var expand = function(root, name) {
-    var results = [], parts, part;
-    // If path is relative
-    if (/^\.\.?(\/|$)/.test(name)) {
-      parts = [root, name].join('/').split('/');
-    } else {
-      parts = name.split('/');
-    }
-    for (var i = 0, length = parts.length; i < length; i++) {
-      part = parts[i];
-      if (part == '..') {
-        results.pop();
-      } else if (part != '.' && part != '') {
-        results.push(part);
-      }
-    }
-    return results.join('/');
-  };
-
-  var dirname = function(path) {
-    return path.split('/').slice(0, -1).join('/');
-  };
-
-  this.require = function(name) {
-    return require(name, '');
-  };
-
-  this.require.define = function(bundle) {
-    for (var key in bundle) {
-      modules[key] = bundle[key];
-    }
-  };
-
-  this.require.modules = modules;
-  this.require.cache   = cache;
   return this.require;
 }).call(this);
 /*!
@@ -10482,11 +10481,11 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
 }).call(this);
 (function() {
-  var Collection, Instance, Singleton, isArray, singularize, underscore,
+  var Collection, Instance, Singleton, Spine, isArray, require, singularize, underscore,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  if (typeof Spine === "undefined" || Spine === null) Spine = require('spine');
+  Spine = this.Spine || require('spine');
 
   isArray = Spine.isArray;
 
@@ -11207,7 +11206,8 @@ this.require.define({"lib/collection":function(exports, require, module){(functi
   module.exports = Collection;
 
 }).call(this);
-;}});this.require.define({"lib/color_picker":function(exports, require, module){(function() {
+;}});
+this.require.define({"lib/color_picker":function(exports, require, module){(function() {
   var Canvas, Color, ColorPicker, Display, Gradient, Input, Popup, Preview, Spectrum,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
@@ -11218,7 +11218,7 @@ this.require.define({"lib/collection":function(exports, require, module){(functi
 
   Color = (function() {
 
-    Color.regex = /(?:#([0-9a-f]{3,6})|rgba?\(([^)]+)\))/;
+    Color.regex = /(?:#([0-9a-f]{3,6})|rgba?\(([^)]+)\))/i;
 
     Color.fromHex = function(hex) {
       var b, g, r;
@@ -11233,21 +11233,21 @@ this.require.define({"lib/collection":function(exports, require, module){(functi
     };
 
     Color.fromString = function(str) {
-      var hex, match, rgba;
+      var a, b, g, hex, match, r, rgba, _ref;
       match = str.match(this.regex);
       if (!match) return null;
       if (hex = match[1]) {
         return this.fromHex(hex);
       } else if (rgba = match[2]) {
-        return (function(func, args, ctor) {
-          ctor.prototype = func.prototype;
-          var child = new ctor, result = func.apply(child, args);
-          return typeof result === "object" ? result : child;
-        })(this, rgba.split(/\s*,\s*/), function() {});
+        _ref = rgba.split(/\s*,\s*/), r = _ref[0], g = _ref[1], b = _ref[2], a = _ref[3];
+        return new this(r, g, b, a);
       }
     };
 
     function Color(r, g, b, a) {
+      if (r == null) r = 0;
+      if (g == null) g = 0;
+      if (b == null) b = 0;
       if (a == null) a = 1;
       this.r = parseInt(r, 10);
       this.g = parseInt(g, 10);
@@ -11696,7 +11696,8 @@ this.require.define({"lib/collection":function(exports, require, module){(functi
   module.exports.Preview = Preview;
 
 }).call(this);
-;}});this.require.define({"lib/gradient_picker":function(exports, require, module){(function() {
+;}});
+this.require.define({"lib/gradient_picker":function(exports, require, module){(function() {
   var Color, ColorPicker, ColorSlide, GradientPicker, Popup, Stop,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
@@ -11803,7 +11804,8 @@ this.require.define({"lib/collection":function(exports, require, module){(functi
   module.exports = GradientPicker;
 
 }).call(this);
-;}});this.require.define({"lib/popup":function(exports, require, module){(function() {
+;}});
+this.require.define({"lib/popup":function(exports, require, module){(function() {
   var Popup,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
@@ -11875,7 +11877,8 @@ this.require.define({"lib/collection":function(exports, require, module){(functi
   module.exports = Popup;
 
 }).call(this);
-;}});this.require.define({"lib/position_picker":function(exports, require, module){(function() {
+;}});
+this.require.define({"lib/position_picker":function(exports, require, module){(function() {
   var PositionPicker,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
@@ -11953,7 +11956,8 @@ this.require.define({"lib/collection":function(exports, require, module){(functi
   module.exports = PositionPicker;
 
 }).call(this);
-;}});(function() {
+;}});
+(function() {
   this.JST || (this.JST = {});
   this.JST["lib/views/color_picker"] = function(__obj) {
     if (!__obj) __obj = {};
@@ -12060,7 +12064,8 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = Canvas;
 
 }).call(this);
-;}});this.require.define({"app/controllers/element":function(exports, require, module){(function() {
+;}});
+this.require.define({"app/controllers/element":function(exports, require, module){(function() {
   var Element, Resizing,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
@@ -12073,7 +12078,11 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
     __extends(Element, _super);
 
     Element.prototype.defaults = {
-      position: 'absolute'
+      position: 'absolute',
+      width: 100,
+      height: 100,
+      left: 0,
+      top: 0
     };
 
     Element.prototype.events = {
@@ -12086,47 +12095,51 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
       this.selected = __bind(this.selected, this);
       if ('el' in attrs) this.el = attrs.el;
       Element.__super__.constructor.call(this);
-      this.resizing = new Resizing(this);
       this.el.addClass('element');
+      this.properties = {};
       this.set(this.defaults);
       this.set(attrs);
+      this.resizing = new Resizing(this);
     }
 
     Element.prototype.get = function(key) {
-      return (typeof this[key] === "function" ? this[key]() : void 0) || this.el.css(key);
+      return (typeof this[key] === "function" ? this[key]() : void 0) || this.properties[key];
     };
 
     Element.prototype.set = function(key, value) {
-      var k, v, _results;
+      var k, v;
       if (typeof key === 'object') {
-        _results = [];
         for (k in key) {
           v = key[k];
-          _results.push(this.set(k, v));
+          this.set(k, v);
         }
-        return _results;
       } else {
-        return (typeof this[key] === "function" ? this[key](value) : void 0) || this.el.css(key, value);
+        (typeof this[key] === "function" ? this[key](value) : void 0) || (this.properties[key] = value);
       }
+      return this.paint();
     };
 
-    Element.prototype.rotate = function(val) {
-      return this.el.transform({
-        rotate: val
-      });
+    Element.prototype.paint = function() {
+      return this.el.css(this.properties);
+    };
+
+    Element.prototype.toJSON = function() {
+      return {
+        properties: this.properties
+      };
     };
 
     Element.prototype.resize = function(area) {
-      this.el.css(area);
+      this.set(area);
       return this.el.trigger('resized', this);
     };
 
-    Element.prototype.move = function(toPosition) {
-      var position;
-      position = this.el.position();
-      position.left += toPosition.left;
-      position.top += toPosition.top;
-      this.el.css(position);
+    Element.prototype.moveBy = function(toPosition) {
+      var area;
+      area = this.area();
+      area.left += toPosition.left;
+      area.top += toPosition.top;
+      this.set(area);
       return this.el.trigger('moved', this);
     };
 
@@ -12139,16 +12152,11 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
     };
 
     Element.prototype.clone = function() {
-      var el;
-      el = this.el.clone();
-      el.empty();
-      return new this.constructor({
-        el: el
-      });
+      return new this.constructor(this.properties);
     };
 
     Element.prototype.select = function(e) {
-      if (this.isSelected()) {
+      if (this.selected()) {
         return this.el.trigger('deselect', [this, e != null ? e.shiftKey : void 0]);
       } else {
         return this.el.trigger('select', [this, e != null ? e.shiftKey : void 0]);
@@ -12156,20 +12164,21 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
     };
 
     Element.prototype.selected = function(bool) {
-      this.el.toggleClass('selected', bool);
-      this.el.attr('contenteditable', false);
-      return this.resizing.toggle(bool);
-    };
-
-    Element.prototype.isSelected = function() {
-      return this.el.hasClass('selected');
+      if (bool != null) {
+        this._selected = bool;
+        this.el.toggleClass('selected', bool);
+        this.resizing.toggle(bool);
+      }
+      return this._selected;
     };
 
     Element.prototype.area = function() {
       var area;
-      area = this.el.position();
-      area.height = this.el.height();
-      area.width = this.el.width();
+      area = {};
+      area.left = this.properties.left || 0;
+      area.top = this.properties.top || 0;
+      area.height = this.properties.height || 0;
+      area.width = this.properties.width || 0;
       return area;
     };
 
@@ -12189,7 +12198,8 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = Element;
 
 }).call(this);
-;}});this.require.define({"app/controllers/element/resizing":function(exports, require, module){(function() {
+;}});
+this.require.define({"app/controllers/element/resizing":function(exports, require, module){(function() {
   var Resizing, Thumb,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
@@ -12344,7 +12354,8 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = Resizing;
 
 }).call(this);
-;}});this.require.define({"app/controllers/elements/ellipsis":function(exports, require, module){(function() {
+;}});
+this.require.define({"app/controllers/elements/ellipsis":function(exports, require, module){(function() {
   var Element, Ellipsis,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -12371,7 +12382,8 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = Ellipsis;
 
 }).call(this);
-;}});this.require.define({"app/controllers/elements/input":function(exports, require, module){(function() {
+;}});
+this.require.define({"app/controllers/elements/input":function(exports, require, module){(function() {
   var CheckBox, Element, Input, Text, Textarea,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -12445,7 +12457,8 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   };
 
 }).call(this);
-;}});this.require.define({"app/controllers/elements/line":function(exports, require, module){(function() {
+;}});
+this.require.define({"app/controllers/elements/line":function(exports, require, module){(function() {
   var Element, Line,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -12469,7 +12482,8 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = Line;
 
 }).call(this);
-;}});this.require.define({"app/controllers/elements/rectangle":function(exports, require, module){(function() {
+;}});
+this.require.define({"app/controllers/elements/rectangle":function(exports, require, module){(function() {
   var Element, Rectangle,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -12493,7 +12507,8 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = Rectangle;
 
 }).call(this);
-;}});this.require.define({"app/controllers/elements/text":function(exports, require, module){(function() {
+;}});
+this.require.define({"app/controllers/elements/text":function(exports, require, module){(function() {
   var Element, Text,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -12517,7 +12532,8 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = Text;
 
 }).call(this);
-;}});this.require.define({"app/controllers/elements/triangle":function(exports, require, module){(function() {
+;}});
+this.require.define({"app/controllers/elements/triangle":function(exports, require, module){(function() {
   var Element, Triangle,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -12543,7 +12559,8 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = Rectangle;
 
 }).call(this);
-;}});this.require.define({"app/controllers/header":function(exports, require, module){(function() {
+;}});
+this.require.define({"app/controllers/header":function(exports, require, module){(function() {
   var Ellipsis, Header, Rectangle,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -12598,7 +12615,8 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = Header;
 
 }).call(this);
-;}});this.require.define({"app/controllers/inspector":function(exports, require, module){(function() {
+;}});
+this.require.define({"app/controllers/inspector":function(exports, require, module){(function() {
   var Background, Border, BoxShadow, Inspector, Opacity, TextShadow,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
@@ -12628,13 +12646,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 
     Inspector.prototype.render = function() {
       this.el.empty();
-      this.append(new Background({
-        stage: this.stage
-      }));
-      this.append(new Opacity({
-        stage: this.stage
-      }));
-      return this.append(new BoxShadow({
+      return this.append(new Opacity({
         stage: this.stage
       }));
     };
@@ -12646,7 +12658,8 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = Inspector;
 
 }).call(this);
-;}});this.require.define({"app/controllers/inspector/background":function(exports, require, module){(function() {
+;}});
+this.require.define({"app/controllers/inspector/background":function(exports, require, module){(function() {
   var Background, ColorPicker, List,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
@@ -12694,7 +12707,8 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = Background;
 
 }).call(this);
-;}});this.require.define({"app/controllers/inspector/border":function(exports, require, module){(function() {
+;}});
+this.require.define({"app/controllers/inspector/border":function(exports, require, module){(function() {
   var Border,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
@@ -12731,7 +12745,8 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = Border;
 
 }).call(this);
-;}});this.require.define({"app/controllers/inspector/box_shadow":function(exports, require, module){(function() {
+;}});
+this.require.define({"app/controllers/inspector/box_shadow":function(exports, require, module){(function() {
   var BoxShadow, BoxShadowEdit, BoxShadowList, Collection, ColorPicker, Popup, PositionPicker, Shadow,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
@@ -12922,7 +12937,8 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = BoxShadow;
 
 }).call(this);
-;}});this.require.define({"app/controllers/inspector/opacity":function(exports, require, module){(function() {
+;}});
+this.require.define({"app/controllers/inspector/opacity":function(exports, require, module){(function() {
   var Opacity,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
@@ -12965,7 +12981,8 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = Opacity;
 
 }).call(this);
-;}});this.require.define({"app/controllers/inspector/text_shadow":function(exports, require, module){(function() {
+;}});
+this.require.define({"app/controllers/inspector/text_shadow":function(exports, require, module){(function() {
   var ColorPicker, PositionPicker, Shadow, TextShadow,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -13068,8 +13085,9 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = TextShadow;
 
 }).call(this);
-;}});this.require.define({"app/controllers/stage":function(exports, require, module){(function() {
-  var Dragging, Ellipsis, KeyBindings, Rectangle, Resizing, SelectArea, Selection, Snapping, Stage,
+;}});
+this.require.define({"app/controllers/stage":function(exports, require, module){(function() {
+  var Dragging, Ellipsis, KeyBindings, Properties, Rectangle, Resizing, SelectArea, Selection, Snapping, Stage,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
@@ -13090,6 +13108,8 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   Rectangle = require('./elements/rectangle');
 
   Ellipsis = require('./elements/ellipsis');
+
+  Properties = require('app/models/properties');
 
   Stage = (function(_super) {
 
@@ -13124,19 +13144,12 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
         return _this.el.trigger('selection.change', _this);
       });
       this.rectangle1 = new Rectangle({
-        left: '200px',
-        top: '200px',
-        background: 'url(assets/blacky.png)'
+        left: 200,
+        top: 200,
+        backgroundImage: [new Properties.URL('assets/blacky.png')]
       });
-      this.rectangle2 = new Rectangle({
-        background: 'url(assets/whitey.png)',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.4), inset 0 1px #FFF'
-      });
-      this.ellipsis = new Ellipsis({
-        left: '100px',
-        top: '100px'
-      });
-      this.add(this.rectangle1, this.rectangle2, this.ellipsis);
+      this.rectangle2 = new Rectangle();
+      this.add(this.rectangle1, this.rectangle2);
     }
 
     Stage.prototype.add = function() {
@@ -13243,7 +13256,8 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = Stage;
 
 }).call(this);
-;}});this.require.define({"app/controllers/stage/dragging":function(exports, require, module){(function() {
+;}});
+this.require.define({"app/controllers/stage/dragging":function(exports, require, module){(function() {
   var CoordTitle, Dragging,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
@@ -13325,7 +13339,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
       this.selectionArea = this.stage.selection.area();
       difference = this.stage.snapping.snap(this.selectionArea, difference);
       this.moveCoordTitle(e);
-      return this.stage.selection.set('move', difference);
+      return this.stage.selection.set('moveBy', difference);
     };
 
     Dragging.prototype.drop = function(e) {
@@ -13353,7 +13367,8 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = Dragging;
 
 }).call(this);
-;}});this.require.define({"app/controllers/stage/key_bindings":function(exports, require, module){(function() {
+;}});
+this.require.define({"app/controllers/stage/key_bindings":function(exports, require, module){(function() {
   var KeyBindings,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
@@ -13401,7 +13416,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
       e.preventDefault();
       amount = -1;
       if (e.shiftKey) amount *= 5;
-      return this.stage.selection.set('move', {
+      return this.stage.selection.set('moveBy', {
         left: amount,
         top: 0
       });
@@ -13412,7 +13427,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
       e.preventDefault();
       amount = -1;
       if (e.shiftKey) amount *= 5;
-      return this.stage.selection.set('move', {
+      return this.stage.selection.set('moveBy', {
         left: 0,
         top: amount
       });
@@ -13423,7 +13438,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
       e.preventDefault();
       amount = 1;
       if (e.shiftKey) amount *= 5;
-      return this.stage.selection.set('move', {
+      return this.stage.selection.set('moveBy', {
         left: amount,
         top: 0
       });
@@ -13434,7 +13449,7 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
       e.preventDefault();
       amount = 1;
       if (e.shiftKey) amount *= 5;
-      return this.stage.selection.set('move', {
+      return this.stage.selection.set('moveBy', {
         left: 0,
         top: amount
       });
@@ -13477,7 +13492,8 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = KeyBindings;
 
 }).call(this);
-;}});this.require.define({"app/controllers/stage/resizing":function(exports, require, module){(function() {
+;}});
+this.require.define({"app/controllers/stage/resizing":function(exports, require, module){(function() {
   var AreaTitle, Resizing,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -13551,7 +13567,8 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = Resizing;
 
 }).call(this);
-;}});this.require.define({"app/controllers/stage/select_area":function(exports, require, module){(function() {
+;}});
+this.require.define({"app/controllers/stage/select_area":function(exports, require, module){(function() {
   var Area, SelectArea,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
@@ -13670,7 +13687,8 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = SelectArea;
 
 }).call(this);
-;}});this.require.define({"app/controllers/stage/selection":function(exports, require, module){(function() {
+;}});
+this.require.define({"app/controllers/stage/selection":function(exports, require, module){(function() {
   var Selection, max, min,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
@@ -13806,7 +13824,8 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = Selection;
 
 }).call(this);
-;}});this.require.define({"app/controllers/stage/snapping":function(exports, require, module){(function() {
+;}});
+this.require.define({"app/controllers/stage/snapping":function(exports, require, module){(function() {
   var SnapLine, Snapping,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -13945,7 +13964,8 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = Snapping;
 
 }).call(this);
-;}});this.require.define({"app/controllers/undo":function(exports, require, module){(function() {
+;}});
+this.require.define({"app/controllers/undo":function(exports, require, module){(function() {
   var Undo;
 
   Undo = (function() {
@@ -13963,7 +13983,8 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module["extends"] = Undo;
 
 }).call(this);
-;}});this.require.define({"app/index":function(exports, require, module){(function() {
+;}});
+this.require.define({"app/index":function(exports, require, module){(function() {
   var App, Header, Inspector, Stage,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -13999,156 +14020,128 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
   module.exports = App;
 
 }).call(this);
-;}});(function() {
-  var Background, Linear, Point, Position, Radial,
-    __slice = Array.prototype.slice,
+;}});
+this.require.define({"app/models/properties":function(exports, require, module){(function() {
+  var BackgroundImage, Property, URL, Values;
+
+  Property = require('./property');
+
+  Values = Property.Values;
+
+  BackgroundImage = require('./properties/background_image');
+
+  URL = BackgroundImage.URL;
+
+  module.exports = {
+    Property: Property,
+    Values: Values,
+    BackgroundImage: BackgroundImage,
+    URL: URL
+  };
+
+}).call(this);
+;}});
+this.require.define({"app/models/properties/background_image":function(exports, require, module){(function() {
+  var BackgroundImage, Color, ColorStop, LinearGradient, Position, Property, URL,
     __hasProp = Object.prototype.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
+    __slice = Array.prototype.slice;
+
+  Property = require('app/models/property');
+
+  Color = require('./color');
 
   Position = (function() {
 
-    Position.keywords = {
-      top: 0,
-      right: 90,
-      bottom: 180,
-      left: 270
-    };
-
-    Position.angleRegex = /(\d+)deg/;
-
-    Position.fromString = function(str) {
-      var a, h, parts, v;
-      parts = str.split(' ');
-      h = this.keywords(parts[0]) || parseFloat(parts[0]) || this.keywords.top;
-      v = this.keywords(parts[1]) || parseFloat(parts[1]) || this.keywords.bottom;
-      a = this.keywords(parts[2]) || parseFloat(parts[2]) || 0;
-      return new this(x, y, a);
-    };
-
-    function Position(x, y, angle) {
-      this.x = x;
-      this.y = y;
-      this.angle = angle;
+    function Position(angle) {
+      this.angle = angle != null ? angle : 0;
     }
 
     Position.prototype.toString = function() {
-      return '';
+      return "" + this.angle + "deg";
     };
 
     return Position;
 
   })();
 
-  Point = (function() {
+  ColorStop = (function() {
 
-    Point.fromString = function(str) {
-      var color, percent;
-      color = Color.fromString(str);
-      str = str.replace(Color.regex, '');
-      percent = parseFloat(str);
-      return new this(color, percent);
-    };
-
-    function Point(color, percent) {
+    function ColorStop(color, length) {
       this.color = color;
-      this.percent = percent;
+      this.length = length;
+      this.color || (this.color = new Color);
     }
 
-    return Point;
-
-  })();
-
-  Background = (function() {
-
-    function Background() {}
-
-    Background.linearRegex = /(-webkit-)?linear-gradient\((.+),?\);?/;
-
-    Background.radialRegex = /(-webkit-)?radial-gradient\((.+),?\);?/;
-
-    Background.fromString = function(str) {
-      var backgrounds, direction, match, p, params, points;
-      backgrounds = [];
-      if (str === 'none') return backgrounds;
-      while (str) {
-        if (match = str.match(this.linearRegex)) {
-          params = match[2];
-          params = params.split(',');
-          direction = Direction.fromString(params.unshift());
-          points = (function() {
-            var _i, _len, _results;
-            _results = [];
-            for (_i = 0, _len = params.length; _i < _len; _i++) {
-              p = params[_i];
-              _results.push(Point.fromString(p));
-            }
-            return _results;
-          })();
-          backgrounds.push(new Linear(direction, points));
-          str = str.replace(this.linearRegex, '');
-        } else if (match = str.match(this.radialRegex)) {
-          params = match[2];
-          params = params.split(',');
-          direction = Direction.fromString(params.unshift());
-          points = (function() {
-            var _i, _len, _results;
-            _results = [];
-            for (_i = 0, _len = params.length; _i < _len; _i++) {
-              p = params[_i];
-              _results.push(Point.fromString(p));
-            }
-            return _results;
-          })();
-          backgrounds.push((function(func, args, ctor) {
-            ctor.prototype = func.prototype;
-            var child = new ctor, result = func.apply(child, args);
-            return typeof result === "object" ? result : child;
-          })(Radial, [direction].concat(__slice.call(points)), function() {}));
-          str = str.replace(this.radialRegex, '');
-        }
+    ColorStop.prototype.toString = function() {
+      if (this.length) {
+        return "" + this.color + " " + this.length + "%";
+      } else {
+        return "" + this.color;
       }
-      return backgrounds;
     };
 
-    return Background;
+    return ColorStop;
 
   })();
 
-  Linear = (function(_super) {
+  BackgroundImage = (function(_super) {
 
-    __extends(Linear, _super);
+    __extends(BackgroundImage, _super);
 
-    function Linear() {
-      var points, position;
-      position = arguments[0], points = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-      this.position = position;
-      this.points = points;
+    function BackgroundImage() {
+      BackgroundImage.__super__.constructor.apply(this, arguments);
     }
 
-    Linear.prototype.toString = function() {
-      return "-webkit-linear-gradient(" + (this.position.toString()) + ")";
+    return BackgroundImage;
+
+  })(Property);
+
+  LinearGradient = (function(_super) {
+
+    __extends(LinearGradient, _super);
+
+    function LinearGradient(position, stops) {
+      this.position = position != null ? position : new Position;
+      this.stops = stops != null ? stops : [];
+    }
+
+    LinearGradient.prototype.toString = function() {
+      return "-webkit-linear-gradient(" + ([this.position].concat(__slice.call(this.stops)).join(',')) + ")";
     };
 
-    return Linear;
+    return LinearGradient;
 
-  })(Background);
+  })(BackgroundImage);
 
-  Radial = (function(_super) {
+  URL = (function(_super) {
 
-    __extends(Radial, _super);
+    __extends(URL, _super);
 
-    function Radial() {
-      var points, position;
-      position = arguments[0], points = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-      this.position = position;
-      this.points = points;
+    function URL(url) {
+      this.url = url;
     }
 
-    return Radial;
+    URL.prototype.toString = function() {
+      return "url('" + this.url + "')";
+    };
 
-  })(Background);
+    return URL;
+
+  })(BackgroundImage);
+
+  module.exports = BackgroundImage;
+
+  module.exports.LinearGradient = LinearGradient;
+
+  module.exports.URL = URL;
+
+  module.exports.Position = Position;
+
+  module.exports.ColorStop = ColorStop;
 
 }).call(this);
+;}});
 this.require.define({"app/models/properties/color":function(exports, require, module){(function() {
   var Color, ColorPicker;
 
@@ -14159,7 +14152,199 @@ this.require.define({"app/models/properties/color":function(exports, require, mo
   module.exports = Color;
 
 }).call(this);
-;}});this.require.define({"app/models/properties/shadow":function(exports, require, module){(function() {
+;}});
+this.require.define({"app/models/properties/parsing/background_image":function(exports, require, module){(function() {
+  var BackgroundImage, Color, ColorStop, LinearGradient, Position, URL,
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
+    __slice = Array.prototype.slice;
+
+  Color = require('./color');
+
+  Position = (function() {
+
+    Position.keywords = {
+      left: 0,
+      bottom: 90,
+      right: 180,
+      top: 270
+    };
+
+    Position.regex = /^(.+)\s+(.+)$/;
+
+    Position.fromRegex = function(keywords, angle) {
+      var posh, posv, types;
+      if (keywords != null) {
+        types = this.regex.exec(keywords);
+        posh = this.keywords[types[1]] || 0;
+        posv = this.keywords[types[2]] || 0;
+        if (posv) {
+          posh /= 2;
+          posv /= 2;
+        }
+        return new this(posh + posv);
+      } else {
+        return new this(angle);
+      }
+    };
+
+    function Position(angle) {
+      this.angle = angle != null ? angle : 0;
+    }
+
+    Position.prototype.toString = function() {
+      return "" + this.angle + "deg";
+    };
+
+    return Position;
+
+  })();
+
+  ColorStop = (function() {
+
+    ColorStop.regex = /^(?:,?\s*(#(?:[0-9a-f]{3,6})|rgba?\((?:[^)]+)\))(?:\s+(-?[0-9]*\.?[0-9]+)%)?\s*)*/;
+
+    ColorStop.multipleFromString = function(str) {
+      var match, matches, _i, _len, _results;
+      matches = [];
+      while (match = this.regex.exec(str)) {
+        matches.push(match);
+        if (regex.lastIndex === match.index) regex.lastIndex++;
+      }
+      _results = [];
+      for (_i = 0, _len = matches.length; _i < _len; _i++) {
+        match = matches[_i];
+        _results.push(this.fromRegex(match[1], match[2]));
+      }
+      return _results;
+    };
+
+    ColorStop.fromRegex = function(color, length) {
+      color = Color.fromString(color);
+      length = parseFloat(length) || 0;
+      return new this(color, length);
+    };
+
+    function ColorStop(color, length) {
+      this.color = color;
+      this.length = length;
+    }
+
+    ColorStop.prototype.toString = function() {
+      if (this.length) {
+        return "" + this.color + " " + this.length + "%";
+      } else {
+        return "" + this.color;
+      }
+    };
+
+    return ColorStop;
+
+  })();
+
+  BackgroundImage = (function() {
+
+    function BackgroundImage() {}
+
+    BackgroundImage.multipleFromString = function(str) {
+      var backgrounds, bg;
+      backgrounds = [];
+      while (str.length) {
+        if (bg = LinearGradient.fromString(str)) {
+          backgrounds.push(bg);
+          str.replace(LinearGradient.regex, '');
+        } else if (bg = URL.fromString(str)) {
+          backgrounds.push(bg);
+          str.replace(URL.regex, '');
+        } else {
+          throw 'Invalid image';
+        }
+        str.replace(/^,?\s*/, '');
+      }
+      return backgrounds;
+    };
+
+    return BackgroundImage;
+
+  })();
+
+  LinearGradient = (function(_super) {
+
+    __extends(LinearGradient, _super);
+
+    LinearGradient.regex = /^(?:-webkit-)?linear-gradient\((?:(?:((?:top\s+|bottom\s+)?(?:right|left)|(?:right\s+|left\s+)?(?:top|bottom))|((?:-?[0-9]*\.?[0-9]+)deg|(?:0)))\s*,)?(.+)\);?/i;
+
+    LinearGradient.fromString = function(str) {
+      var match, position, stops;
+      match = str.match(this.regex);
+      if (!match) return;
+      position = Position.fromRegex(match[1], match[2]);
+      stops = ColorStop.multipleFromString(match[3]);
+      return new this(position, stops);
+    };
+
+    function LinearGradient(position, stops) {
+      this.position = position != null ? position : new Position;
+      this.stops = stops != null ? stops : [];
+    }
+
+    LinearGradient.prototype.toString = function() {
+      return "-webkit-linear-gradient(" + ([this.position].concat(__slice.call(this.stops)).join(',')) + ")";
+    };
+
+    return LinearGradient;
+
+  })(BackgroundImage);
+
+  URL = (function(_super) {
+
+    __extends(URL, _super);
+
+    URL.regex = /^url\(?:(?:"|')?(.+)\1\)/;
+
+    URL.fromString = function(str) {
+      var match;
+      match = str.match(this.regex);
+      if (!match) return;
+      return new this(match[1]);
+    };
+
+    function URL(url) {
+      this.url = url;
+    }
+
+    URL.prototype.toString = function() {
+      return "url('" + this.url + "')";
+    };
+
+    return URL;
+
+  })(BackgroundImage);
+
+  module.exports = BackgroundImage;
+
+  module.exports.LinearGradient = LinearGradient;
+
+  module.exports.URL = URL;
+
+  module.exports.Position = Position;
+
+  module.exports.ColorStop = ColorStop;
+
+}).call(this);
+;}});
+this.require.define({"app/models/properties/parsing/color":function(exports, require, module){(function() {
+  var Color, ColorPicker;
+
+  ColorPicker = require('lib/color_picker');
+
+  Color = ColorPicker.Color;
+
+  module.exports = Color;
+
+}).call(this);
+;}});
+this.require.define({"app/models/properties/parsing/shadow":function(exports, require, module){(function() {
   var Color, Shadow;
 
   Color = require('./color');
@@ -14236,7 +14421,90 @@ this.require.define({"app/models/properties/color":function(exports, require, mo
   module.exports = Shadow;
 
 }).call(this);
-;}});(function() {
+;}});
+this.require.define({"app/models/properties/shadow":function(exports, require, module){(function() {
+  var Color, Property, Shadow,
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  Property = require('app/models/property');
+
+  Color = require('./color');
+
+  Shadow = (function(_super) {
+
+    __extends(Shadow, _super);
+
+    function Shadow(properties) {
+      var k, v;
+      if (properties == null) properties = {};
+      for (k in properties) {
+        v = properties[k];
+        this[k] = v;
+      }
+      this.x || (this.x = 0);
+      this.y || (this.y = 0);
+      this.color || (this.color = new Color(0, 0, 0, 0.3));
+    }
+
+    Shadow.prototype.toString = function() {
+      var result;
+      result = [];
+      if (this.inset) result.push('inset');
+      result.push(this.x + 'px');
+      result.push(this.y + 'px');
+      if (this.blur != null) result.push(this.blur + 'px');
+      if (this.spread != null) result.push(this.spread + 'px');
+      result.push(this.color.toString());
+      return result.join(' ');
+    };
+
+    return Shadow;
+
+  })(Property);
+
+  module.exports = Shadow;
+
+}).call(this);
+;}});
+this.require.define({"app/models/property":function(exports, require, module){(function() {
+  var Collection, Property, Values,
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  Collection = require('lib/collection');
+
+  Values = (function(_super) {
+
+    __extends(Values, _super);
+
+    function Values() {
+      Values.__super__.constructor.apply(this, arguments);
+    }
+
+    Values.prototype.toString = function() {
+      return this.join(', ');
+    };
+
+    return Values;
+
+  })(Collection);
+
+  Property = (function() {
+
+    function Property() {}
+
+    return Property;
+
+  })();
+
+  module.exports = Property;
+
+  module.exports.Values = Values;
+
+}).call(this);
+;}});
+(function() {
   this.JST || (this.JST = {});
   this.JST["app/views/header"] = function(__obj) {
     if (!__obj) __obj = {};

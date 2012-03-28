@@ -12,7 +12,7 @@ Phase 1:
 * Inspector panel (Element/Text/Ruler)
   * ½ Background
   * Border
-  * ½ Shadow
+  * ✓ Shadow
   * Font alignment
   * Font family/size/style/color
   * ✓ Text-shadow
@@ -28,7 +28,6 @@ Phase 2:
 * Undo/redo (on set())
 * Resizing snapping
 * Element snapping
-* Canvas snapping
 * Pen tool
 * Layers
 * Scaling stage & size

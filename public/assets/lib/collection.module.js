@@ -132,6 +132,10 @@ this.require.define({"lib/collection":function(exports, require, module){(functi
       return this[this.length - 1];
     };
 
+    Collection.prototype.valueOf = function() {
+      return this.slice(0);
+    };
+
     return Collection;
 
   })(Array);

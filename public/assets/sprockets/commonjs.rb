@@ -17,9 +17,7 @@ module Sprockets
 
     def evaluate(scope, locals, &block)
       if File.extname(scope.logical_path) == '.module'
-        path = scope.logical_path
-        path = File.join(File.dirname(path), File.basename(path, '.module'))
-        path = path.inspect
+        path = scope.logical_path.chomp('.module').inspect
 
         scope.require_asset 'sprockets/commonjs'
 

@@ -32,7 +32,6 @@ class TextShadow extends Spine.Controller
     @disabled = not @stage.selection.isAny()
 
     @shadow = @stage.selection.get('textShadow')
-    @shadow = Shadow.fromString(@shadow)[0] if @shadow
     @shadow or= new Shadow
 
     @html JST['app/views/inspector/text_shadow'](@)
@@ -77,6 +76,6 @@ class TextShadow extends Spine.Controller
     @shadow.y    = parseFloat(@$y.val())
     @shadow.blur = parseFloat(@$blur.val())
 
-    @stage.selection.set('textShadow', @shadow.toString())
+    @stage.selection.set('textShadow', @shadow)
 
 module.exports =  TextShadow

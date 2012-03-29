@@ -1,30 +1,35 @@
-ColorPicker = require('lib/color_picker')
+Collection  = require('lib/collection')
+Color       = require('app/models/properties/color')
+BackgroundImage = require('app/models/properties/background_image')
 
 class List
 
 class Background extends Spine.Controller
   className: 'background'
 
-  styles: [
-    'background',
-    'backgroundColor',
-    'backgroundImage',
-    'backgroundRepeat',
-    'backgroundSize'
-  ]
+  # styles: [
+  #   'background',
+  #   'backgroundColor',
+  #   'backgroundImage',
+  #   'backgroundRepeat',
+  #   'backgroundSize'
+  # ]
+  #
 
   constructor: ->
     super
     @render()
 
   render: =>
-    @values = {}
+    @backgroundImage = @stage.selection.get('backgroundImage')
+    @backgroundImage = new Collection(@backgroundImage)
 
-    for style in @styles
-      @values[style] = @stage.selection.get(style)
+    @backgroundColor = @stage.selection.get('backgroundColor')
 
     @el.empty()
     @el.append('<h3>Background</h3>')
 
+  set: =>
+    @stage.selection.set('backgroundImage', @backgroundImage.valueOf())
 
 module.exports = Background

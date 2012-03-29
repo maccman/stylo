@@ -215,7 +215,6 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
         _this = this;
       this.disabled = !this.stage.selection.isAny();
       shadows = this.stage.selection.get('boxShadow');
-      shadows = Shadow.fromString(shadows);
       this.shadows = new Collection(shadows);
       this.current = this.shadows.first();
       this.shadows.change(this.set);
@@ -239,7 +238,7 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
 
     BoxShadow.prototype.set = function(shadow) {
       if (shadow) if (!this.shadows.include(shadow)) this.shadows.push(shadow);
-      return this.stage.selection.set('boxShadow', this.shadows.join(', '));
+      return this.stage.selection.set('boxShadow', this.shadows.valueOf());
     };
 
     return BoxShadow;

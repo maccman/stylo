@@ -11199,6 +11199,10 @@ this.require.define({"lib/collection":function(exports, require, module){(functi
       return this[this.length - 1];
     };
 
+    Collection.prototype.valueOf = function() {
+      return this.slice(0);
+    };
+
     return Collection;
 
   })(Array);
@@ -12646,7 +12650,10 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
 
     Inspector.prototype.render = function() {
       this.el.empty();
-      return this.append(new Opacity({
+      this.append(new Opacity({
+        stage: this.stage
+      }));
+      return this.append(new BoxShadow({
         stage: this.stage
       }));
     };
@@ -12660,12 +12667,16 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
 }).call(this);
 ;}});
 this.require.define({"app/controllers/inspector/background":function(exports, require, module){(function() {
-  var Background, ColorPicker, List,
+  var Background, BackgroundImage, Collection, Color, List,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  ColorPicker = require('lib/color_picker');
+  Collection = require('lib/collection');
+
+  Color = require('app/models/properties/color');
+
+  BackgroundImage = require('app/models/properties/background_image');
 
   List = (function() {
 
@@ -12681,23 +12692,22 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
 
     Background.prototype.className = 'background';
 
-    Background.prototype.styles = ['background', 'backgroundColor', 'backgroundImage', 'backgroundRepeat', 'backgroundSize'];
-
     function Background() {
+      this.set = __bind(this.set, this);
       this.render = __bind(this.render, this);      Background.__super__.constructor.apply(this, arguments);
       this.render();
     }
 
     Background.prototype.render = function() {
-      var style, _i, _len, _ref;
-      this.values = {};
-      _ref = this.styles;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        style = _ref[_i];
-        this.values[style] = this.stage.selection.get(style);
-      }
+      this.backgroundImage = this.stage.selection.get('backgroundImage');
+      this.backgroundImage = new Collection(this.backgroundImage);
+      this.backgroundColor = this.stage.selection.get('backgroundColor');
       this.el.empty();
       return this.el.append('<h3>Background</h3>');
+    };
+
+    Background.prototype.set = function() {
+      return this.stage.selection.set('backgroundImage', this.backgroundImage.valueOf());
     };
 
     return Background;
@@ -12903,7 +12913,6 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
         _this = this;
       this.disabled = !this.stage.selection.isAny();
       shadows = this.stage.selection.get('boxShadow');
-      shadows = Shadow.fromString(shadows);
       this.shadows = new Collection(shadows);
       this.current = this.shadows.first();
       this.shadows.change(this.set);
@@ -12927,7 +12936,7 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
 
     BoxShadow.prototype.set = function(shadow) {
       if (shadow) if (!this.shadows.include(shadow)) this.shadows.push(shadow);
-      return this.stage.selection.set('boxShadow', this.shadows.join(', '));
+      return this.stage.selection.set('boxShadow', this.shadows.valueOf());
     };
 
     return BoxShadow;
@@ -13028,7 +13037,6 @@ this.require.define({"app/controllers/inspector/text_shadow":function(exports, r
       var _ref;
       this.disabled = !this.stage.selection.isAny();
       this.shadow = this.stage.selection.get('textShadow');
-      if (this.shadow) this.shadow = Shadow.fromString(this.shadow)[0];
       this.shadow || (this.shadow = new Shadow);
       this.html(JST['app/views/inspector/text_shadow'](this));
       this.$('input').attr('disabled', this.disabled);
@@ -13075,7 +13083,7 @@ this.require.define({"app/controllers/inspector/text_shadow":function(exports, r
       this.shadow.x = parseFloat(this.$x.val());
       this.shadow.y = parseFloat(this.$y.val());
       this.shadow.blur = parseFloat(this.$blur.val());
-      return this.stage.selection.set('textShadow', this.shadow.toString());
+      return this.stage.selection.set('textShadow', this.shadow);
     };
 
     return TextShadow;

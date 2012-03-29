@@ -117,7 +117,6 @@ class BoxShadow extends Spine.Controller
     @disabled = not @stage.selection.isAny()
 
     shadows  = @stage.selection.get('boxShadow')
-    shadows  = Shadow.fromString(shadows)
 
     @shadows = new Collection(shadows)
     @current = @shadows.first()
@@ -148,6 +147,6 @@ class BoxShadow extends Spine.Controller
     if shadow
       @shadows.push(shadow) unless @shadows.include(shadow)
 
-    @stage.selection.set('boxShadow', @shadows.join(', '))
+    @stage.selection.set('boxShadow', @shadows.valueOf())
 
 module.exports = BoxShadow

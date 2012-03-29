@@ -44,4 +44,7 @@ class Collection extends Array
   last: ->
     @[@length - 1]
 
+  valueOf: ->
+    @slice(0)
+
 module.exports = Collection

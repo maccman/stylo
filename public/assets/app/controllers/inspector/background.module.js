@@ -59,12 +59,16 @@
   return this.require;
 }).call(this);
 this.require.define({"app/controllers/inspector/background":function(exports, require, module){(function() {
-  var Background, ColorPicker, List,
+  var Background, BackgroundImage, Collection, Color, List,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  ColorPicker = require('lib/color_picker');
+  Collection = require('lib/collection');
+
+  Color = require('app/models/properties/color');
+
+  BackgroundImage = require('app/models/properties/background_image');
 
   List = (function() {
 
@@ -80,23 +84,22 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
 
     Background.prototype.className = 'background';
 
-    Background.prototype.styles = ['background', 'backgroundColor', 'backgroundImage', 'backgroundRepeat', 'backgroundSize'];
-
     function Background() {
+      this.set = __bind(this.set, this);
       this.render = __bind(this.render, this);      Background.__super__.constructor.apply(this, arguments);
       this.render();
     }
 
     Background.prototype.render = function() {
-      var style, _i, _len, _ref;
-      this.values = {};
-      _ref = this.styles;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        style = _ref[_i];
-        this.values[style] = this.stage.selection.get(style);
-      }
+      this.backgroundImage = this.stage.selection.get('backgroundImage');
+      this.backgroundImage = new Collection(this.backgroundImage);
+      this.backgroundColor = this.stage.selection.get('backgroundColor');
       this.el.empty();
       return this.el.append('<h3>Background</h3>');
+    };
+
+    Background.prototype.set = function() {
+      return this.stage.selection.set('backgroundImage', this.backgroundImage.valueOf());
     };
 
     return Background;

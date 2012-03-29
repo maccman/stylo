@@ -10,7 +10,7 @@ gem 'coffee-script'
 gem 'eco'
 gem 'uglifier'
 gem 'sprockets'
-gem 'sprockets-commonjs'
+gem 'sprockets-commonjs', :git => 'git://github.com/maccman/sprockets-commonjs.git'
 gem 'stylus'
 
 group :test, :development do

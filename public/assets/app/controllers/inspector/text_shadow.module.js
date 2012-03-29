@@ -104,7 +104,6 @@ this.require.define({"app/controllers/inspector/text_shadow":function(exports, r
       var _ref;
       this.disabled = !this.stage.selection.isAny();
       this.shadow = this.stage.selection.get('textShadow');
-      if (this.shadow) this.shadow = Shadow.fromString(this.shadow)[0];
       this.shadow || (this.shadow = new Shadow);
       this.html(JST['app/views/inspector/text_shadow'](this));
       this.$('input').attr('disabled', this.disabled);
@@ -151,7 +150,7 @@ this.require.define({"app/controllers/inspector/text_shadow":function(exports, r
       this.shadow.x = parseFloat(this.$x.val());
       this.shadow.y = parseFloat(this.$y.val());
       this.shadow.blur = parseFloat(this.$blur.val());
-      return this.stage.selection.set('textShadow', this.shadow.toString());
+      return this.stage.selection.set('textShadow', this.shadow);
     };
 
     return TextShadow;

@@ -88,7 +88,10 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
 
     Inspector.prototype.render = function() {
       this.el.empty();
-      return this.append(new Opacity({
+      this.append(new Opacity({
+        stage: this.stage
+      }));
+      return this.append(new BoxShadow({
         stage: this.stage
       }));
     };

@@ -4,7 +4,6 @@ Opacity    = require('./inspector/opacity')
 BoxShadow  = require('./inspector/box_shadow')
 TextShadow = require('./inspector/text_shadow')
 
-
 class Inspector extends Spine.Controller
   className: 'inspector'
 
@@ -18,7 +17,7 @@ class Inspector extends Spine.Controller
     # @append(new Background(stage: @stage))
     # @append(new Border(stage: @stage))
     @append(new Opacity(stage: @stage))
-    # @append(new BoxShadow(stage: @stage))
+    @append(new BoxShadow(stage: @stage))
     # @append(new TextShadow(stage: @stage))
 
 module.exports = Inspector

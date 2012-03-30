@@ -48,6 +48,7 @@ class Color
 
   set: (values) ->
     @[key] = value for key, value of values
+    this
 
   rgb: ->
     result =
@@ -94,6 +95,10 @@ class Canvas extends Spine.Controller
   drop: =>
     @el.unbind('mousemove', @over)
     $(document).unbind('mouseup', @drop)
+
+  release: ->
+    super
+    @drop()
 
 class Gradient extends Canvas
   className: 'gradient'
@@ -172,6 +177,33 @@ class Spectrum extends Canvas
   setColor: (@color) ->
     @render()
 
+class Alpha extends Canvas
+  className: 'alpha'
+  width: 25
+  height: 250
+
+  constructor: ->
+    super
+    @color or= new Color(0, 0, 0)
+    @setColor(@color)
+
+  render: ->
+    @ctx.clearRect(0, 0, @width, @height)
+
+    gradient = @ctx.createLinearGradient(0, 0, 0, @height)
+    gradient.addColorStop(0, @color.clone().set(a: 0).toString())
+    gradient.addColorStop(0.9, @color.clone().set(a: 1).toString())
+
+    @ctx.fillStyle = gradient
+    @ctx.fillRect(0, 0, @width, @height)
+
+  setColor: (@color) ->
+    @render()
+
+  val: (x, y) ->
+     data = @ctx.getImageData(x, y, 1, 1).data
+     @color.set(a: Math.round((data[3] / 255) * 100) / 100)
+
 class Display extends Spine.Controller
   tag: 'article'
 
@@ -229,7 +261,7 @@ class Display extends Spine.Controller
 
 class ColorPicker extends Popup
   className: 'colorPicker'
-  width: 390
+  width: 425
 
   events:
     'click .save': 'save'
@@ -249,28 +281,37 @@ class ColorPicker extends Popup
 
     @gradient = new Gradient(color: @color)
     @spectrum = new Spectrum(color: @color)
+    @alpha    = new Alpha(color: @color)
     @display  = new Display(color: @color, original: @original)
 
     @gradient.bind 'change', (color) =>
       @color.set(color.rgb())
       @display.setColor(@color)
+      @alpha.setColor(@color)
       @change()
 
     @spectrum.bind 'change', (color) =>
       @color.set(color.rgb())
       @gradient.setColor(@color)
       @display.setColor(@color)
+      @alpha.setColor(@color)
+      @change()
+
+    @alpha.bind 'change', (color) =>
+      @color.set(a: color.a)
+      @display.setColor(@color)
       @change()
 
     @display.bind 'change', (color) =>
       @setColor(color)
 
-    @append(@gradient, @spectrum, @display)
+    @append(@gradient, @spectrum, @alpha, @display)
 
   setColor: (@color) ->
     @display.setColor(@color)
     @gradient.setColor(@color)
     @spectrum.setColor(@color)
+    @alpha.setColor(@color)
     @change()
 
   change: (color = @color) ->
@@ -286,6 +327,12 @@ class ColorPicker extends Popup
     @close()
     @trigger 'cancel'
     @trigger 'change', @original
+
+  release: ->
+    super
+    @gradient.release()
+    @spectrum.release()
+    @display.release()
 
 class Input extends Spine.Controller
   className: 'colorInput'
@@ -328,15 +375,16 @@ class Preview extends Spine.Controller
   constructor: ->
     super
     @color  or= new Color
-    @picker = new ColorPicker(color: @color)
     @inner  = $('<div />').addClass('inner')
     @append @inner
     @render()
 
   render: ->
-    @inner.css(background: @color.toString())
+    @inner.css(background: @color)
 
   open: =>
+    @picker = new ColorPicker(color: @color)
+
     @picker.bind 'change', (color) =>
       @color.set color
       @trigger 'change', @color

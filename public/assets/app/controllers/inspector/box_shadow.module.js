@@ -183,7 +183,9 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
     };
 
     BoxShadowList.prototype.addShadow = function() {
-      this.shadows.push(this.current = new Shadow);
+      this.shadows.push(this.current = new Shadow({
+        blur: 3
+      }));
       this.trigger('change', this.current);
       return false;
     };
@@ -211,11 +213,10 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
     }
 
     BoxShadow.prototype.render = function() {
-      var shadows,
-        _this = this;
+      var _this = this;
       this.disabled = !this.stage.selection.isAny();
-      shadows = this.stage.selection.get('boxShadow');
-      this.shadows = new Collection(shadows);
+      this.shadows = this.stage.selection.get('boxShadow');
+      this.shadows = new Collection(this.shadows);
       this.current = this.shadows.first();
       this.shadows.change(this.set);
       this.el.empty();

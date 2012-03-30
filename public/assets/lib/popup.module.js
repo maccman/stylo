@@ -114,8 +114,8 @@ this.require.define({"lib/popup":function(exports, require, module){(function() 
       $('body').unbind('mousedown', this.remove);
       this.el.gfxRaisedOut();
       return this.el.queueNext(function() {
-        _this.el.remove();
-        return _this.trigger('hide');
+        _this.release();
+        return _this.trigger('close');
       });
     };
 

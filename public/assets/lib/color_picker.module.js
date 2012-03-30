@@ -59,7 +59,7 @@
   return this.require;
 }).call(this);
 this.require.define({"lib/color_picker":function(exports, require, module){(function() {
-  var Canvas, Color, ColorPicker, Display, Gradient, Input, Popup, Preview, Spectrum,
+  var Alpha, Canvas, Color, ColorPicker, Display, Gradient, Input, Popup, Preview, Spectrum,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
@@ -122,13 +122,12 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
     };
 
     Color.prototype.set = function(values) {
-      var key, value, _results;
-      _results = [];
+      var key, value;
       for (key in values) {
         value = values[key];
-        _results.push(this[key] = value);
+        this[key] = value;
       }
-      return _results;
+      return this;
     };
 
     Color.prototype.rgb = function() {
@@ -196,6 +195,11 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
     Canvas.prototype.drop = function() {
       this.el.unbind('mousemove', this.over);
       return $(document).unbind('mouseup', this.drop);
+    };
+
+    Canvas.prototype.release = function() {
+      Canvas.__super__.release.apply(this, arguments);
+      return this.drop();
     };
 
     return Canvas;
@@ -299,6 +303,53 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
   })(Canvas);
 
+  Alpha = (function(_super) {
+
+    __extends(Alpha, _super);
+
+    Alpha.prototype.className = 'alpha';
+
+    Alpha.prototype.width = 25;
+
+    Alpha.prototype.height = 250;
+
+    function Alpha() {
+      Alpha.__super__.constructor.apply(this, arguments);
+      this.color || (this.color = new Color(0, 0, 0));
+      this.setColor(this.color);
+    }
+
+    Alpha.prototype.render = function() {
+      var gradient;
+      this.ctx.clearRect(0, 0, this.width, this.height);
+      gradient = this.ctx.createLinearGradient(0, 0, 0, this.height);
+      gradient.addColorStop(0, this.color.clone().set({
+        a: 0
+      }).toString());
+      gradient.addColorStop(0.9, this.color.clone().set({
+        a: 1
+      }).toString());
+      this.ctx.fillStyle = gradient;
+      return this.ctx.fillRect(0, 0, this.width, this.height);
+    };
+
+    Alpha.prototype.setColor = function(color) {
+      this.color = color;
+      return this.render();
+    };
+
+    Alpha.prototype.val = function(x, y) {
+      var data;
+      data = this.ctx.getImageData(x, y, 1, 1).data;
+      return this.color.set({
+        a: Math.round((data[3] / 255) * 100) / 100
+      });
+    };
+
+    return Alpha;
+
+  })(Canvas);
+
   Display = (function(_super) {
 
     __extends(Display, _super);
@@ -372,7 +423,7 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
     ColorPicker.prototype.className = 'colorPicker';
 
-    ColorPicker.prototype.width = 390;
+    ColorPicker.prototype.width = 425;
 
     ColorPicker.prototype.events = {
       'click .save': 'save',
@@ -399,6 +450,9 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
       this.spectrum = new Spectrum({
         color: this.color
       });
+      this.alpha = new Alpha({
+        color: this.color
+      });
       this.display = new Display({
         color: this.color,
         original: this.original
@@ -406,18 +460,27 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
       this.gradient.bind('change', function(color) {
         _this.color.set(color.rgb());
         _this.display.setColor(_this.color);
+        _this.alpha.setColor(_this.color);
         return _this.change();
       });
       this.spectrum.bind('change', function(color) {
         _this.color.set(color.rgb());
         _this.gradient.setColor(_this.color);
         _this.display.setColor(_this.color);
+        _this.alpha.setColor(_this.color);
+        return _this.change();
+      });
+      this.alpha.bind('change', function(color) {
+        _this.color.set({
+          a: color.a
+        });
+        _this.display.setColor(_this.color);
         return _this.change();
       });
       this.display.bind('change', function(color) {
         return _this.setColor(color);
       });
-      return this.append(this.gradient, this.spectrum, this.display);
+      return this.append(this.gradient, this.spectrum, this.alpha, this.display);
     };
 
     ColorPicker.prototype.setColor = function(color) {
@@ -425,6 +488,7 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
       this.display.setColor(this.color);
       this.gradient.setColor(this.color);
       this.spectrum.setColor(this.color);
+      this.alpha.setColor(this.color);
       return this.change();
     };
 
@@ -444,6 +508,13 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
       this.close();
       this.trigger('cancel');
       return this.trigger('change', this.original);
+    };
+
+    ColorPicker.prototype.release = function() {
+      ColorPicker.__super__.release.apply(this, arguments);
+      this.gradient.release();
+      this.spectrum.release();
+      return this.display.release();
     };
 
     return ColorPicker;
@@ -510,9 +581,6 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
     function Preview() {
       this.open = __bind(this.open, this);      Preview.__super__.constructor.apply(this, arguments);
       this.color || (this.color = new Color);
-      this.picker = new ColorPicker({
-        color: this.color
-      });
       this.inner = $('<div />').addClass('inner');
       this.append(this.inner);
       this.render();
@@ -520,12 +588,15 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
     Preview.prototype.render = function() {
       return this.inner.css({
-        background: this.color.toString()
+        background: this.color
       });
     };
 
     Preview.prototype.open = function() {
       var _this = this;
+      this.picker = new ColorPicker({
+        color: this.color
+      });
       this.picker.bind('change', function(color) {
         _this.color.set(color);
         _this.trigger('change', _this.color);

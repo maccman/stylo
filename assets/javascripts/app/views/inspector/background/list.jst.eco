@@ -1,0 +1,13 @@
+<div class="items">
+  <% for background in @backgrounds: %>
+    <div class="item">
+      <div class="preview" style="background: <%= background.toString() %>"></div>
+      <span><%= background.toString() %></span>
+    </div>
+  <% end %>
+</div>
+
+<footer>
+  <button class="plus">+</button>
+  <button class="minus">-</button>
+</footer>

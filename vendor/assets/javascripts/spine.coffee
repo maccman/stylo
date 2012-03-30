@@ -400,8 +400,6 @@ class Controller extends Module
     @el.addClass(@className) if @className
     @el.attr(@attributes) if @attributes
 
-    @release -> @el.remove()
-
     @events = @constructor.events unless @events
     @elements = @constructor.elements unless @elements
 
@@ -410,11 +408,9 @@ class Controller extends Module
 
     super
 
-  release: (callback) =>
-    if typeof callback is 'function'
-      @bind 'release', callback
-    else
-      @trigger 'release'
+  release: ->
+    @el.remove()
+    @unbind()
 
   $: (selector) -> $(selector, @el)
 

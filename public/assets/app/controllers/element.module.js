@@ -75,7 +75,8 @@ this.require.define({"app/controllers/element":function(exports, require, module
       width: 100,
       height: 100,
       left: 0,
-      top: 0
+      top: 0,
+      opacity: 1
     };
 
     Element.prototype.events = {

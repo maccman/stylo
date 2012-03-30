@@ -7,6 +7,7 @@ class Element extends Spine.Controller
     height: 100
     left: 0
     top: 0
+    opacity: 1
 
   events:
     'mousedown': 'select'

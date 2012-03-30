@@ -55,6 +55,7 @@ body {
   -moz-box-align: stretch;
   -moz-box-pack: start;
   padding: 6px;
+  width: 425px;
 }
 .colorPicker canvas {
   display: block;
@@ -76,14 +77,16 @@ body {
   width: 60px;
 }
 .colorPicker .spectrum,
-.colorPicker .gradient {
+.colorPicker .gradient,
+.colorPicker .alpha {
   cursor: pointer;
-}
-.colorPicker .spectrum {
-  margin: 0 6px 0 0;
 }
 .colorPicker .preview {
   background: url("grid.png") repeat;
+}
+.colorPicker .alpha {
+  background: url("grid.png") repeat;
+  margin: 0 6px 0 0;
 }
 .colorPicker .preview {
   margin: 5px 0 10px;
@@ -413,7 +416,7 @@ body {
   -webkit-box-shadow: 0 4px 8px rgba(0,0,0,0.24);
   box-shadow: 0 4px 8px rgba(0,0,0,0.24);
   background: #fff;
-  width: 400px;
+  min-width: 400px;
   color: #000;
 }
 .popup article {

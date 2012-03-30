@@ -28,8 +28,8 @@ class Popup extends Spine.Controller
     $('body').unbind('mousedown', @remove)
     @el.gfxRaisedOut()
     @el.queueNext =>
-      @el.remove()
-      @trigger 'hide'
+      @release()
+      @trigger 'close'
 
   remove: (e) =>
     # Hide unless the click was on the popup

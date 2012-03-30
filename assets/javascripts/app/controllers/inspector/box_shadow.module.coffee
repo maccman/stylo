@@ -96,7 +96,7 @@ class BoxShadowList extends Spine.Controller
     false
 
   addShadow: ->
-    @shadows.push(@current = new Shadow)
+    @shadows.push(@current = new Shadow(blur: 3))
     @trigger 'change', @current
     false
 
@@ -116,9 +116,8 @@ class BoxShadow extends Spine.Controller
   render: ->
     @disabled = not @stage.selection.isAny()
 
-    shadows  = @stage.selection.get('boxShadow')
-
-    @shadows = new Collection(shadows)
+    @shadows  = @stage.selection.get('boxShadow')
+    @shadows = new Collection(@shadows)
     @current = @shadows.first()
     @shadows.change @set
 

@@ -9330,8 +9330,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     __slice = Array.prototype.slice,
     __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = Object.prototype.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Events = {
     bind: function(ev, callback) {
@@ -9910,7 +9909,6 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     Controller.prototype.tag = 'div';
 
     function Controller(options) {
-      this.release = __bind(this.release, this);
       var key, value, _ref;
       this.options = options;
       _ref = this.options;
@@ -9922,9 +9920,6 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
       this.el = $(this.el);
       if (this.className) this.el.addClass(this.className);
       if (this.attributes) this.el.attr(this.attributes);
-      this.release(function() {
-        return this.el.remove();
-      });
       if (!this.events) this.events = this.constructor.events;
       if (!this.elements) this.elements = this.constructor.elements;
       if (this.events) this.delegateEvents(this.events);
@@ -9932,12 +9927,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
       Controller.__super__.constructor.apply(this, arguments);
     }
 
-    Controller.prototype.release = function(callback) {
-      if (typeof callback === 'function') {
-        return this.bind('release', callback);
-      } else {
-        return this.trigger('release');
-      }
+    Controller.prototype.release = function() {
+      this.el.remove();
+      return this.unbind();
     };
 
     Controller.prototype.$ = function(selector) {
@@ -11212,7 +11204,7 @@ this.require.define({"lib/collection":function(exports, require, module){(functi
 }).call(this);
 ;}});
 this.require.define({"lib/color_picker":function(exports, require, module){(function() {
-  var Canvas, Color, ColorPicker, Display, Gradient, Input, Popup, Preview, Spectrum,
+  var Alpha, Canvas, Color, ColorPicker, Display, Gradient, Input, Popup, Preview, Spectrum,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
@@ -11275,13 +11267,12 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
     };
 
     Color.prototype.set = function(values) {
-      var key, value, _results;
-      _results = [];
+      var key, value;
       for (key in values) {
         value = values[key];
-        _results.push(this[key] = value);
+        this[key] = value;
       }
-      return _results;
+      return this;
     };
 
     Color.prototype.rgb = function() {
@@ -11349,6 +11340,11 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
     Canvas.prototype.drop = function() {
       this.el.unbind('mousemove', this.over);
       return $(document).unbind('mouseup', this.drop);
+    };
+
+    Canvas.prototype.release = function() {
+      Canvas.__super__.release.apply(this, arguments);
+      return this.drop();
     };
 
     return Canvas;
@@ -11452,6 +11448,53 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
   })(Canvas);
 
+  Alpha = (function(_super) {
+
+    __extends(Alpha, _super);
+
+    Alpha.prototype.className = 'alpha';
+
+    Alpha.prototype.width = 25;
+
+    Alpha.prototype.height = 250;
+
+    function Alpha() {
+      Alpha.__super__.constructor.apply(this, arguments);
+      this.color || (this.color = new Color(0, 0, 0));
+      this.setColor(this.color);
+    }
+
+    Alpha.prototype.render = function() {
+      var gradient;
+      this.ctx.clearRect(0, 0, this.width, this.height);
+      gradient = this.ctx.createLinearGradient(0, 0, 0, this.height);
+      gradient.addColorStop(0, this.color.clone().set({
+        a: 0
+      }).toString());
+      gradient.addColorStop(0.9, this.color.clone().set({
+        a: 1
+      }).toString());
+      this.ctx.fillStyle = gradient;
+      return this.ctx.fillRect(0, 0, this.width, this.height);
+    };
+
+    Alpha.prototype.setColor = function(color) {
+      this.color = color;
+      return this.render();
+    };
+
+    Alpha.prototype.val = function(x, y) {
+      var data;
+      data = this.ctx.getImageData(x, y, 1, 1).data;
+      return this.color.set({
+        a: Math.round((data[3] / 255) * 100) / 100
+      });
+    };
+
+    return Alpha;
+
+  })(Canvas);
+
   Display = (function(_super) {
 
     __extends(Display, _super);
@@ -11525,7 +11568,7 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
     ColorPicker.prototype.className = 'colorPicker';
 
-    ColorPicker.prototype.width = 390;
+    ColorPicker.prototype.width = 425;
 
     ColorPicker.prototype.events = {
       'click .save': 'save',
@@ -11552,6 +11595,9 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
       this.spectrum = new Spectrum({
         color: this.color
       });
+      this.alpha = new Alpha({
+        color: this.color
+      });
       this.display = new Display({
         color: this.color,
         original: this.original
@@ -11559,18 +11605,27 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
       this.gradient.bind('change', function(color) {
         _this.color.set(color.rgb());
         _this.display.setColor(_this.color);
+        _this.alpha.setColor(_this.color);
         return _this.change();
       });
       this.spectrum.bind('change', function(color) {
         _this.color.set(color.rgb());
         _this.gradient.setColor(_this.color);
         _this.display.setColor(_this.color);
+        _this.alpha.setColor(_this.color);
+        return _this.change();
+      });
+      this.alpha.bind('change', function(color) {
+        _this.color.set({
+          a: color.a
+        });
+        _this.display.setColor(_this.color);
         return _this.change();
       });
       this.display.bind('change', function(color) {
         return _this.setColor(color);
       });
-      return this.append(this.gradient, this.spectrum, this.display);
+      return this.append(this.gradient, this.spectrum, this.alpha, this.display);
     };
 
     ColorPicker.prototype.setColor = function(color) {
@@ -11578,6 +11633,7 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
       this.display.setColor(this.color);
       this.gradient.setColor(this.color);
       this.spectrum.setColor(this.color);
+      this.alpha.setColor(this.color);
       return this.change();
     };
 
@@ -11597,6 +11653,13 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
       this.close();
       this.trigger('cancel');
       return this.trigger('change', this.original);
+    };
+
+    ColorPicker.prototype.release = function() {
+      ColorPicker.__super__.release.apply(this, arguments);
+      this.gradient.release();
+      this.spectrum.release();
+      return this.display.release();
     };
 
     return ColorPicker;
@@ -11663,9 +11726,6 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
     function Preview() {
       this.open = __bind(this.open, this);      Preview.__super__.constructor.apply(this, arguments);
       this.color || (this.color = new Color);
-      this.picker = new ColorPicker({
-        color: this.color
-      });
       this.inner = $('<div />').addClass('inner');
       this.append(this.inner);
       this.render();
@@ -11673,12 +11733,15 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
     Preview.prototype.render = function() {
       return this.inner.css({
-        background: this.color.toString()
+        background: this.color
       });
     };
 
     Preview.prototype.open = function() {
       var _this = this;
+      this.picker = new ColorPicker({
+        color: this.color
+      });
       this.picker.bind('change', function(color) {
         _this.color.set(color);
         _this.trigger('change', _this.color);
@@ -11702,7 +11765,7 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 }).call(this);
 ;}});
 this.require.define({"lib/gradient_picker":function(exports, require, module){(function() {
-  var Color, ColorPicker, ColorSlide, GradientPicker, Popup, Stop,
+  var BackgroundImage, Color, ColorPicker, ColorSlide, GradientPicker, Popup, Stop,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -11712,6 +11775,8 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
   ColorPicker = require('./color_picker');
 
   Color = ColorPicker.Color;
+
+  BackgroundImage = require('app/models/properties/background_image');
 
   Stop = (function(_super) {
 
@@ -11798,7 +11863,7 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
 
     function GradientPicker() {
       GradientPicker.__super__.constructor.apply(this, arguments);
-      this.color || (this.color = Color(0, 0, 0));
+      this.gradient || (this.gradient = new BackgroundImage.LinearGradient);
     }
 
     return GradientPicker;
@@ -11865,8 +11930,8 @@ this.require.define({"lib/popup":function(exports, require, module){(function() 
       $('body').unbind('mousedown', this.remove);
       this.el.gfxRaisedOut();
       return this.el.queueNext(function() {
-        _this.el.remove();
-        return _this.trigger('hide');
+        _this.release();
+        return _this.trigger('close');
       });
     };
 
@@ -12086,7 +12151,8 @@ this.require.define({"app/controllers/element":function(exports, require, module
       width: 100,
       height: 100,
       left: 0,
-      top: 0
+      top: 0,
+      opacity: 1
     };
 
     Element.prototype.events = {
@@ -12667,10 +12733,10 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
 }).call(this);
 ;}});
 this.require.define({"app/controllers/inspector/background":function(exports, require, module){(function() {
-  var Background, BackgroundImage, Collection, Color, List,
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+  var Background, BackgroundImage, Collection, Color, Edit, List,
     __hasProp = Object.prototype.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   Collection = require('lib/collection');
 
@@ -12678,13 +12744,90 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
 
   BackgroundImage = require('app/models/properties/background_image');
 
-  List = (function() {
+  Edit = (function(_super) {
 
-    function List() {}
+    __extends(Edit, _super);
+
+    Edit.prototype.className = 'edit';
+
+    Edit.prototype.events = {
+      'change input': 'inputChange'
+    };
+
+    Edit.prototype.elements = {
+      'input[name=x]': '$x',
+      'input[name=y]': '$y',
+      'input[name=blur]': '$blur'
+    };
+
+    function Edit() {
+      Edit.__super__.constructor.apply(this, arguments);
+      this.change(this.background);
+    }
+
+    Edit.prototype.change = function(background) {
+      this.background = background != null ? background : new BackgroundImage;
+      return this.render();
+    };
+
+    Edit.prototype.render = function() {
+      return this.html(JST['app/views/inspector/background'](this));
+    };
+
+    return Edit;
+
+  })(Spine.Controller);
+
+  List = (function(_super) {
+
+    __extends(List, _super);
+
+    List.prototype.className = 'list';
+
+    List.prototype.events = {
+      'click .item': 'click',
+      'click button.plus': 'plus',
+      'click button.minus': 'minus'
+    };
+
+    function List() {
+      this.render = __bind(this.render, this);      List.__super__.constructor.apply(this, arguments);
+      if (!this.backgrounds) throw 'backgrounds required';
+      this.backgrounds.change(this.render);
+      this.render();
+    }
+
+    List.prototype.render = function() {
+      var selected;
+      this.html(JST['app/views/inspector/background/list'](this));
+      this.$('.item').removeClass('selected');
+      selected = this.$('.item').get(this.backgrounds.indexOf(this.current));
+      return $(selected).addClass('selected');
+    };
+
+    List.prototype.click = function(e) {
+      this.current = this.backgrounds[$(e.currentTarget).index()];
+      this.trigger('change', this.current);
+      this.render();
+      return false;
+    };
+
+    List.prototype.plus = function() {
+      this.backgrounds.push(this.current = new BackgroundImage);
+      this.trigger('change', this.current);
+      return false;
+    };
+
+    List.prototype.minus = function() {
+      this.backgrounds.remove(this.current);
+      this.current = this.backgrounds.first();
+      this.trigger('change', this.current);
+      return false;
+    };
 
     return List;
 
-  })();
+  })(Spine.Controller);
 
   Background = (function(_super) {
 
@@ -12699,15 +12842,32 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
     }
 
     Background.prototype.render = function() {
-      this.backgroundImage = this.stage.selection.get('backgroundImage');
-      this.backgroundImage = new Collection(this.backgroundImage);
-      this.backgroundColor = this.stage.selection.get('backgroundColor');
+      var _this = this;
+      this.disabled = !this.stage.selection.isAny();
+      this.backgrounds = this.stage.selection.get('backgroundImage');
+      this.backgrounds = new Collection(this.backgrounds);
+      this.current = this.backgrounds.first();
+      this.backgrounds.change(this.set);
       this.el.empty();
-      return this.el.append('<h3>Background</h3>');
+      this.el.append('<h3>Background</h3>');
+      this.list = new List({
+        current: this.current,
+        backgrounds: this.backgrounds
+      });
+      this.list.bind('change', function(current) {
+        _this.current = current;
+        return _this.edit.change(_this.current);
+      });
+      this.append(this.list);
+      this.edit = new Edit({
+        background: this.current
+      });
+      this.edit.bind('change', this.set);
+      return this.append(this.edit);
     };
 
     Background.prototype.set = function() {
-      return this.stage.selection.set('backgroundImage', this.backgroundImage.valueOf());
+      return this.stage.selection.set('backgroundImage', this.backgrounds.valueOf());
     };
 
     return Background;
@@ -12881,7 +13041,9 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
     };
 
     BoxShadowList.prototype.addShadow = function() {
-      this.shadows.push(this.current = new Shadow);
+      this.shadows.push(this.current = new Shadow({
+        blur: 3
+      }));
       this.trigger('change', this.current);
       return false;
     };
@@ -12909,11 +13071,10 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
     }
 
     BoxShadow.prototype.render = function() {
-      var shadows,
-        _this = this;
+      var _this = this;
       this.disabled = !this.stage.selection.isAny();
-      shadows = this.stage.selection.get('boxShadow');
-      this.shadows = new Collection(shadows);
+      this.shadows = this.stage.selection.get('boxShadow');
+      this.shadows = new Collection(this.shadows);
       this.current = this.shadows.first();
       this.shadows.change(this.set);
       this.el.empty();
@@ -14605,7 +14766,71 @@ this.require.define({"app/models/property":function(exports, require, module){(f
     (function() {
       (function() {
       
-        __out.push('\n\n<article>\n</article>\n');
+        __out.push('<article>\n</article>\n');
+      
+      }).call(this);
+      
+    }).call(__obj);
+    __obj.safe = __objSafe, __obj.escape = __escape;
+    return __out.join('');
+  };
+}).call(this);
+(function() {
+  this.JST || (this.JST = {});
+  this.JST["app/views/inspector/background/list"] = function(__obj) {
+    if (!__obj) __obj = {};
+    var __out = [], __capture = function(callback) {
+      var out = __out, result;
+      __out = [];
+      callback.call(this);
+      result = __out.join('');
+      __out = out;
+      return __safe(result);
+    }, __sanitize = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else if (typeof value !== 'undefined' && value != null) {
+        return __escape(value);
+      } else {
+        return '';
+      }
+    }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+    __safe = __obj.safe = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else {
+        if (!(typeof value !== 'undefined' && value != null)) value = '';
+        var result = new String(value);
+        result.ecoSafe = true;
+        return result;
+      }
+    };
+    if (!__escape) {
+      __escape = __obj.escape = function(value) {
+        return ('' + value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      };
+    }
+    (function() {
+      (function() {
+        var background, _i, _len, _ref;
+      
+        __out.push('<div class="items">\n  ');
+      
+        _ref = this.backgrounds;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          background = _ref[_i];
+          __out.push('\n    <div class="item">\n      <div class="preview" style="background: ');
+          __out.push(__sanitize(background.toString()));
+          __out.push('"></div>\n      <span>');
+          __out.push(__sanitize(background.toString()));
+          __out.push('</span>\n    </div>\n  ');
+        }
+      
+        __out.push('\n</div>\n\n<footer>\n  <button class="plus">+</button>\n  <button class="minus">-</button>\n</footer>\n');
       
       }).call(this);
       

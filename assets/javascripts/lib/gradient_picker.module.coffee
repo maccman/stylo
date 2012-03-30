@@ -1,6 +1,9 @@
-Popup = require('./popup')
+Popup       = require('./popup')
 ColorPicker = require('./color_picker')
-Color = ColorPicker.Color
+Color       = ColorPicker.Color
+
+# TODO - abstract
+BackgroundImage = require('app/models/properties/background_image')
 
 class Stop extends Spine.Controller
   className: 'stop'
@@ -49,6 +52,6 @@ class ColorSlide extends Spine.Controller
 class GradientPicker extends Popup
   constructor: ->
     super
-    @color or= Color(0, 0, 0)
+    @gradient or= new BackgroundImage.LinearGradient
 
 module.exports = GradientPicker

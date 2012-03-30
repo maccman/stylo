@@ -59,7 +59,7 @@
   return this.require;
 }).call(this);
 this.require.define({"lib/gradient_picker":function(exports, require, module){(function() {
-  var Color, ColorPicker, ColorSlide, GradientPicker, Popup, Stop,
+  var BackgroundImage, Color, ColorPicker, ColorSlide, GradientPicker, Popup, Stop,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -69,6 +69,8 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
   ColorPicker = require('./color_picker');
 
   Color = ColorPicker.Color;
+
+  BackgroundImage = require('app/models/properties/background_image');
 
   Stop = (function(_super) {
 
@@ -155,7 +157,7 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
 
     function GradientPicker() {
       GradientPicker.__super__.constructor.apply(this, arguments);
-      this.color || (this.color = Color(0, 0, 0));
+      this.gradient || (this.gradient = new BackgroundImage.LinearGradient);
     }
 
     return GradientPicker;

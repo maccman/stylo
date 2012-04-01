@@ -59,12 +59,16 @@
   return this.require;
 }).call(this);
 this.require.define({"app/controllers/element":function(exports, require, module){(function() {
-  var Element, Resizing,
+  var Background, Color, Element, Resizing,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Resizing = require('./element/resizing');
+
+  Background = require('app/models/properties/background');
+
+  Color = require('app/models/properties/color');
 
   Element = (function(_super) {
 
@@ -76,7 +80,8 @@ this.require.define({"app/controllers/element":function(exports, require, module
       height: 100,
       left: 0,
       top: 0,
-      opacity: 1
+      opacity: 1,
+      background: [new Color(0, 0, 0, 0.2)]
     };
 
     Element.prototype.events = {

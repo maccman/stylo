@@ -29,7 +29,6 @@ Phase 2:
 * Resizing snapping
 * Element snapping
 * Pen tool
-* Layers
 * Scaling stage & size
 * Z-index
 * Keyboard shortcuts
@@ -41,6 +40,7 @@ Nice to have:
 * Exporting HTML
 * Share (dropbox/email?)
 * Clone HTML components
+* Layers
 
 Inherit Ellipsis from Rectangle (resizing & lines).
 

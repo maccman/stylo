@@ -11240,6 +11240,14 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
       }
     };
 
+    Color.White = function(alpha) {
+      return new Color(255, 255, 255, alpha);
+    };
+
+    Color.Black = function(alpha) {
+      return new Color(0, 0, 0, alpha);
+    };
+
     function Color(r, g, b, a) {
       if (r == null) r = 0;
       if (g == null) g = 0;
@@ -11765,7 +11773,7 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 }).call(this);
 ;}});
 this.require.define({"lib/gradient_picker":function(exports, require, module){(function() {
-  var BackgroundImage, Color, ColorPicker, ColorStop, GradientPicker, LinearGradient, Popup, Slider,
+  var Background, Color, ColorPicker, ColorStop, GradientPicker, LinearGradient, Popup, Slider,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -11776,11 +11784,11 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
 
   Color = ColorPicker.Color;
 
-  BackgroundImage = require('app/models/properties/background_image');
+  Background = require('app/models/properties/background');
 
-  LinearGradient = BackgroundImage.LinearGradient;
+  LinearGradient = Background.LinearGradient;
 
-  ColorStop = BackgroundImage.ColorStop;
+  ColorStop = Background.ColorStop;
 
   Slider = (function(_super) {
 
@@ -11789,55 +11797,66 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
     Slider.prototype.className = 'slider';
 
     Slider.prototype.events = {
-      'mousedown': 'listen'
+      'mousedown': 'listen',
+      'mouseup': 'openColorPicker'
     };
 
     function Slider(colorStop) {
-      var _this = this;
       this.colorStop = colorStop != null ? colorStop : new ColorStop;
       this.drop = __bind(this.drop, this);
       this.drag = __bind(this.drag, this);
       this.listen = __bind(this.listen, this);
       Slider.__super__.constructor.call(this);
-      this.colorInput = new ColorPicker.Preview({
-        color: this.colorStop.color
-      });
-      this.colorInput.bind('change', function(color) {
-        _this.colorInput.color = color;
-        return _this.el.trigger('change', _this);
-      });
-      this.append(this.colorInput);
+      this.inner = $('<div />').addClass('inner');
+      this.append(this.inner);
+      this.render();
     }
+
+    Slider.prototype.render = function() {
+      this.move(this.colorStop.length);
+      return this.inner.css({
+        background: this.colorStop.color
+      });
+    };
 
     Slider.prototype.listen = function(e) {
       e.preventDefault();
       e.stopPropagation();
       this.width = this.el.parent().width();
+      this.offset = this.el.parent().offset();
+      this.remove = false;
+      this.moved = false;
       $(document).mousemove(this.drag);
       return $(document).mouseup(this.drop);
     };
 
     Slider.prototype.drag = function(e) {
-      var left, location, position;
-      position = this.el.offset();
-      left = e.pageY - position.left;
-      location = (left / this.width) * 100;
-      return this.move(location);
+      var left, length, top, _ref;
+      this.moved = true;
+      if ((_ref = this.picker) != null) {
+        if (typeof _ref.close === "function") _ref.close();
+      }
+      this.picker = false;
+      top = e.pageY - this.offset.top;
+      this.remove = top > 100 || top < -100;
+      this.el.toggleClass('remove', this.remove);
+      left = e.pageX - this.offset.left;
+      length = (left / this.width) * 100;
+      return this.move(length);
     };
 
     Slider.prototype.drop = function(e) {
       $(document).unbind('mousemove', this.drag);
-      return $(document).unbind('mouseup', this.drop);
+      $(document).unbind('mouseup', this.drop);
+      if (this.remove) return this.release();
     };
 
-    Slider.prototype.move = function(location) {
-      var left;
-      this.location = location != null ? location : 0;
-      this.colorStop.location = this.location;
-      left = (this.location / 100) * this.width;
-      left = Math.max(Math.min(this.width, left), 0);
+    Slider.prototype.move = function(length) {
+      this.length = length != null ? length : 0;
+      this.length = Math.max(Math.min(this.length, 100), 0);
+      this.colorStop.length = this.length;
       this.el.css({
-        left: left
+        left: "" + this.length + "%"
       });
       return this.el.trigger('change', this);
     };
@@ -11848,6 +11867,20 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
       return this.el.trigger('change', this);
     };
 
+    Slider.prototype.openColorPicker = function() {
+      var _this = this;
+      if (this.moved) return;
+      this.picker = new ColorPicker({
+        color: this.colorStop.color
+      });
+      this.picker.bind('change', function(color) {
+        _this.colorStop.color = color;
+        _this.el.trigger('change', _this);
+        return _this.render();
+      });
+      return this.picker.open(this.el.offset());
+    };
+
     return Slider;
 
   })(Spine.Controller);
@@ -11856,9 +11889,12 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
 
     __extends(GradientPicker, _super);
 
+    GradientPicker.prototype.className = 'gradientPicker';
+
     GradientPicker.prototype.events = {
-      'removed': 'removeSlider',
-      'change': 'set'
+      'removed .slider': 'removeSlider',
+      'change': 'set',
+      'click': 'createSlider'
     };
 
     function GradientPicker() {
@@ -11871,8 +11907,8 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
         this.append(new Slider(stop));
       }
       if (!this.gradient.stops.length) {
-        this.addSlider(new ColorStop(new Color(255, 255, 255), 0));
-        this.addSlider(new ColorStop(new Color(0, 0, 0), 1));
+        this.addSlider(new ColorStop(new Color.White, 0));
+        this.addSlider(new ColorStop(new Color.Black, 100));
       }
       this.el.css({
         background: this.gradient
@@ -11887,7 +11923,7 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
     };
 
     GradientPicker.prototype.removeSlider = function(e, slider) {
-      return this.gradient.removeStop(slider.colorStop);
+      debugger;      return this.gradient.removeStop(slider.colorStop);
     };
 
     GradientPicker.prototype.set = function() {
@@ -11895,6 +11931,14 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
         background: this.gradient
       });
       return this.trigger('change', this.gradient);
+    };
+
+    GradientPicker.prototype.createSlider = function(e) {
+      var left, length;
+      if (e.target !== e.currentTarget) return;
+      left = e.pageX - this.el.offset().left;
+      length = (left / this.el.width()) * 100;
+      return this.addSlider(new ColorStop(new Color.White, length));
     };
 
     return GradientPicker;
@@ -12166,12 +12210,16 @@ this.require.define({"app/controllers/canvas":function(exports, require, module)
 }).call(this);
 ;}});
 this.require.define({"app/controllers/element":function(exports, require, module){(function() {
-  var Element, Resizing,
+  var Background, Color, Element, Resizing,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Resizing = require('./element/resizing');
+
+  Background = require('app/models/properties/background');
+
+  Color = require('app/models/properties/color');
 
   Element = (function(_super) {
 
@@ -12183,7 +12231,8 @@ this.require.define({"app/controllers/element":function(exports, require, module
       height: 100,
       left: 0,
       top: 0,
-      opacity: 1
+      opacity: 1,
+      background: [new Color(0, 0, 0, 0.2)]
     };
 
     Element.prototype.events = {
@@ -12767,7 +12816,7 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
 }).call(this);
 ;}});
 this.require.define({"app/controllers/inspector/background":function(exports, require, module){(function() {
-  var BI, Background, BackgroundImage, Collection, Color, ColorPicker, Edit, GradientPicker, List,
+  var Background, BackgroundInspector, Collection, Color, ColorPicker, Edit, GradientPicker, List,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -12780,9 +12829,7 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
 
   Color = require('app/models/properties/color');
 
-  BackgroundImage = require('app/models/properties/background_image');
-
-  BI = BackgroundImage;
+  Background = require('app/models/properties/background');
 
   Edit = (function(_super) {
 
@@ -12808,18 +12855,18 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
       var picker,
         _this = this;
       this.el.empty();
-      if (this.background instanceof BackgroundImage.Pure) {
+      if (this.background instanceof Color) {
         picker = new ColorPicker.Preview({
-          color: this.background.color
+          color: this.background
         });
         picker.bind('change', function(color) {
-          _this.background.color = color;
+          _this.background = color;
           return _this.trigger('change', _this.background);
         });
         return this.append(picker);
-      } else if (this.background instanceof BackgroundImage.URL) {
+      } else if (this.background instanceof Background.URL) {
         return this.html(JST['app/views/inspector/background/url'](this));
-      } else if (this.background instanceof BackgroundImage.LinearGradient) {
+      } else if (this.background instanceof Background.LinearGradient) {
         picker = new GradientPicker({
           gradient: this.background
         });
@@ -12834,7 +12881,7 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
     };
 
     Edit.prototype.inputChange = function() {
-      if (this.background instanceof BackgroundImage.URL) {
+      if (this.background instanceof Background.URL) {
         this.background.url = this.$('input').val();
         return this.trigger('change', this.background);
       }
@@ -12879,7 +12926,7 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
     };
 
     List.prototype.plus = function() {
-      this.current = new BI.LinearGradient(new BI.Position(0), [new BI.ColorStop(new Color(255, 255, 255)), new BI.ColorStop(new Color(0, 0, 0))]);
+      this.current = new Background.LinearGradient(new Background.Position(0), [new Background.ColorStop(new Color.Black, 0), new Background.ColorStop(new Color.White, 100)]);
       this.backgrounds.push(this.current);
       this.trigger('change', this.current);
       return false;
@@ -12896,22 +12943,22 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
 
   })(Spine.Controller);
 
-  Background = (function(_super) {
+  BackgroundInspector = (function(_super) {
 
-    __extends(Background, _super);
+    __extends(BackgroundInspector, _super);
 
-    Background.prototype.className = 'background';
+    BackgroundInspector.prototype.className = 'background';
 
-    function Background() {
+    function BackgroundInspector() {
       this.set = __bind(this.set, this);
-      this.render = __bind(this.render, this);      Background.__super__.constructor.apply(this, arguments);
+      this.render = __bind(this.render, this);      BackgroundInspector.__super__.constructor.apply(this, arguments);
       this.render();
     }
 
-    Background.prototype.render = function() {
+    BackgroundInspector.prototype.render = function() {
       var _this = this;
       this.disabled = !this.stage.selection.isAny();
-      this.backgrounds = this.stage.selection.get('backgroundImage');
+      this.backgrounds = this.stage.selection.get('background');
       this.backgrounds = new Collection(this.backgrounds);
       this.current = this.backgrounds.first();
       this.backgrounds.change(this.set);
@@ -12929,19 +12976,21 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
       this.edit = new Edit({
         background: this.current
       });
-      this.edit.bind('change', this.set);
+      this.edit.bind('change', function() {
+        return _this.backgrounds.change();
+      });
       return this.append(this.edit);
     };
 
-    Background.prototype.set = function() {
-      return this.stage.selection.set('backgroundImage', this.backgrounds.valueOf());
+    BackgroundInspector.prototype.set = function() {
+      return this.stage.selection.set('background', this.backgrounds.valueOf());
     };
 
-    return Background;
+    return BackgroundInspector;
 
   })(Spine.Controller);
 
-  module.exports = Background;
+  module.exports = BackgroundInspector;
 
 }).call(this);
 ;}});
@@ -13385,7 +13434,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       this.rectangle1 = new Rectangle({
         left: 200,
         top: 200,
-        backgroundImage: [new Properties.URL('assets/blacky.png')]
+        background: [new Properties.Background.URL('assets/blacky.png')]
       });
       this.rectangle2 = new Rectangle();
       this.add(this.rectangle1, this.rectangle2);
@@ -14261,27 +14310,24 @@ this.require.define({"app/index":function(exports, require, module){(function() 
 }).call(this);
 ;}});
 this.require.define({"app/models/properties":function(exports, require, module){(function() {
-  var BackgroundImage, Property, URL, Values;
+  var Background, Property, Values;
 
   Property = require('./property');
 
   Values = Property.Values;
 
-  BackgroundImage = require('./properties/background_image');
-
-  URL = BackgroundImage.URL;
+  Background = require('./properties/background');
 
   module.exports = {
     Property: Property,
     Values: Values,
-    BackgroundImage: BackgroundImage,
-    URL: URL
+    Background: Background
   };
 
 }).call(this);
 ;}});
-this.require.define({"app/models/properties/background_image":function(exports, require, module){(function() {
-  var BackgroundImage, Color, ColorStop, LinearGradient, Position, Property, Pure, URL,
+this.require.define({"app/models/properties/background":function(exports, require, module){(function() {
+  var BackgroundImage, Color, ColorStop, LinearGradient, Position, Property, URL,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __slice = Array.prototype.slice;
@@ -14346,7 +14392,11 @@ this.require.define({"app/models/properties/background_image":function(exports, 
     }
 
     LinearGradient.prototype.toString = function() {
-      return "-webkit-linear-gradient(" + ([this.position].concat(__slice.call(this.stops)).join(',')) + ")";
+      var stops;
+      stops = this.stops.sort(function(a, b) {
+        return a.length - b.length;
+      });
+      return "-webkit-linear-gradient(" + ([this.position].concat(__slice.call(stops)).join(',')) + ")";
     };
 
     LinearGradient.prototype.addStop = function(stop) {
@@ -14379,22 +14429,6 @@ this.require.define({"app/models/properties/background_image":function(exports, 
 
   })(BackgroundImage);
 
-  Pure = (function(_super) {
-
-    __extends(Pure, _super);
-
-    function Pure(color) {
-      this.color = color;
-    }
-
-    Pure.prototype.toString = function() {
-      return "" + this.color;
-    };
-
-    return Pure;
-
-  })(BackgroundImage);
-
   module.exports = BackgroundImage;
 
   module.exports.LinearGradient = LinearGradient;
@@ -14404,8 +14438,6 @@ this.require.define({"app/models/properties/background_image":function(exports, 
   module.exports.Position = Position;
 
   module.exports.ColorStop = ColorStop;
-
-  module.exports.Pure = Pure;
 
 }).call(this);
 ;}});
@@ -14417,275 +14449,6 @@ this.require.define({"app/models/properties/color":function(exports, require, mo
   Color = ColorPicker.Color;
 
   module.exports = Color;
-
-}).call(this);
-;}});
-this.require.define({"app/models/properties/parsing/background_image":function(exports, require, module){(function() {
-  var BackgroundImage, Color, ColorStop, LinearGradient, Position, URL,
-    __hasProp = Object.prototype.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
-    __slice = Array.prototype.slice;
-
-  Color = require('./color');
-
-  Position = (function() {
-
-    Position.keywords = {
-      left: 0,
-      bottom: 90,
-      right: 180,
-      top: 270
-    };
-
-    Position.regex = /^(.+)\s+(.+)$/;
-
-    Position.fromRegex = function(keywords, angle) {
-      var posh, posv, types;
-      if (keywords != null) {
-        types = this.regex.exec(keywords);
-        posh = this.keywords[types[1]] || 0;
-        posv = this.keywords[types[2]] || 0;
-        if (posv) {
-          posh /= 2;
-          posv /= 2;
-        }
-        return new this(posh + posv);
-      } else {
-        return new this(angle);
-      }
-    };
-
-    function Position(angle) {
-      this.angle = angle != null ? angle : 0;
-    }
-
-    Position.prototype.toString = function() {
-      return "" + this.angle + "deg";
-    };
-
-    return Position;
-
-  })();
-
-  ColorStop = (function() {
-
-    ColorStop.regex = /^(?:,?\s*(#(?:[0-9a-f]{3,6})|rgba?\((?:[^)]+)\))(?:\s+(-?[0-9]*\.?[0-9]+)%)?\s*)*/;
-
-    ColorStop.multipleFromString = function(str) {
-      var match, matches, _i, _len, _results;
-      matches = [];
-      while (match = this.regex.exec(str)) {
-        matches.push(match);
-        if (regex.lastIndex === match.index) regex.lastIndex++;
-      }
-      _results = [];
-      for (_i = 0, _len = matches.length; _i < _len; _i++) {
-        match = matches[_i];
-        _results.push(this.fromRegex(match[1], match[2]));
-      }
-      return _results;
-    };
-
-    ColorStop.fromRegex = function(color, length) {
-      color = Color.fromString(color);
-      length = parseFloat(length) || 0;
-      return new this(color, length);
-    };
-
-    function ColorStop(color, length) {
-      this.color = color;
-      this.length = length;
-    }
-
-    ColorStop.prototype.toString = function() {
-      if (this.length) {
-        return "" + this.color + " " + this.length + "%";
-      } else {
-        return "" + this.color;
-      }
-    };
-
-    return ColorStop;
-
-  })();
-
-  BackgroundImage = (function() {
-
-    function BackgroundImage() {}
-
-    BackgroundImage.multipleFromString = function(str) {
-      var backgrounds, bg;
-      backgrounds = [];
-      while (str.length) {
-        if (bg = LinearGradient.fromString(str)) {
-          backgrounds.push(bg);
-          str.replace(LinearGradient.regex, '');
-        } else if (bg = URL.fromString(str)) {
-          backgrounds.push(bg);
-          str.replace(URL.regex, '');
-        } else {
-          throw 'Invalid image';
-        }
-        str.replace(/^,?\s*/, '');
-      }
-      return backgrounds;
-    };
-
-    return BackgroundImage;
-
-  })();
-
-  LinearGradient = (function(_super) {
-
-    __extends(LinearGradient, _super);
-
-    LinearGradient.regex = /^(?:-webkit-)?linear-gradient\((?:(?:((?:top\s+|bottom\s+)?(?:right|left)|(?:right\s+|left\s+)?(?:top|bottom))|((?:-?[0-9]*\.?[0-9]+)deg|(?:0)))\s*,)?(.+)\);?/i;
-
-    LinearGradient.fromString = function(str) {
-      var match, position, stops;
-      match = str.match(this.regex);
-      if (!match) return;
-      position = Position.fromRegex(match[1], match[2]);
-      stops = ColorStop.multipleFromString(match[3]);
-      return new this(position, stops);
-    };
-
-    function LinearGradient(position, stops) {
-      this.position = position != null ? position : new Position;
-      this.stops = stops != null ? stops : [];
-    }
-
-    LinearGradient.prototype.toString = function() {
-      return "-webkit-linear-gradient(" + ([this.position].concat(__slice.call(this.stops)).join(',')) + ")";
-    };
-
-    return LinearGradient;
-
-  })(BackgroundImage);
-
-  URL = (function(_super) {
-
-    __extends(URL, _super);
-
-    URL.regex = /^url\(?:(?:"|')?(.+)\1\)/;
-
-    URL.fromString = function(str) {
-      var match;
-      match = str.match(this.regex);
-      if (!match) return;
-      return new this(match[1]);
-    };
-
-    function URL(url) {
-      this.url = url;
-    }
-
-    URL.prototype.toString = function() {
-      return "url('" + this.url + "')";
-    };
-
-    return URL;
-
-  })(BackgroundImage);
-
-  module.exports = BackgroundImage;
-
-  module.exports.LinearGradient = LinearGradient;
-
-  module.exports.URL = URL;
-
-  module.exports.Position = Position;
-
-  module.exports.ColorStop = ColorStop;
-
-}).call(this);
-;}});
-this.require.define({"app/models/properties/parsing/color":function(exports, require, module){(function() {
-  var Color, ColorPicker;
-
-  ColorPicker = require('lib/color_picker');
-
-  Color = ColorPicker.Color;
-
-  module.exports = Color;
-
-}).call(this);
-;}});
-this.require.define({"app/models/properties/parsing/shadow":function(exports, require, module){(function() {
-  var Color, Shadow;
-
-  Color = require('./color');
-
-  Shadow = (function() {
-
-    Shadow.fromString = function(str) {
-      var color, colors, i, inset, p, parts, properties, property, shadows, _len;
-      if (!str) return [];
-      if (str === 'none') return [];
-      shadows = [];
-      colors = [];
-      while (color = Color.fromString(str)) {
-        colors.push(color);
-        str = str.replace(Color.regex, '');
-      }
-      properties = str.split(',');
-      for (i = 0, _len = properties.length; i < _len; i++) {
-        property = properties[i];
-        color = colors[i];
-        inset = this.insetRegex.test(property);
-        parts = property.split(' ');
-        parts = (function() {
-          var _i, _len2, _results;
-          _results = [];
-          for (_i = 0, _len2 = parts.length; _i < _len2; _i++) {
-            p = parts[_i];
-            if (p !== '') _results.push(parseFloat(p));
-          }
-          return _results;
-        })();
-        shadows.push(new this({
-          x: parts[0],
-          y: parts[1],
-          blur: parts[2],
-          spread: parts[3],
-          inset: inset,
-          color: color
-        }));
-      }
-      return shadows;
-    };
-
-    Shadow.insetRegex = /inset/;
-
-    function Shadow(properties) {
-      var k, v;
-      if (properties == null) properties = {};
-      for (k in properties) {
-        v = properties[k];
-        this[k] = v;
-      }
-      this.x || (this.x = 0);
-      this.y || (this.y = 0);
-      this.color || (this.color = new Color(0, 0, 0, 0.3));
-    }
-
-    Shadow.prototype.toString = function() {
-      var result;
-      result = [];
-      if (this.inset) result.push('inset');
-      result.push(this.x + 'px');
-      result.push(this.y + 'px');
-      if (this.blur != null) result.push(this.blur + 'px');
-      if (this.spread != null) result.push(this.spread + 'px');
-      result.push(this.color.toString());
-      return result.join(' ');
-    };
-
-    return Shadow;
-
-  })();
-
-  module.exports = Shadow;
 
 }).call(this);
 ;}});

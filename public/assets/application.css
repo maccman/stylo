@@ -101,6 +101,33 @@ body {
 .colorPicker button.save {
   float: right;
 }
+.gradientPicker {
+  position: relative;
+  height: 20px;
+  border-radius: 3px;
+}
+.gradientPicker .slider {
+  position: absolute;
+  width: 10px;
+  height: 16px;
+  bottom: 0;
+  margin: 0 0 -8px -5px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: url("grid.png") repeat;
+  cursor: pointer;
+}
+.gradientPicker .slider .inner {
+  height: 16px;
+}
+.gradientPicker .colorPreview {
+  border: 0;
+  width: auto;
+  margin: 0;
+  border: 0;
+}
+.gradientPicker .colorPreview .inner {
+  width: auto;
+}
 #app .header {
   height: 35px;
   line-height: 35px;
@@ -382,13 +409,6 @@ body {
   -webkit-box-shadow: inset 0 0 10px rgba(0,0,0,0.20);
   box-shadow: inset 0 0 10px rgba(0,0,0,0.20);
 }
-#app .inspector .background select {
-  width: 130px;
-  margin-left: 5px;
-}
-#app .inspector .background .preview {
-  margin: 5px 0 0 60px;
-}
 #app .inspector .background .edit {
   padding: 10px;
 }
@@ -494,7 +514,6 @@ body {
 }
 #app .stage .element {
   outline: none;
-  background: rgba(0,0,0,0.50);
 }
 #app .stage .resizing .thumb {
   position: absolute;

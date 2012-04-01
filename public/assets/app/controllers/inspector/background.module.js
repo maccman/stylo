@@ -59,7 +59,7 @@
   return this.require;
 }).call(this);
 this.require.define({"app/controllers/inspector/background":function(exports, require, module){(function() {
-  var BI, Background, BackgroundImage, Collection, Color, ColorPicker, Edit, GradientPicker, List,
+  var Background, BackgroundInspector, Collection, Color, ColorPicker, Edit, GradientPicker, List,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -72,9 +72,7 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
 
   Color = require('app/models/properties/color');
 
-  BackgroundImage = require('app/models/properties/background_image');
-
-  BI = BackgroundImage;
+  Background = require('app/models/properties/background');
 
   Edit = (function(_super) {
 
@@ -100,18 +98,18 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
       var picker,
         _this = this;
       this.el.empty();
-      if (this.background instanceof BackgroundImage.Pure) {
+      if (this.background instanceof Color) {
         picker = new ColorPicker.Preview({
-          color: this.background.color
+          color: this.background
         });
         picker.bind('change', function(color) {
-          _this.background.color = color;
+          _this.background = color;
           return _this.trigger('change', _this.background);
         });
         return this.append(picker);
-      } else if (this.background instanceof BackgroundImage.URL) {
+      } else if (this.background instanceof Background.URL) {
         return this.html(JST['app/views/inspector/background/url'](this));
-      } else if (this.background instanceof BackgroundImage.LinearGradient) {
+      } else if (this.background instanceof Background.LinearGradient) {
         picker = new GradientPicker({
           gradient: this.background
         });
@@ -126,7 +124,7 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
     };
 
     Edit.prototype.inputChange = function() {
-      if (this.background instanceof BackgroundImage.URL) {
+      if (this.background instanceof Background.URL) {
         this.background.url = this.$('input').val();
         return this.trigger('change', this.background);
       }
@@ -171,7 +169,7 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
     };
 
     List.prototype.plus = function() {
-      this.current = new BI.LinearGradient(new BI.Position(0), [new BI.ColorStop(new Color(255, 255, 255)), new BI.ColorStop(new Color(0, 0, 0))]);
+      this.current = new Background.LinearGradient(new Background.Position(0), [new Background.ColorStop(new Color.Black, 0), new Background.ColorStop(new Color.White, 100)]);
       this.backgrounds.push(this.current);
       this.trigger('change', this.current);
       return false;
@@ -188,22 +186,22 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
 
   })(Spine.Controller);
 
-  Background = (function(_super) {
+  BackgroundInspector = (function(_super) {
 
-    __extends(Background, _super);
+    __extends(BackgroundInspector, _super);
 
-    Background.prototype.className = 'background';
+    BackgroundInspector.prototype.className = 'background';
 
-    function Background() {
+    function BackgroundInspector() {
       this.set = __bind(this.set, this);
-      this.render = __bind(this.render, this);      Background.__super__.constructor.apply(this, arguments);
+      this.render = __bind(this.render, this);      BackgroundInspector.__super__.constructor.apply(this, arguments);
       this.render();
     }
 
-    Background.prototype.render = function() {
+    BackgroundInspector.prototype.render = function() {
       var _this = this;
       this.disabled = !this.stage.selection.isAny();
-      this.backgrounds = this.stage.selection.get('backgroundImage');
+      this.backgrounds = this.stage.selection.get('background');
       this.backgrounds = new Collection(this.backgrounds);
       this.current = this.backgrounds.first();
       this.backgrounds.change(this.set);
@@ -221,19 +219,21 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
       this.edit = new Edit({
         background: this.current
       });
-      this.edit.bind('change', this.set);
+      this.edit.bind('change', function() {
+        return _this.backgrounds.change();
+      });
       return this.append(this.edit);
     };
 
-    Background.prototype.set = function() {
-      return this.stage.selection.set('backgroundImage', this.backgrounds.valueOf());
+    BackgroundInspector.prototype.set = function() {
+      return this.stage.selection.set('background', this.backgrounds.valueOf());
     };
 
-    return Background;
+    return BackgroundInspector;
 
   })(Spine.Controller);
 
-  module.exports = Background;
+  module.exports = BackgroundInspector;
 
 }).call(this);
 ;}});

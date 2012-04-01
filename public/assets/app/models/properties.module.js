@@ -59,21 +59,18 @@
   return this.require;
 }).call(this);
 this.require.define({"app/models/properties":function(exports, require, module){(function() {
-  var BackgroundImage, Property, URL, Values;
+  var Background, Property, Values;
 
   Property = require('./property');
 
   Values = Property.Values;
 
-  BackgroundImage = require('./properties/background_image');
-
-  URL = BackgroundImage.URL;
+  Background = require('./properties/background');
 
   module.exports = {
     Property: Property,
     Values: Values,
-    BackgroundImage: BackgroundImage,
-    URL: URL
+    Background: Background
   };
 
 }).call(this);

@@ -29,6 +29,12 @@ class Color
       [r, g, b, a] = rgba.split(/\s*,\s*/)
       new this(r, g, b, a)
 
+  @White: (alpha) ->
+    new Color(255, 255, 255, alpha)
+
+  @Black: (alpha) ->
+    new Color(0, 0, 0, alpha)
+
   constructor: (r = 0, g = 0, b = 0, a = 1) ->
     @r = parseInt(r, 10)
     @g = parseInt(g, 10)

@@ -58,38 +58,17 @@
 
   return this.require;
 }).call(this);
-this.require.define({"app/models/properties/background.module":function(exports, require, module){(function() {
-  var BackgroundImage, Color, LinearGradient, Point, Position, URL,
+this.require.define({"app/models/properties/background":function(exports, require, module){(function() {
+  var BackgroundImage, Color, ColorStop, LinearGradient, Position, Property, URL,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __slice = Array.prototype.slice;
 
-  Color = require('lib/color_picker').Color;
+  Property = require('app/models/property');
+
+  Color = require('./color');
 
   Position = (function() {
-
-    Position.prototype.keywords = {
-      left: 0,
-      bottom: 90,
-      right: 180,
-      top: 270
-    };
-
-    Position.fromRegex = function(keywords, angle) {
-      var posh, posv, types;
-      if (keywords != null) {
-        types = keywords.split(' ');
-        posh = this.keywords[types[0]] || 0;
-        posv = this.keywords[types[1]] || 0;
-        if (posv) {
-          posh /= 2;
-          posv /= 2;
-        }
-        return new this(posh + posv);
-      } else {
-        return new this(angle);
-      }
-    };
 
     function Position(angle) {
       this.angle = angle != null ? angle : 0;
@@ -103,79 +82,63 @@ this.require.define({"app/models/properties/background.module":function(exports,
 
   })();
 
-  Point = (function() {
+  ColorStop = (function() {
 
-    Point.fromRegex = function(color, length) {
-      color = Color.fromString(color);
-      length = parseFloat(length) || 0;
-      return new this(color, length);
-    };
-
-    function Point(color, length) {
+    function ColorStop(color, length) {
       this.color = color;
       this.length = length;
+      this.color || (this.color = new Color);
     }
 
-    Point.prototype.toString = function() {
-      return "" + this.color + " " + this.length + "%";
+    ColorStop.prototype.toString = function() {
+      if (this.length) {
+        return "" + this.color + " " + this.length + "%";
+      } else {
+        return "" + this.color;
+      }
     };
 
-    return Point;
+    return ColorStop;
 
   })();
 
-  BackgroundImage = (function() {
+  BackgroundImage = (function(_super) {
 
-    function BackgroundImage() {}
+    __extends(BackgroundImage, _super);
 
-    BackgroundImage.multipleFromString = function(str) {
-      var backgrounds, bg;
-      backgrounds = [];
-      while (str.length) {
-        if (bg = LinearGradient.fromString(str)) {
-          backgrounds.push(bg);
-          str.replace(LinearGradient.regex, '');
-        } else if (bg = URL.fromString(str)) {
-          backgrounds.push(bg);
-          str.replace(URL.regex, '');
-        } else {
-          throw 'Invalid image';
-        }
-        str.replace(/^,?\s*/, '');
-      }
-      return backgrounds;
-    };
+    function BackgroundImage() {
+      BackgroundImage.__super__.constructor.apply(this, arguments);
+    }
 
     return BackgroundImage;
 
-  })();
+  })(Property);
 
   LinearGradient = (function(_super) {
 
     __extends(LinearGradient, _super);
 
-    LinearGradient.regex = /^(?:-webkit-)?linear-gradient\((?:(?:((?:top\s+|bottom\s+)?(?:right|left)|(?:right\s+|left\s+)?(?:top|bottom))|((?:-?[0-9]*\.?[0-9]+)deg|(?:0)))\s*,)?(?:(?:\s*(#(?:[0-9a-f]{3,6})|rgba?\(?:(?:[^)]+)\))(?:\s+(-?[0-9]*\.?[0-9]+)%)?)(?:,\s*(#(?:[0-9a-f]{3,6})|rgba?\(?:(?:[^)]+)\))(?:\s+(-?[0-9]*\.?[0-9]+)%)?)+)\);?/i;
-
-    LinearGradient.fromString = function(str) {
-      var match, points, position;
-      match = str.match(this.regex);
-      if (!match) return;
-      match.shift();
-      position = Position.fromRegex(match.shift(), match.shift());
-      points = [];
-      while (match.length) {
-        points.push(Point.fromRegex(match.shift(), match.shift()));
-      }
-      return new this(position, points);
-    };
-
-    function LinearGradient(position, points) {
+    function LinearGradient(position, stops) {
       this.position = position != null ? position : new Position;
-      this.points = points != null ? points : [];
+      this.stops = stops != null ? stops : [];
     }
 
     LinearGradient.prototype.toString = function() {
-      return "-webkit-linear-gradient(" + ([this.position].concat(__slice.call(this.points)).join(',')) + ")";
+      var stops;
+      stops = this.stops.sort(function(a, b) {
+        return a.length - b.length;
+      });
+      return "-webkit-linear-gradient(" + ([this.position].concat(__slice.call(stops)).join(',')) + ")";
+    };
+
+    LinearGradient.prototype.addStop = function(stop) {
+      return this.stops.push(stop);
+    };
+
+    LinearGradient.prototype.removeStop = function(stop) {
+      var index;
+      index = this.stops.indexOf(colorStop);
+      return this.stops.splice(index, 1);
     };
 
     return LinearGradient;
@@ -185,15 +148,6 @@ this.require.define({"app/models/properties/background.module":function(exports,
   URL = (function(_super) {
 
     __extends(URL, _super);
-
-    URL.regex = /^url\(?:(?:"|')?(.+)\1\)/;
-
-    URL.fromString = function(str) {
-      var match;
-      match = str.match(this.regex);
-      if (!match) return;
-      return new this(match[1]);
-    };
 
     function URL(url) {
       this.url = url;
@@ -215,7 +169,7 @@ this.require.define({"app/models/properties/background.module":function(exports,
 
   module.exports.Position = Position;
 
-  module.exports.Point = Point;
+  module.exports.ColorStop = ColorStop;
 
 }).call(this);
 ;}});

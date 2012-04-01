@@ -1,4 +1,6 @@
-Resizing = require('./element/resizing')
+Resizing   = require('./element/resizing')
+Background = require('app/models/properties/background')
+Color      = require('app/models/properties/color')
 
 class Element extends Spine.Controller
   defaults:
@@ -8,6 +10,7 @@ class Element extends Spine.Controller
     left: 0
     top: 0
     opacity: 1
+    background: [new Color(0, 0, 0, 0.2)]
 
   events:
     'mousedown': 'select'

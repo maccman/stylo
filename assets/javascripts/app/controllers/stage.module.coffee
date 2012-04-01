@@ -36,7 +36,7 @@ class Stage extends Spine.Controller
     # FIXME: Test data
     @rectangle1 = new Rectangle(
       left: 200, top: 200,
-      backgroundImage: [new Properties.URL('assets/blacky.png')]
+      background: [new Properties.Background.URL('assets/blacky.png')]
     )
     @rectangle2 = new Rectangle()
 

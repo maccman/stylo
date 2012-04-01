@@ -3,52 +3,63 @@ ColorPicker = require('./color_picker')
 Color       = ColorPicker.Color
 
 # TODO - abstract from properties
-BackgroundImage = require('app/models/properties/background_image')
-LinearGradient  = BackgroundImage.LinearGradient
-ColorStop       = BackgroundImage.ColorStop
+Background      = require('app/models/properties/background')
+LinearGradient  = Background.LinearGradient
+ColorStop       = Background.ColorStop
 
 class Slider extends Spine.Controller
   className: 'slider'
 
   events:
     'mousedown': 'listen'
+    'mouseup': 'openColorPicker'
 
   constructor: (@colorStop = new ColorStop) ->
     super()
 
-    @colorInput = new ColorPicker.Preview(color: @colorStop.color)
-    @colorInput.bind 'change', (color) =>
-      @colorInput.color = color
-      @el.trigger('change', this)
+    @inner = $('<div />').addClass('inner')
+    @append @inner
+    @render()
 
-    @append(@colorInput)
+  render: ->
+    @move(@colorStop.length)
+    @inner.css(background: @colorStop.color)
 
   listen: (e) =>
     e.preventDefault()
     e.stopPropagation()
 
-    @width = @el.parent().width()
+    @width  = @el.parent().width()
+    @offset = @el.parent().offset()
+    @remove = false
+    @moved  = false
+
     $(document).mousemove(@drag)
     $(document).mouseup(@drop)
 
   drag: (e) =>
-    position = @el.offset()
-    left     = e.pageY - position.left
+    @moved = true
+    @picker?.close?()
+    @picker = false
 
-    location = (left / @width) * 100
-    @move(location)
+    top = e.pageY - @offset.top
+    @remove = top > 100 or top < -100
+    @el.toggleClass('remove', @remove)
+
+    left   = e.pageX - @offset.left
+    length = (left / @width) * 100
+    @move(length)
 
   drop: (e) =>
     $(document).unbind('mousemove', @drag)
     $(document).unbind('mouseup', @drop)
+    @release() if @remove
 
-  move: (@location = 0) ->
-    @colorStop.location = @location
+  move: (@length = 0) ->
+    @length = Math.max(Math.min(@length, 100), 0)
+    @colorStop.length = @length
 
-    left = (@location / 100) * @width
-    left = Math.max(Math.min(@width, left), 0)
-
-    @el.css(left: left)
+    @el.css(left: "#{@length}%")
     @el.trigger('change', this)
 
   release: ->
@@ -56,10 +67,26 @@ class Slider extends Spine.Controller
     @el.trigger('removed', this)
     @el.trigger('change', this)
 
+  openColorPicker: ->
+    if @moved
+      return
+
+    @picker = new ColorPicker(color: @colorStop.color)
+
+    @picker.bind 'change', (color) =>
+      @colorStop.color = color
+      @el.trigger('change', this)
+      @render()
+
+    @picker.open(@el.offset())
+
 class GradientPicker extends Spine.Controller
+  className: 'gradientPicker'
+
   events:
     'removed': 'removeSlider'
     'change': 'set'
+    'click': 'createSlider'
 
   constructor: ->
     super
@@ -69,8 +96,8 @@ class GradientPicker extends Spine.Controller
 
     # Add default stops
     unless @gradient.stops.length
-      @addSlider(new ColorStop(new Color(255, 255, 255), 0))
-      @addSlider(new ColorStop(new Color(0, 0, 0), 1))
+      @addSlider(new ColorStop(new Color.White, 0))
+      @addSlider(new ColorStop(new Color.Black, 100))
 
     @el.css(background: @gradient)
 
@@ -80,10 +107,20 @@ class GradientPicker extends Spine.Controller
     @set()
 
   removeSlider: (e, slider) ->
+    debugger
     @gradient.removeStop(slider.colorStop)
 
   set: ->
     @el.css(background: @gradient)
     @trigger('change', @gradient)
+
+  createSlider: (e) ->
+    # Only create sliders for clicks directly on the picker
+    return unless e.target is e.currentTarget
+
+    left   = e.pageX - @el.offset().left
+    length = (left / @el.width()) * 100
+
+    @addSlider(new ColorStop(new Color.White, length))
 
 module.exports = GradientPicker

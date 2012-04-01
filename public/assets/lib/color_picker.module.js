@@ -95,6 +95,14 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
       }
     };
 
+    Color.White = function(alpha) {
+      return new Color(255, 255, 255, alpha);
+    };
+
+    Color.Black = function(alpha) {
+      return new Color(0, 0, 0, alpha);
+    };
+
     function Color(r, g, b, a) {
       if (r == null) r = 0;
       if (g == null) g = 0;

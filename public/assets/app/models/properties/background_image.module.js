@@ -59,7 +59,7 @@
   return this.require;
 }).call(this);
 this.require.define({"app/models/properties/background_image":function(exports, require, module){(function() {
-  var BackgroundImage, Color, ColorStop, LinearGradient, Position, Property, URL,
+  var BackgroundImage, Color, ColorStop, LinearGradient, Position, Property, Pure, URL,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __slice = Array.prototype.slice;
@@ -127,6 +127,16 @@ this.require.define({"app/models/properties/background_image":function(exports, 
       return "-webkit-linear-gradient(" + ([this.position].concat(__slice.call(this.stops)).join(',')) + ")";
     };
 
+    LinearGradient.prototype.addStop = function(stop) {
+      return this.stops.push(stop);
+    };
+
+    LinearGradient.prototype.removeStop = function(stop) {
+      var index;
+      index = this.stops.indexOf(colorStop);
+      return this.stops.splice(index, 1);
+    };
+
     return LinearGradient;
 
   })(BackgroundImage);
@@ -147,6 +157,22 @@ this.require.define({"app/models/properties/background_image":function(exports, 
 
   })(BackgroundImage);
 
+  Pure = (function(_super) {
+
+    __extends(Pure, _super);
+
+    function Pure(color) {
+      this.color = color;
+    }
+
+    Pure.prototype.toString = function() {
+      return "" + this.color;
+    };
+
+    return Pure;
+
+  })(BackgroundImage);
+
   module.exports = BackgroundImage;
 
   module.exports.LinearGradient = LinearGradient;
@@ -156,6 +182,8 @@ this.require.define({"app/models/properties/background_image":function(exports, 
   module.exports.Position = Position;
 
   module.exports.ColorStop = ColorStop;
+
+  module.exports.Pure = Pure;
 
 }).call(this);
 ;}});

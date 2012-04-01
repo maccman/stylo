@@ -46,8 +46,8 @@ class SelectArea extends Spine.Controller
     @selectArea?.remove()
     @offset = @el.offset()
 
-    $(@el).mousemove(@drag)
-    $(@el).mouseup(@drop)
+    $(document).mousemove(@drag)
+    $(document).mouseup(@drop)
 
   drag: (e) =>
     # Mouse events need to be offset
@@ -78,7 +78,7 @@ class SelectArea extends Spine.Controller
   drop: (e) =>
     @selectArea?.remove()
     @selectArea = null
-    $(@el).unbind('mousemove', @drag)
-    $(@el).unbind('mouseup', @drop)
+    $(document).unbind('mousemove', @drag)
+    $(document).unbind('mouseup', @drop)
 
 module.exports = SelectArea

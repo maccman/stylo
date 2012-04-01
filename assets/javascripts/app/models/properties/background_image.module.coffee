@@ -19,12 +19,18 @@ class ColorStop
 
 class BackgroundImage extends Property
 
-
 class LinearGradient extends BackgroundImage
   constructor: (@position = new Position, @stops = []) ->
 
   toString: ->
     "-webkit-linear-gradient(#{[@position, @stops...].join(',')})"
+
+  addStop: (stop) ->
+    @stops.push(stop)
+
+  removeStop: (stop) ->
+    index = @stops.indexOf(colorStop)
+    @stops.splice(index, 1)
 
 class URL extends BackgroundImage
   constructor: (@url) ->
@@ -32,8 +38,15 @@ class URL extends BackgroundImage
   toString: ->
     "url('#{@url}')"
 
-module.exports = BackgroundImage
+class Pure extends BackgroundImage
+  constructor: (@color) ->
+
+  toString: ->
+    "#{@color}"
+
+module.exports                = BackgroundImage
 module.exports.LinearGradient = LinearGradient
-module.exports.URL = URL
-module.exports.Position = Position
-module.exports.ColorStop = ColorStop
+module.exports.URL            = URL
+module.exports.Position       = Position
+module.exports.ColorStop      = ColorStop
+module.exports.Pure           = Pure

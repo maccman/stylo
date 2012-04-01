@@ -237,7 +237,7 @@ class Display extends Spine.Controller
     @$g.val @color.g
     @$b.val @color.b
 
-    @$a.val @color.a * 100
+    @$a.val Math.round(@color.a * 100)
     @$hex.val @color.toHex()
     @$preview.css(background: @color.toString())
 

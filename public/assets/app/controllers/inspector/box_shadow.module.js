@@ -233,7 +233,10 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
       this.edit = new BoxShadowEdit({
         shadow: this.current
       });
-      this.edit.bind('change', this.set);
+      this.edit.bind('change', function() {
+        var _ref;
+        return (_ref = _this.shadows).change.apply(_ref, arguments);
+      });
       return this.append(this.edit);
     };
 

@@ -11537,7 +11537,7 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
       this.$r.val(this.color.r);
       this.$g.val(this.color.g);
       this.$b.val(this.color.b);
-      this.$a.val(this.color.a * 100);
+      this.$a.val(Math.round(this.color.a * 100));
       this.$hex.val(this.color.toHex());
       return this.$preview.css({
         background: this.color.toString()
@@ -11765,7 +11765,7 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 }).call(this);
 ;}});
 this.require.define({"lib/gradient_picker":function(exports, require, module){(function() {
-  var BackgroundImage, Color, ColorPicker, ColorSlide, GradientPicker, Popup, Stop,
+  var BackgroundImage, Color, ColorPicker, ColorStop, GradientPicker, LinearGradient, Popup, Slider,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -11778,82 +11778,77 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
 
   BackgroundImage = require('app/models/properties/background_image');
 
-  Stop = (function(_super) {
+  LinearGradient = BackgroundImage.LinearGradient;
 
-    __extends(Stop, _super);
+  ColorStop = BackgroundImage.ColorStop;
 
-    Stop.prototype.className = 'stop';
+  Slider = (function(_super) {
 
-    Stop.prototype.events = {
+    __extends(Slider, _super);
+
+    Slider.prototype.className = 'slider';
+
+    Slider.prototype.events = {
       'mousedown': 'listen'
     };
 
-    function Stop(slide, color, location) {
-      this.slide = slide;
-      this.color = color;
-      this.location = location != null ? location : 0;
+    function Slider(colorStop) {
+      var _this = this;
+      this.colorStop = colorStop != null ? colorStop : new ColorStop;
       this.drop = __bind(this.drop, this);
       this.drag = __bind(this.drag, this);
       this.listen = __bind(this.listen, this);
-      Stop.__super__.constructor.call(this);
-      this.appendTo(this.slide);
+      Slider.__super__.constructor.call(this);
+      this.colorInput = new ColorPicker.Preview({
+        color: this.colorStop.color
+      });
+      this.colorInput.bind('change', function(color) {
+        _this.colorInput.color = color;
+        return _this.el.trigger('change', _this);
+      });
+      this.append(this.colorInput);
     }
 
-    Stop.prototype.listen = function(e) {
+    Slider.prototype.listen = function(e) {
       e.preventDefault();
       e.stopPropagation();
-      this.dragPosition = {
-        left: e.pageX,
-        top: e.pageY
-      };
-      this.slide.mousemove(this.drag);
+      this.width = this.el.parent().width();
+      $(document).mousemove(this.drag);
       return $(document).mouseup(this.drop);
     };
 
-    Stop.prototype.drag = function(e) {
-      var difference;
-      difference = {
-        left: e.pageX - this.dragPosition.left,
-        top: e.pageY - this.dragPosition.top
-      };
-      this.dragPosition = {
-        left: e.pageX,
-        top: e.pageY
-      };
-      return this.move({
-        left: difference.left
-      });
+    Slider.prototype.drag = function(e) {
+      var left, location, position;
+      position = this.el.offset();
+      left = e.pageY - position.left;
+      location = (left / this.width) * 100;
+      return this.move(location);
     };
 
-    Stop.prototype.drop = function(e) {
-      this.slide.unbind('mousemove', this.drag);
+    Slider.prototype.drop = function(e) {
+      $(document).unbind('mousemove', this.drag);
       return $(document).unbind('mouseup', this.drop);
     };
 
-    Stop.prototype.move = function(toPosition) {
-      var position;
-      position = this.el.position();
-      position.left += toPosition.left;
-      this.location = this.slide.width() - position.left;
-      this.el.css(position);
-      return this.el.trigger('moved', this);
+    Slider.prototype.move = function(location) {
+      var left;
+      this.location = location != null ? location : 0;
+      this.colorStop.location = this.location;
+      left = (this.location / 100) * this.width;
+      left = Math.max(Math.min(this.width, left), 0);
+      this.el.css({
+        left: left
+      });
+      return this.el.trigger('change', this);
     };
 
-    return Stop;
+    Slider.prototype.release = function() {
+      Slider.__super__.release.apply(this, arguments);
+      this.el.trigger('removed', this);
+      return this.el.trigger('change', this);
+    };
 
-  })(Spine.Controller);
-
-  ColorSlide = (function(_super) {
-
-    __extends(ColorSlide, _super);
-
-    function ColorSlide() {
-      ColorSlide.__super__.constructor.apply(this, arguments);
-    }
-
-    ColorSlide.prototype.className = 'colorSlide';
-
-    return ColorSlide;
+    return Slider;
 
   })(Spine.Controller);
 
@@ -11861,14 +11856,50 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
 
     __extends(GradientPicker, _super);
 
+    GradientPicker.prototype.events = {
+      'removed': 'removeSlider',
+      'change': 'set'
+    };
+
     function GradientPicker() {
+      var stop, _i, _len, _ref;
       GradientPicker.__super__.constructor.apply(this, arguments);
-      this.gradient || (this.gradient = new BackgroundImage.LinearGradient);
+      this.gradient || (this.gradient = new LinearGradient);
+      _ref = this.gradient.stops;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        stop = _ref[_i];
+        this.append(new Slider(stop));
+      }
+      if (!this.gradient.stops.length) {
+        this.addSlider(new ColorStop(new Color(255, 255, 255), 0));
+        this.addSlider(new ColorStop(new Color(0, 0, 0), 1));
+      }
+      this.el.css({
+        background: this.gradient
+      });
     }
+
+    GradientPicker.prototype.addSlider = function(colorStop) {
+      if (colorStop == null) colorStop = new ColorStop;
+      this.gradient.addStop(colorStop);
+      this.append(new Slider(colorStop));
+      return this.set();
+    };
+
+    GradientPicker.prototype.removeSlider = function(e, slider) {
+      return this.gradient.removeStop(slider.colorStop);
+    };
+
+    GradientPicker.prototype.set = function() {
+      this.el.css({
+        background: this.gradient
+      });
+      return this.trigger('change', this.gradient);
+    };
 
     return GradientPicker;
 
-  })(Popup);
+  })(Spine.Controller);
 
   module.exports = GradientPicker;
 
@@ -12716,6 +12747,9 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
 
     Inspector.prototype.render = function() {
       this.el.empty();
+      this.append(new Background({
+        stage: this.stage
+      }));
       this.append(new Opacity({
         stage: this.stage
       }));
@@ -12733,16 +12767,22 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
 }).call(this);
 ;}});
 this.require.define({"app/controllers/inspector/background":function(exports, require, module){(function() {
-  var Background, BackgroundImage, Collection, Color, Edit, List,
+  var BI, Background, BackgroundImage, Collection, Color, ColorPicker, Edit, GradientPicker, List,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   Collection = require('lib/collection');
 
+  ColorPicker = require('lib/color_picker');
+
+  GradientPicker = require('lib/gradient_picker');
+
   Color = require('app/models/properties/color');
 
   BackgroundImage = require('app/models/properties/background_image');
+
+  BI = BackgroundImage;
 
   Edit = (function(_super) {
 
@@ -12754,24 +12794,50 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
       'change input': 'inputChange'
     };
 
-    Edit.prototype.elements = {
-      'input[name=x]': '$x',
-      'input[name=y]': '$y',
-      'input[name=blur]': '$blur'
-    };
-
     function Edit() {
       Edit.__super__.constructor.apply(this, arguments);
       this.change(this.background);
     }
 
     Edit.prototype.change = function(background) {
-      this.background = background != null ? background : new BackgroundImage;
+      this.background = background;
       return this.render();
     };
 
     Edit.prototype.render = function() {
-      return this.html(JST['app/views/inspector/background'](this));
+      var picker,
+        _this = this;
+      this.el.empty();
+      if (this.background instanceof BackgroundImage.Pure) {
+        picker = new ColorPicker.Preview({
+          color: this.background.color
+        });
+        picker.bind('change', function(color) {
+          _this.background.color = color;
+          return _this.trigger('change', _this.background);
+        });
+        return this.append(picker);
+      } else if (this.background instanceof BackgroundImage.URL) {
+        return this.html(JST['app/views/inspector/background/url'](this));
+      } else if (this.background instanceof BackgroundImage.LinearGradient) {
+        picker = new GradientPicker({
+          gradient: this.background
+        });
+        picker.bind('change', function(background) {
+          _this.background = background;
+          return _this.trigger('change', _this.background);
+        });
+        return this.append(picker);
+      } else {
+
+      }
+    };
+
+    Edit.prototype.inputChange = function() {
+      if (this.background instanceof BackgroundImage.URL) {
+        this.background.url = this.$('input').val();
+        return this.trigger('change', this.background);
+      }
     };
 
     return Edit;
@@ -12813,7 +12879,8 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
     };
 
     List.prototype.plus = function() {
-      this.backgrounds.push(this.current = new BackgroundImage);
+      this.current = new BI.LinearGradient(new BI.Position(0), [new BI.ColorStop(new Color(255, 255, 255)), new BI.ColorStop(new Color(0, 0, 0))]);
+      this.backgrounds.push(this.current);
       this.trigger('change', this.current);
       return false;
     };
@@ -13091,7 +13158,10 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
       this.edit = new BoxShadowEdit({
         shadow: this.current
       });
-      this.edit.bind('change', this.set);
+      this.edit.bind('change', function() {
+        var _ref;
+        return (_ref = _this.shadows).change.apply(_ref, arguments);
+      });
       return this.append(this.edit);
     };
 
@@ -13816,8 +13886,8 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
       e.preventDefault();
       if ((_ref = this.selectArea) != null) _ref.remove();
       this.offset = this.el.offset();
-      $(this.el).mousemove(this.drag);
-      return $(this.el).mouseup(this.drop);
+      $(document).mousemove(this.drag);
+      return $(document).mouseup(this.drop);
     };
 
     SelectArea.prototype.drag = function(e) {
@@ -13845,8 +13915,8 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
       var _ref;
       if ((_ref = this.selectArea) != null) _ref.remove();
       this.selectArea = null;
-      $(this.el).unbind('mousemove', this.drag);
-      return $(this.el).unbind('mouseup', this.drop);
+      $(document).unbind('mousemove', this.drag);
+      return $(document).unbind('mouseup', this.drop);
     };
 
     return SelectArea;
@@ -14211,7 +14281,7 @@ this.require.define({"app/models/properties":function(exports, require, module){
 }).call(this);
 ;}});
 this.require.define({"app/models/properties/background_image":function(exports, require, module){(function() {
-  var BackgroundImage, Color, ColorStop, LinearGradient, Position, Property, URL,
+  var BackgroundImage, Color, ColorStop, LinearGradient, Position, Property, Pure, URL,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __slice = Array.prototype.slice;
@@ -14279,6 +14349,16 @@ this.require.define({"app/models/properties/background_image":function(exports, 
       return "-webkit-linear-gradient(" + ([this.position].concat(__slice.call(this.stops)).join(',')) + ")";
     };
 
+    LinearGradient.prototype.addStop = function(stop) {
+      return this.stops.push(stop);
+    };
+
+    LinearGradient.prototype.removeStop = function(stop) {
+      var index;
+      index = this.stops.indexOf(colorStop);
+      return this.stops.splice(index, 1);
+    };
+
     return LinearGradient;
 
   })(BackgroundImage);
@@ -14299,6 +14379,22 @@ this.require.define({"app/models/properties/background_image":function(exports, 
 
   })(BackgroundImage);
 
+  Pure = (function(_super) {
+
+    __extends(Pure, _super);
+
+    function Pure(color) {
+      this.color = color;
+    }
+
+    Pure.prototype.toString = function() {
+      return "" + this.color;
+    };
+
+    return Pure;
+
+  })(BackgroundImage);
+
   module.exports = BackgroundImage;
 
   module.exports.LinearGradient = LinearGradient;
@@ -14308,6 +14404,8 @@ this.require.define({"app/models/properties/background_image":function(exports, 
   module.exports.Position = Position;
 
   module.exports.ColorStop = ColorStop;
+
+  module.exports.Pure = Pure;
 
 }).call(this);
 ;}});
@@ -14777,6 +14875,57 @@ this.require.define({"app/models/property":function(exports, require, module){(f
 }).call(this);
 (function() {
   this.JST || (this.JST = {});
+  this.JST["app/views/inspector/background/linear_gradient"] = function(__obj) {
+    if (!__obj) __obj = {};
+    var __out = [], __capture = function(callback) {
+      var out = __out, result;
+      __out = [];
+      callback.call(this);
+      result = __out.join('');
+      __out = out;
+      return __safe(result);
+    }, __sanitize = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else if (typeof value !== 'undefined' && value != null) {
+        return __escape(value);
+      } else {
+        return '';
+      }
+    }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+    __safe = __obj.safe = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else {
+        if (!(typeof value !== 'undefined' && value != null)) value = '';
+        var result = new String(value);
+        result.ecoSafe = true;
+        return result;
+      }
+    };
+    if (!__escape) {
+      __escape = __obj.escape = function(value) {
+        return ('' + value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      };
+    }
+    (function() {
+      (function() {
+      
+      
+      
+      }).call(this);
+      
+    }).call(__obj);
+    __obj.safe = __objSafe, __obj.escape = __escape;
+    return __out.join('');
+  };
+}).call(this);
+(function() {
+  this.JST || (this.JST = {});
   this.JST["app/views/inspector/background/list"] = function(__obj) {
     if (!__obj) __obj = {};
     var __out = [], __capture = function(callback) {
@@ -14831,6 +14980,61 @@ this.require.define({"app/models/property":function(exports, require, module){(f
         }
       
         __out.push('\n</div>\n\n<footer>\n  <button class="plus">+</button>\n  <button class="minus">-</button>\n</footer>\n');
+      
+      }).call(this);
+      
+    }).call(__obj);
+    __obj.safe = __objSafe, __obj.escape = __escape;
+    return __out.join('');
+  };
+}).call(this);
+(function() {
+  this.JST || (this.JST = {});
+  this.JST["app/views/inspector/background/url"] = function(__obj) {
+    if (!__obj) __obj = {};
+    var __out = [], __capture = function(callback) {
+      var out = __out, result;
+      __out = [];
+      callback.call(this);
+      result = __out.join('');
+      __out = out;
+      return __safe(result);
+    }, __sanitize = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else if (typeof value !== 'undefined' && value != null) {
+        return __escape(value);
+      } else {
+        return '';
+      }
+    }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+    __safe = __obj.safe = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else {
+        if (!(typeof value !== 'undefined' && value != null)) value = '';
+        var result = new String(value);
+        result.ecoSafe = true;
+        return result;
+      }
+    };
+    if (!__escape) {
+      __escape = __obj.escape = function(value) {
+        return ('' + value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      };
+    }
+    (function() {
+      (function() {
+      
+        __out.push('<label>\n  <span>URL</span>\n  <input type="text" placeholder="URL..." value="');
+      
+        __out.push(__sanitize(this.background.url));
+      
+        __out.push('" />\n</label>\n');
       
       }).call(this);
       
@@ -14989,7 +15193,7 @@ this.require.define({"app/models/property":function(exports, require, module){(f
         _ref = this.shadows;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           shadow = _ref[_i];
-          __out.push('\n    <div class="item">\n      <div class="preview" style="box-shadow: ');
+          __out.push('\n    <div class="item">\n      <div class="preview hidden" style="box-shadow: ');
           __out.push(__sanitize(shadow.toString()));
           __out.push('"></div>\n      <span>');
           __out.push(__sanitize(shadow.toString()));

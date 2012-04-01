@@ -137,8 +137,8 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
       e.preventDefault();
       if ((_ref = this.selectArea) != null) _ref.remove();
       this.offset = this.el.offset();
-      $(this.el).mousemove(this.drag);
-      return $(this.el).mouseup(this.drop);
+      $(document).mousemove(this.drag);
+      return $(document).mouseup(this.drop);
     };
 
     SelectArea.prototype.drag = function(e) {
@@ -166,8 +166,8 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
       var _ref;
       if ((_ref = this.selectArea) != null) _ref.remove();
       this.selectArea = null;
-      $(this.el).unbind('mousemove', this.drag);
-      return $(this.el).unbind('mouseup', this.drop);
+      $(document).unbind('mousemove', this.drag);
+      return $(document).unbind('mouseup', this.drop);
     };
 
     return SelectArea;

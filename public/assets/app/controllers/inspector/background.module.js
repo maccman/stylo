@@ -59,16 +59,22 @@
   return this.require;
 }).call(this);
 this.require.define({"app/controllers/inspector/background":function(exports, require, module){(function() {
-  var Background, BackgroundImage, Collection, Color, Edit, List,
+  var BI, Background, BackgroundImage, Collection, Color, ColorPicker, Edit, GradientPicker, List,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   Collection = require('lib/collection');
 
+  ColorPicker = require('lib/color_picker');
+
+  GradientPicker = require('lib/gradient_picker');
+
   Color = require('app/models/properties/color');
 
   BackgroundImage = require('app/models/properties/background_image');
+
+  BI = BackgroundImage;
 
   Edit = (function(_super) {
 
@@ -80,24 +86,50 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
       'change input': 'inputChange'
     };
 
-    Edit.prototype.elements = {
-      'input[name=x]': '$x',
-      'input[name=y]': '$y',
-      'input[name=blur]': '$blur'
-    };
-
     function Edit() {
       Edit.__super__.constructor.apply(this, arguments);
       this.change(this.background);
     }
 
     Edit.prototype.change = function(background) {
-      this.background = background != null ? background : new BackgroundImage;
+      this.background = background;
       return this.render();
     };
 
     Edit.prototype.render = function() {
-      return this.html(JST['app/views/inspector/background'](this));
+      var picker,
+        _this = this;
+      this.el.empty();
+      if (this.background instanceof BackgroundImage.Pure) {
+        picker = new ColorPicker.Preview({
+          color: this.background.color
+        });
+        picker.bind('change', function(color) {
+          _this.background.color = color;
+          return _this.trigger('change', _this.background);
+        });
+        return this.append(picker);
+      } else if (this.background instanceof BackgroundImage.URL) {
+        return this.html(JST['app/views/inspector/background/url'](this));
+      } else if (this.background instanceof BackgroundImage.LinearGradient) {
+        picker = new GradientPicker({
+          gradient: this.background
+        });
+        picker.bind('change', function(background) {
+          _this.background = background;
+          return _this.trigger('change', _this.background);
+        });
+        return this.append(picker);
+      } else {
+
+      }
+    };
+
+    Edit.prototype.inputChange = function() {
+      if (this.background instanceof BackgroundImage.URL) {
+        this.background.url = this.$('input').val();
+        return this.trigger('change', this.background);
+      }
     };
 
     return Edit;
@@ -139,7 +171,8 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
     };
 
     List.prototype.plus = function() {
-      this.backgrounds.push(this.current = new BackgroundImage);
+      this.current = new BI.LinearGradient(new BI.Position(0), [new BI.ColorStop(new Color(255, 255, 255)), new BI.ColorStop(new Color(0, 0, 0))]);
+      this.backgrounds.push(this.current);
       this.trigger('change', this.current);
       return false;
     };

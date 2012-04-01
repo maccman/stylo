@@ -121,113 +121,74 @@
     }
   }
 
-  .background {
-    select {
-      width: 130px
-      margin-left: 5px
+  .list {
+    background: #FFF
+    border-radius: 4px
+    margin: 10px 10px 0 10px
+    overflow: hidden
+    border: 1px solid rgba(0, 0, 0, 0.25)
+    box-shadow: 0 1px 1px #FFF
+
+    .items {
+      min-height: 35px
+      max-height: 100px
+      overflow-x: auto
     }
 
-    .preview {
-      margin: 5px 0 0 60px
-    }
+    .item {
+      padding: 8px
+      cursor: pointer
+      border-bottom: 1px solid rgba(0, 0, 0, 0.25)
 
-    span {
-      width: 50px
-    }
-  }
-
-  .opacity label {
-    input[type=range] {
-      width: 135px
-      margin: 5px
-      position: relative
-      bottom: -4px
-    }
-
-    input[type=number] {
-      width: 40px
-    }
-  }
-
-  .boxShadow {
-    .list {
-      background: #FFF
-      border-radius: 4px
-      margin: 10px 10px 0 10px
-      overflow: hidden
-      border: 1px solid rgba(0, 0, 0, 0.25)
-      box-shadow: 0 1px 1px #FFF
-
-      .items {
-        min-height: 30px
-        max-height: 100px
-        overflow-x: auto
+      &:last-child {
+        border-bottom: none
       }
 
-      .item {
-        padding: 8px
-        cursor: pointer
-        border-bottom: 1px solid rgba(0, 0, 0, 0.25)
-
-        &:last-child {
-          border-bottom: none
-        }
-
-        &.selected {
-          color: #FFF
-          text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.1)
-          vbg-gradient(#BAC4D8, #9AA8C7)
-        }
+      &.selected {
+        color: #FFF
+        text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.1)
+        vbg-gradient(#BAC4D8, #9AA8C7)
       }
 
-      footer {
-        border-top: 1px solid rgba(0, 0, 0, 0.15)
-        inset-line(0.8)
-        vbg-gradient(lighten(rgba(238, 238, 238, 1), 80%), rgba(238, 238, 238, 0.9))
-        -webkit-border-radius: 0 0 4px 4px
-        overflow: hidden
-
-        button {
-          margin: 0
-          display: block
-          float: left
-
-          color: #5B5B5B;
-          font-size: 14px;
-          font-weight: bold
-          text-transform: uppercase
-          text-shadow: 0 1px 1px #FFF;
-          padding: 2px 12px
-          box-shadow: inset -1px 0 1px rgba(255, 255, 255, 0.5)
-          border: none
-          border-right: 1px solid rgba(0, 0, 0, 0.15)
-          background: none
-
-          &:active {
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2)
-          }
-        }
+      .preview {
+        margin: 0 3px 0 0
+        width: 8px
+        height: 8px
+        display: inline-block
       }
-    }
 
-    .positionPicker {
-      margin: 3px 5px 3px 0
-    }
-
-    label {
       span {
-        margin-left: 3px
-        width: auto
+        ellipsis()
       }
     }
 
-    .blur span, .color span {
-      width: 33px
-    }
+    footer {
+      border-top: 1px solid rgba(0, 0, 0, 0.15)
+      inset-line(0.8)
+      vbg-gradient(lighten(rgba(238, 238, 238, 1), 80%), rgba(238, 238, 238, 0.9))
+      -webkit-border-radius: 0 0 4px 4px
+      overflow: hidden
 
-    .color span {
-      position relative
-      top: -6px
+      button {
+        margin: 0
+        display: block
+        float: left
+
+        color: #5B5B5B;
+        font-size: 14px;
+        font-weight: bold
+        text-transform: uppercase
+        text-shadow: 0 1px 1px #FFF;
+        padding: 2px 12px
+        box-shadow: inset -1px 0 1px rgba(255, 255, 255, 0.5)
+        border: none
+        border-right: 1px solid rgba(0, 0, 0, 0.15)
+        background: none
+
+        &:active {
+          box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2)
+        }
+      }
     }
-  }
+  } // .list
 }

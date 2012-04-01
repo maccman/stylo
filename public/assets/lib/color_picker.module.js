@@ -392,7 +392,7 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
       this.$r.val(this.color.r);
       this.$g.val(this.color.g);
       this.$b.val(this.color.b);
-      this.$a.val(this.color.a * 100);
+      this.$a.val(Math.round(this.color.a * 100));
       this.$hex.val(this.color.toHex());
       return this.$preview.css({
         background: this.color.toString()

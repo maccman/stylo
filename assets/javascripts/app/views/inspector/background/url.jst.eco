@@ -1,0 +1,4 @@
+<label>
+  <span>URL</span>
+  <input type="text" placeholder="URL..." value="<%= @background.url %>" />
+</label>

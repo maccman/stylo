@@ -1,6 +1,9 @@
 Collection      = require('lib/collection')
+ColorPicker     = require('lib/color_picker')
+GradientPicker  = require('lib/gradient_picker')
 Color           = require('app/models/properties/color')
 BackgroundImage = require('app/models/properties/background_image')
+BI              = BackgroundImage
 
 class Edit extends Spine.Controller
   className: 'edit'
@@ -8,26 +11,44 @@ class Edit extends Spine.Controller
   events:
     'change input': 'inputChange'
 
-  elements:
-    'input[name=x]': '$x'
-    'input[name=y]': '$y'
-    'input[name=blur]': '$blur'
-
   constructor: ->
     super
     @change(@background)
 
-  change: (@background = new BackgroundImage) ->
+  change: (@background) ->
     @render()
 
   render: ->
-    @html JST['app/views/inspector/background'](@)
+    @el.empty()
+
+    if @background instanceof BackgroundImage.Pure
+      picker = new ColorPicker.Preview(color: @background.color)
+      picker.bind 'change', (color) =>
+        @background.color = color
+        @trigger('change', @background)
+      @append picker
+
+    else if @background instanceof BackgroundImage.URL
+      @html JST['app/views/inspector/background/url'](@)
+
+    else if @background instanceof BackgroundImage.LinearGradient
+      picker = new GradientPicker(gradient: @background)
+      picker.bind 'change', (@background) =>
+        @trigger 'change', @background
+      @append picker
+
+    else
+      # Empty BG
 
     # TODO
     # Multiple gradient picker
     # Single color picker
     # Url picker (repeat)
 
+  inputChange: ->
+    if @background instanceof BackgroundImage.URL
+      @background.url = @$('input').val()
+      @trigger 'change', @background
 
 class List extends Spine.Controller
   className: 'list'
@@ -57,7 +78,14 @@ class List extends Spine.Controller
     false
 
   plus: ->
-    @backgrounds.push(@current = new BackgroundImage)
+    @current = new BI.LinearGradient(
+      new BI.Position(0),
+      [
+        new BI.ColorStop(new Color(255, 255, 255)),
+        new BI.ColorStop(new Color(0, 0, 0))
+      ]
+    )
+    @backgrounds.push(@current)
     @trigger 'change', @current
     false
 
@@ -66,7 +94,6 @@ class List extends Spine.Controller
     @current = @backgrounds.first()
     @trigger 'change', @current
     false
-
 
 class Background extends Spine.Controller
   className: 'background'
@@ -109,7 +136,6 @@ class Background extends Spine.Controller
     @edit = new Edit(background: @current)
     @edit.bind 'change', @set
     @append @edit
-
 
   set: =>
     @stage.selection.set('backgroundImage', @backgrounds.valueOf())

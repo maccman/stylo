@@ -58,52 +58,59 @@
 
   return this.require;
 }).call(this);
-this.require.define({"app/controllers/inspector":function(exports, require, module){(function() {
-  var Background, Border, BoxShadow, Inspector, Opacity, TextShadow,
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = Object.prototype.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
-
-  Background = require('./inspector/background');
-
-  Border = require('./inspector/border');
-
-  Opacity = require('./inspector/opacity');
-
-  BoxShadow = require('./inspector/box_shadow');
-
-  TextShadow = require('./inspector/text_shadow');
-
-  Inspector = (function(_super) {
-
-    __extends(Inspector, _super);
-
-    Inspector.prototype.className = 'inspector';
-
-    function Inspector() {
-      this.render = __bind(this.render, this);      Inspector.__super__.constructor.apply(this, arguments);
-      this.stage.selection.bind('change', this.render);
-      this.render();
-    }
-
-    Inspector.prototype.render = function() {
-      this.el.empty();
-      this.append(new Background({
-        stage: this.stage
-      }));
-      this.append(new Opacity({
-        stage: this.stage
-      }));
-      return this.append(new BoxShadow({
-        stage: this.stage
-      }));
+this.require.define({"app/views/foo":function(exports, require, module){(function() {
+  this.JST || (this.JST = {});
+  this.JST["app/views/foo.module"] = function(__obj) {
+    if (!__obj) __obj = {};
+    var __out = [], __capture = function(callback) {
+      var out = __out, result;
+      __out = [];
+      callback.call(this);
+      result = __out.join('');
+      __out = out;
+      return __safe(result);
+    }, __sanitize = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else if (typeof value !== 'undefined' && value != null) {
+        return __escape(value);
+      } else {
+        return '';
+      }
+    }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+    __safe = __obj.safe = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else {
+        if (!(typeof value !== 'undefined' && value != null)) value = '';
+        var result = new String(value);
+        result.ecoSafe = true;
+        return result;
+      }
     };
-
-    return Inspector;
-
-  })(Spine.Controller);
-
-  module.exports = Inspector;
-
+    if (!__escape) {
+      __escape = __obj.escape = function(value) {
+        return ('' + value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      };
+    }
+    (function() {
+      (function() {
+      
+        __out.push('<h1>');
+      
+        __out.push(__sanitize(this.test));
+      
+        __out.push('</h1>\nd\n');
+      
+      }).call(this);
+      
+    }).call(__obj);
+    __obj.safe = __objSafe, __obj.escape = __escape;
+    return __out.join('');
+  };
 }).call(this);
 ;}});

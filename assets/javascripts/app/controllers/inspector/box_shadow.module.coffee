@@ -139,7 +139,7 @@ class BoxShadow extends Spine.Controller
     # BoxShadow Edit
 
     @edit = new BoxShadowEdit(shadow: @current)
-    @edit.bind 'change', @set
+    @edit.bind 'change', => @shadows.change(arguments...)
     @append @edit
 
   set: (shadow) =>

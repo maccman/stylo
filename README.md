@@ -10,7 +10,7 @@ Phase 1:
 * ✓ Select multiple items
 * ✓ Toolbar menu
 * Inspector panel (Element/Text/Ruler)
-  * ½ Background (TODO - bg color)
+  * ✓ Background
   * Border
   * ✓ Shadow
   * Font alignment
@@ -24,15 +24,16 @@ Phase 2:
 
 * ✓ Stage snapping
 * ✓ Color picker
+* Complete background inspector
+* Scaling stage & size
+* Z-index
 * Copy paste
 * Undo/redo (on set())
+* Saving/opening
 * Resizing snapping
 * Element snapping
 * Pen tool
-* Scaling stage & size
-* Z-index
 * Keyboard shortcuts
-* Saving/opening
 
 Nice to have:
 

@@ -74,14 +74,17 @@ this.require.define({"app/controllers/element":function(exports, require, module
 
     __extends(Element, _super);
 
-    Element.prototype.defaults = {
-      position: 'absolute',
-      width: 100,
-      height: 100,
-      left: 0,
-      top: 0,
-      opacity: 1,
-      background: [new Color(0, 0, 0, 0.2)]
+    Element.prototype.defaults = function() {
+      var result;
+      return result = {
+        position: 'absolute',
+        width: 100,
+        height: 100,
+        left: 0,
+        top: 0,
+        opacity: 1,
+        backgroundColor: new Color(0, 0, 0, 0.2)
+      };
     };
 
     Element.prototype.events = {
@@ -96,7 +99,7 @@ this.require.define({"app/controllers/element":function(exports, require, module
       Element.__super__.constructor.call(this);
       this.el.addClass('element');
       this.properties = {};
-      this.set(this.defaults);
+      this.set(this.defaults());
       this.set(attrs);
       this.resizing = new Resizing(this);
     }

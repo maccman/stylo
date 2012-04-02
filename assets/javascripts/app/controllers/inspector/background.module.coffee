@@ -4,6 +4,13 @@ GradientPicker  = require('lib/gradient_picker')
 Color           = require('app/models/properties/color')
 Background      = require('app/models/properties/background')
 
+class Backgrounds extends Collection
+  getColor: ->
+    (@filter (item) -> item instanceof Color)[0]
+
+  getImages: ->
+    @filter (item) -> item not instanceof Color
+
 class Edit extends Spine.Controller
   className: 'edit'
 
@@ -104,10 +111,15 @@ class BackgroundInspector extends Spine.Controller
   render: =>
     @disabled = not @stage.selection.isAny()
 
+    # Get the background gradients
     @backgrounds = @stage.selection.get('backgroundImage')
-    @backgrounds = new Collection(@backgrounds)
-    @current     = @backgrounds.first()
+    @backgrounds = new Backgrounds(@backgrounds)
 
+    # Get the background color
+    backgroundColor = @stage.selection.get('backgroundColor')
+    @backgrounds.push(backgroundColor) if backgroundColor
+
+    @current = @backgrounds.first()
     @backgrounds.change @set
 
     @el.empty()
@@ -129,6 +141,7 @@ class BackgroundInspector extends Spine.Controller
     @append @edit
 
   set: =>
-    @stage.selection.set('backgroundImage', @backgrounds.valueOf())
+    @stage.selection.set('backgroundColor', @backgrounds.getColor())
+    @stage.selection.set('backgroundImage', @backgrounds.getImages())
 
 module.exports = BackgroundInspector

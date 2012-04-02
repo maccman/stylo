@@ -12225,14 +12225,17 @@ this.require.define({"app/controllers/element":function(exports, require, module
 
     __extends(Element, _super);
 
-    Element.prototype.defaults = {
-      position: 'absolute',
-      width: 100,
-      height: 100,
-      left: 0,
-      top: 0,
-      opacity: 1,
-      background: [new Color(0, 0, 0, 0.2)]
+    Element.prototype.defaults = function() {
+      var result;
+      return result = {
+        position: 'absolute',
+        width: 100,
+        height: 100,
+        left: 0,
+        top: 0,
+        opacity: 1,
+        backgroundColor: new Color(0, 0, 0, 0.2)
+      };
     };
 
     Element.prototype.events = {
@@ -12247,7 +12250,7 @@ this.require.define({"app/controllers/element":function(exports, require, module
       Element.__super__.constructor.call(this);
       this.el.addClass('element');
       this.properties = {};
-      this.set(this.defaults);
+      this.set(this.defaults());
       this.set(attrs);
       this.resizing = new Resizing(this);
     }
@@ -12816,7 +12819,7 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
 }).call(this);
 ;}});
 this.require.define({"app/controllers/inspector/background":function(exports, require, module){(function() {
-  var Background, BackgroundInspector, Collection, Color, ColorPicker, Edit, GradientPicker, List,
+  var Background, BackgroundInspector, Backgrounds, Collection, Color, ColorPicker, Edit, GradientPicker, List,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -12830,6 +12833,30 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
   Color = require('app/models/properties/color');
 
   Background = require('app/models/properties/background');
+
+  Backgrounds = (function(_super) {
+
+    __extends(Backgrounds, _super);
+
+    function Backgrounds() {
+      Backgrounds.__super__.constructor.apply(this, arguments);
+    }
+
+    Backgrounds.prototype.getColor = function() {
+      return (this.filter(function(item) {
+        return item instanceof Color;
+      }))[0];
+    };
+
+    Backgrounds.prototype.getImages = function() {
+      return this.filter(function(item) {
+        return !(item instanceof Color);
+      });
+    };
+
+    return Backgrounds;
+
+  })(Collection);
 
   Edit = (function(_super) {
 
@@ -12956,10 +12983,13 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
     }
 
     BackgroundInspector.prototype.render = function() {
-      var _this = this;
+      var backgroundColor,
+        _this = this;
       this.disabled = !this.stage.selection.isAny();
       this.backgrounds = this.stage.selection.get('backgroundImage');
-      this.backgrounds = new Collection(this.backgrounds);
+      this.backgrounds = new Backgrounds(this.backgrounds);
+      backgroundColor = this.stage.selection.get('backgroundColor');
+      if (backgroundColor) this.backgrounds.push(backgroundColor);
       this.current = this.backgrounds.first();
       this.backgrounds.change(this.set);
       this.el.empty();
@@ -12983,7 +13013,8 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
     };
 
     BackgroundInspector.prototype.set = function() {
-      return this.stage.selection.set('backgroundImage', this.backgrounds.valueOf());
+      this.stage.selection.set('backgroundColor', this.backgrounds.getColor());
+      return this.stage.selection.set('backgroundImage', this.backgrounds.getImages());
     };
 
     return BackgroundInspector;
@@ -13434,7 +13465,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       this.rectangle1 = new Rectangle({
         left: 200,
         top: 200,
-        background: [new Properties.Background.URL('assets/blacky.png')]
+        backgroundImage: [new Properties.Background.URL('assets/blacky.png')]
       });
       this.rectangle2 = new Rectangle();
       this.add(this.rectangle1, this.rectangle2);

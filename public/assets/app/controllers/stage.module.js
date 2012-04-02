@@ -118,7 +118,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       this.rectangle1 = new Rectangle({
         left: 200,
         top: 200,
-        background: [new Properties.Background.URL('assets/blacky.png')]
+        backgroundImage: [new Properties.Background.URL('assets/blacky.png')]
       });
       this.rectangle2 = new Rectangle();
       this.add(this.rectangle1, this.rectangle2);

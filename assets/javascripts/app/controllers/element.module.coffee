@@ -3,14 +3,15 @@ Background = require('app/models/properties/background')
 Color      = require('app/models/properties/color')
 
 class Element extends Spine.Controller
-  defaults:
-    position: 'absolute'
-    width: 100
-    height: 100
-    left: 0
-    top: 0
-    opacity: 1
-    background: [new Color(0, 0, 0, 0.2)]
+  defaults: ->
+    result =
+      position: 'absolute'
+      width: 100
+      height: 100
+      left: 0
+      top: 0
+      opacity: 1
+      backgroundColor: new Color(0, 0, 0, 0.2)
 
   events:
     'mousedown': 'select'
@@ -23,7 +24,7 @@ class Element extends Spine.Controller
 
     @properties = {}
 
-    @set @defaults
+    @set @defaults()
     @set attrs
 
     @resizing = new Resizing(this)

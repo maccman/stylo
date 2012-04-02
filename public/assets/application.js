@@ -11858,13 +11858,13 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
       this.el.css({
         left: "" + this.length + "%"
       });
-      return this.el.trigger('change', this);
+      return this.el.trigger('change', [this]);
     };
 
     Slider.prototype.release = function() {
-      Slider.__super__.release.apply(this, arguments);
-      this.el.trigger('removed', this);
-      return this.el.trigger('change', this);
+      this.el.trigger('removed', [this]);
+      this.el.trigger('change', [this]);
+      return Slider.__super__.release.apply(this, arguments);
     };
 
     Slider.prototype.openColorPicker = function() {
@@ -11875,7 +11875,7 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
       });
       this.picker.bind('change', function(color) {
         _this.colorStop.color = color;
-        _this.el.trigger('change', _this);
+        _this.el.trigger('change', [_this]);
         return _this.render();
       });
       return this.picker.open(this.el.offset());
@@ -11892,7 +11892,7 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
     GradientPicker.prototype.className = 'gradientPicker';
 
     GradientPicker.prototype.events = {
-      'removed .slider': 'removeSlider',
+      'removed': 'removeSlider',
       'change': 'set',
       'click': 'createSlider'
     };
@@ -11923,7 +11923,7 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
     };
 
     GradientPicker.prototype.removeSlider = function(e, slider) {
-      debugger;      return this.gradient.removeStop(slider.colorStop);
+      return this.gradient.removeStop(slider.colorStop);
     };
 
     GradientPicker.prototype.set = function() {
@@ -12281,7 +12281,7 @@ this.require.define({"app/controllers/element":function(exports, require, module
 
     Element.prototype.resize = function(area) {
       this.set(area);
-      return this.el.trigger('resized', this);
+      return this.el.trigger('resized', [this]);
     };
 
     Element.prototype.moveBy = function(toPosition) {
@@ -12290,7 +12290,7 @@ this.require.define({"app/controllers/element":function(exports, require, module
       area.left += toPosition.left;
       area.top += toPosition.top;
       this.set(area);
-      return this.el.trigger('moved', this);
+      return this.el.trigger('moved', [this]);
     };
 
     Element.prototype.edit = function() {
@@ -12958,7 +12958,7 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
     BackgroundInspector.prototype.render = function() {
       var _this = this;
       this.disabled = !this.stage.selection.isAny();
-      this.backgrounds = this.stage.selection.get('background');
+      this.backgrounds = this.stage.selection.get('backgroundImage');
       this.backgrounds = new Collection(this.backgrounds);
       this.current = this.backgrounds.first();
       this.backgrounds.change(this.set);
@@ -12983,7 +12983,7 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
     };
 
     BackgroundInspector.prototype.set = function() {
-      return this.stage.selection.set('background', this.backgrounds.valueOf());
+      return this.stage.selection.set('backgroundImage', this.backgrounds.valueOf());
     };
 
     return BackgroundInspector;
@@ -13429,7 +13429,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       this.snapping = new Snapping(this);
       this.keybindings = new KeyBindings(this);
       this.selection.bind('change', function() {
-        return _this.el.trigger('selection.change', _this);
+        return _this.el.trigger('selection.change', [_this]);
       });
       this.rectangle1 = new Rectangle({
         left: 200,
@@ -14327,7 +14327,7 @@ this.require.define({"app/models/properties":function(exports, require, module){
 }).call(this);
 ;}});
 this.require.define({"app/models/properties/background":function(exports, require, module){(function() {
-  var BackgroundImage, Color, ColorStop, LinearGradient, Position, Property, URL,
+  var Background, BackgroundImage, Color, ColorStop, LinearGradient, Position, Property, URL,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __slice = Array.prototype.slice;
@@ -14405,7 +14405,7 @@ this.require.define({"app/models/properties/background":function(exports, requir
 
     LinearGradient.prototype.removeStop = function(stop) {
       var index;
-      index = this.stops.indexOf(colorStop);
+      index = this.stops.indexOf(stop);
       return this.stops.splice(index, 1);
     };
 
@@ -14429,7 +14429,22 @@ this.require.define({"app/models/properties/background":function(exports, requir
 
   })(BackgroundImage);
 
-  module.exports = BackgroundImage;
+  Background = (function() {
+
+    function Background(color, images) {
+      this.color = color;
+      this.images = images != null ? images : [];
+    }
+
+    Background.prototype.toString = function() {
+      return "" + this.color + " " + this.images;
+    };
+
+    return Background;
+
+  })();
+
+  module.exports = Background;
 
   module.exports.LinearGradient = LinearGradient;
 

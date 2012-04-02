@@ -104,7 +104,7 @@ class BackgroundInspector extends Spine.Controller
   render: =>
     @disabled = not @stage.selection.isAny()
 
-    @backgrounds = @stage.selection.get('background')
+    @backgrounds = @stage.selection.get('backgroundImage')
     @backgrounds = new Collection(@backgrounds)
     @current     = @backgrounds.first()
 
@@ -129,6 +129,6 @@ class BackgroundInspector extends Spine.Controller
     @append @edit
 
   set: =>
-    @stage.selection.set('background', @backgrounds.valueOf())
+    @stage.selection.set('backgroundImage', @backgrounds.valueOf())
 
 module.exports = BackgroundInspector

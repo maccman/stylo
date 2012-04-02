@@ -59,7 +59,7 @@
   return this.require;
 }).call(this);
 this.require.define({"app/models/properties/background":function(exports, require, module){(function() {
-  var BackgroundImage, Color, ColorStop, LinearGradient, Position, Property, URL,
+  var Background, BackgroundImage, Color, ColorStop, LinearGradient, Position, Property, URL,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __slice = Array.prototype.slice;
@@ -137,7 +137,7 @@ this.require.define({"app/models/properties/background":function(exports, requir
 
     LinearGradient.prototype.removeStop = function(stop) {
       var index;
-      index = this.stops.indexOf(colorStop);
+      index = this.stops.indexOf(stop);
       return this.stops.splice(index, 1);
     };
 
@@ -161,7 +161,22 @@ this.require.define({"app/models/properties/background":function(exports, requir
 
   })(BackgroundImage);
 
-  module.exports = BackgroundImage;
+  Background = (function() {
+
+    function Background(color, images) {
+      this.color = color;
+      this.images = images != null ? images : [];
+    }
+
+    Background.prototype.toString = function() {
+      return "" + this.color + " " + this.images;
+    };
+
+    return Background;
+
+  })();
+
+  module.exports = Background;
 
   module.exports.LinearGradient = LinearGradient;
 

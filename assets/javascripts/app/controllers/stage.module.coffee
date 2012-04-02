@@ -31,7 +31,7 @@ class Stage extends Spine.Controller
     @keybindings = new KeyBindings(this)
 
     @selection.bind 'change', =>
-      @el.trigger('selection.change', this)
+      @el.trigger('selection.change', [this])
 
     # FIXME: Test data
     @rectangle1 = new Rectangle(

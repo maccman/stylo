@@ -48,7 +48,7 @@ class Element extends Spine.Controller
 
   resize: (area) ->
     @set(area)
-    @el.trigger('resized', this)
+    @el.trigger('resized', [this])
 
   moveBy: (toPosition) ->
     area       = @area()
@@ -56,7 +56,7 @@ class Element extends Spine.Controller
     area.top  += toPosition.top
 
     @set(area)
-    @el.trigger('moved', this)
+    @el.trigger('moved', [this])
 
   edit: ->
     @el.attr('contenteditable', true)

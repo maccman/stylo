@@ -130,7 +130,7 @@ this.require.define({"app/controllers/element":function(exports, require, module
 
     Element.prototype.resize = function(area) {
       this.set(area);
-      return this.el.trigger('resized', this);
+      return this.el.trigger('resized', [this]);
     };
 
     Element.prototype.moveBy = function(toPosition) {
@@ -139,7 +139,7 @@ this.require.define({"app/controllers/element":function(exports, require, module
       area.left += toPosition.left;
       area.top += toPosition.top;
       this.set(area);
-      return this.el.trigger('moved', this);
+      return this.el.trigger('moved', [this]);
     };
 
     Element.prototype.edit = function() {

@@ -113,7 +113,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       this.snapping = new Snapping(this);
       this.keybindings = new KeyBindings(this);
       this.selection.bind('change', function() {
-        return _this.el.trigger('selection.change', _this);
+        return _this.el.trigger('selection.change', [_this]);
       });
       this.rectangle1 = new Rectangle({
         left: 200,

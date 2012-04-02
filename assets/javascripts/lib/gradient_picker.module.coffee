@@ -60,12 +60,12 @@ class Slider extends Spine.Controller
     @colorStop.length = @length
 
     @el.css(left: "#{@length}%")
-    @el.trigger('change', this)
+    @el.trigger('change', [this])
 
   release: ->
+    @el.trigger('removed', [this])
+    @el.trigger('change', [this])
     super
-    @el.trigger('removed', this)
-    @el.trigger('change', this)
 
   openColorPicker: ->
     if @moved
@@ -75,7 +75,7 @@ class Slider extends Spine.Controller
 
     @picker.bind 'change', (color) =>
       @colorStop.color = color
-      @el.trigger('change', this)
+      @el.trigger('change', [this])
       @render()
 
     @picker.open(@el.offset())
@@ -107,7 +107,6 @@ class GradientPicker extends Spine.Controller
     @set()
 
   removeSlider: (e, slider) ->
-    debugger
     @gradient.removeStop(slider.colorStop)
 
   set: ->

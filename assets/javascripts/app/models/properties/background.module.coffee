@@ -30,7 +30,7 @@ class LinearGradient extends BackgroundImage
     @stops.push(stop)
 
   removeStop: (stop) ->
-    index = @stops.indexOf(colorStop)
+    index = @stops.indexOf(stop)
     @stops.splice(index, 1)
 
 class URL extends BackgroundImage
@@ -39,7 +39,13 @@ class URL extends BackgroundImage
   toString: ->
     "url('#{@url}')"
 
-module.exports                = BackgroundImage
+class Background
+  constructor: (@color, @images = []) ->
+
+  toString: ->
+    "#{@color} #{@images}"
+
+module.exports                = Background
 module.exports.LinearGradient = LinearGradient
 module.exports.URL            = URL
 module.exports.Position       = Position

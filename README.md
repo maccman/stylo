@@ -10,7 +10,7 @@ Phase 1:
 * ✓ Select multiple items
 * ✓ Toolbar menu
 * Inspector panel (Element/Text/Ruler)
-  * ½ Background
+  * ½ Background (TODO - bg color)
   * Border
   * ✓ Shadow
   * Font alignment

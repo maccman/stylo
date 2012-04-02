@@ -144,13 +144,13 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
       this.el.css({
         left: "" + this.length + "%"
       });
-      return this.el.trigger('change', this);
+      return this.el.trigger('change', [this]);
     };
 
     Slider.prototype.release = function() {
-      Slider.__super__.release.apply(this, arguments);
-      this.el.trigger('removed', this);
-      return this.el.trigger('change', this);
+      this.el.trigger('removed', [this]);
+      this.el.trigger('change', [this]);
+      return Slider.__super__.release.apply(this, arguments);
     };
 
     Slider.prototype.openColorPicker = function() {
@@ -161,7 +161,7 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
       });
       this.picker.bind('change', function(color) {
         _this.colorStop.color = color;
-        _this.el.trigger('change', _this);
+        _this.el.trigger('change', [_this]);
         return _this.render();
       });
       return this.picker.open(this.el.offset());
@@ -209,7 +209,7 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
     };
 
     GradientPicker.prototype.removeSlider = function(e, slider) {
-      debugger;      return this.gradient.removeStop(slider.colorStop);
+      return this.gradient.removeStop(slider.colorStop);
     };
 
     GradientPicker.prototype.set = function() {

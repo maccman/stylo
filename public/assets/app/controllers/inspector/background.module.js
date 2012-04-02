@@ -201,7 +201,7 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
     BackgroundInspector.prototype.render = function() {
       var _this = this;
       this.disabled = !this.stage.selection.isAny();
-      this.backgrounds = this.stage.selection.get('background');
+      this.backgrounds = this.stage.selection.get('backgroundImage');
       this.backgrounds = new Collection(this.backgrounds);
       this.current = this.backgrounds.first();
       this.backgrounds.change(this.set);
@@ -226,7 +226,7 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
     };
 
     BackgroundInspector.prototype.set = function() {
-      return this.stage.selection.set('background', this.backgrounds.valueOf());
+      return this.stage.selection.set('backgroundImage', this.backgrounds.valueOf());
     };
 
     return BackgroundInspector;

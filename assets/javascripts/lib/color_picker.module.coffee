@@ -35,22 +35,35 @@ class Color
   @Black: (alpha) ->
     new Color(0, 0, 0, alpha)
 
-  constructor: (r = 0, g = 0, b = 0, a = 1) ->
-    @r = parseInt(r, 10)
-    @g = parseInt(g, 10)
-    @b = parseInt(b, 10)
+  @Transparent: ->
+    new Color
+
+  constructor: (r, g, b, a = 1) ->
+    @r = parseInt(r, 10) if r?
+    @g = parseInt(g, 10) if g?
+    @b = parseInt(b, 10) if b?
     @a = parseFloat(a)
 
   toHex: ->
+    unless @r? and @g? and @b?
+      return 'transparent'
+
     a = (@b | @g << 8 | @r << 16).toString(16)
     a = '#' + '000000'.substr(0, 6 - a.length) + a
     a.toUpperCase()
 
   isTransparent: ->
-    @a is 0
+    not @a
 
   toString: ->
-    "rgba(#{@r},#{@g},#{@b},#{@a})"
+    if @r? and @g? and @b?
+      if @a?
+        "rgba(#{@r},#{@g},#{@b},#{@a})"
+      else
+        "rgb(#{@r},#{@g},#{@b})"
+
+    else
+      'transparent'
 
   set: (values) ->
     @[key] = value for key, value of values
@@ -113,7 +126,7 @@ class Gradient extends Canvas
 
   constructor: ->
     super
-    @color or= new Color(0, 0, 0)
+    @color or= new Color.Black
     @setColor(@color)
 
   setColor: (@color) ->

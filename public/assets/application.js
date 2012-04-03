@@ -11248,30 +11248,42 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
       return new Color(0, 0, 0, alpha);
     };
 
+    Color.Transparent = function() {
+      return new Color;
+    };
+
     function Color(r, g, b, a) {
-      if (r == null) r = 0;
-      if (g == null) g = 0;
-      if (b == null) b = 0;
       if (a == null) a = 1;
-      this.r = parseInt(r, 10);
-      this.g = parseInt(g, 10);
-      this.b = parseInt(b, 10);
+      if (r != null) this.r = parseInt(r, 10);
+      if (g != null) this.g = parseInt(g, 10);
+      if (b != null) this.b = parseInt(b, 10);
       this.a = parseFloat(a);
     }
 
     Color.prototype.toHex = function() {
       var a;
+      if (!((this.r != null) && (this.g != null) && (this.b != null))) {
+        return 'transparent';
+      }
       a = (this.b | this.g << 8 | this.r << 16).toString(16);
       a = '#' + '000000'.substr(0, 6 - a.length) + a;
       return a.toUpperCase();
     };
 
     Color.prototype.isTransparent = function() {
-      return this.a === 0;
+      return !this.a;
     };
 
     Color.prototype.toString = function() {
-      return "rgba(" + this.r + "," + this.g + "," + this.b + "," + this.a + ")";
+      if ((this.r != null) && (this.g != null) && (this.b != null)) {
+        if (this.a != null) {
+          return "rgba(" + this.r + "," + this.g + "," + this.b + "," + this.a + ")";
+        } else {
+          return "rgb(" + this.r + "," + this.g + "," + this.b + ")";
+        }
+      } else {
+        return 'transparent';
+      }
     };
 
     Color.prototype.set = function(values) {
@@ -11371,7 +11383,7 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
     function Gradient() {
       Gradient.__super__.constructor.apply(this, arguments);
-      this.color || (this.color = new Color(0, 0, 0));
+      this.color || (this.color = new Color.Black);
       this.setColor(this.color);
     }
 
@@ -11854,6 +11866,7 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
     Slider.prototype.move = function(length) {
       this.length = length != null ? length : 0;
       this.length = Math.max(Math.min(this.length, 100), 0);
+      this.length = Math.round(this.length);
       this.colorStop.length = this.length;
       this.el.css({
         left: "" + this.length + "%"
@@ -12234,7 +12247,7 @@ this.require.define({"app/controllers/element":function(exports, require, module
         left: 0,
         top: 0,
         opacity: 1,
-        backgroundColor: new Color(0, 0, 0, 0.2)
+        backgroundColor: new Color.Black(0.2)
       };
     };
 
@@ -12819,7 +12832,7 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
 }).call(this);
 ;}});
 this.require.define({"app/controllers/inspector/background":function(exports, require, module){(function() {
-  var Background, BackgroundInspector, Backgrounds, Collection, Color, ColorPicker, Edit, GradientPicker, List,
+  var Background, BackgroundImage, BackgroundInspector, Backgrounds, Collection, Color, ColorPicker, Edit, GradientPicker, List,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -12834,6 +12847,8 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
 
   Background = require('app/models/properties/background');
 
+  BackgroundImage = Background.BackgroundImage;
+
   Backgrounds = (function(_super) {
 
     __extends(Backgrounds, _super);
@@ -12845,12 +12860,12 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
     Backgrounds.prototype.getColor = function() {
       return (this.filter(function(item) {
         return item instanceof Color;
-      }))[0];
+      }))[0] || new Color.Transparent;
     };
 
     Backgrounds.prototype.getImages = function() {
       return this.filter(function(item) {
-        return !(item instanceof Color);
+        return item instanceof BackgroundImage;
       });
     };
 
@@ -14386,7 +14401,7 @@ this.require.define({"app/models/properties/background":function(exports, requir
     function ColorStop(color, length) {
       this.color = color;
       this.length = length;
-      this.color || (this.color = new Color);
+      this.color || (this.color = new Color.Black);
     }
 
     ColorStop.prototype.toString = function() {
@@ -14428,6 +14443,14 @@ this.require.define({"app/models/properties/background":function(exports, requir
         return a.length - b.length;
       });
       return "-webkit-linear-gradient(" + ([this.position].concat(__slice.call(stops)).join(',')) + ")";
+    };
+
+    LinearGradient.prototype.toDisplayString = function() {
+      var stops;
+      stops = this.stops.sort(function(a, b) {
+        return a.length - b.length;
+      });
+      return "linear-gradient(" + ([this.position].concat(__slice.call(stops)).join(', ')) + ")";
     };
 
     LinearGradient.prototype.addStop = function(stop) {
@@ -14477,6 +14500,8 @@ this.require.define({"app/models/properties/background":function(exports, requir
 
   module.exports = Background;
 
+  module.exports.BackgroundImage = BackgroundImage;
+
   module.exports.LinearGradient = LinearGradient;
 
   module.exports.URL = URL;
@@ -14520,7 +14545,7 @@ this.require.define({"app/models/properties/shadow":function(exports, require, m
       }
       this.x || (this.x = 0);
       this.y || (this.y = 0);
-      this.color || (this.color = new Color(0, 0, 0, 0.3));
+      this.color || (this.color = new Color.Black(0.3));
     }
 
     Shadow.prototype.toString = function() {
@@ -14781,10 +14806,12 @@ this.require.define({"app/models/property":function(exports, require, module){(f
         _ref = this.backgrounds;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           background = _ref[_i];
-          __out.push('\n    <div class="item">\n      <div class="preview" style="background: ');
+          __out.push('\n    <div class="item" title="');
+          __out.push(__sanitize(background.toString()));
+          __out.push('">\n      <div class="preview" style="background: ');
           __out.push(__sanitize(background.toString()));
           __out.push('"></div>\n      <span>');
-          __out.push(__sanitize(background.toString()));
+          __out.push(__sanitize((typeof background.toDisplayString === "function" ? background.toDisplayString() : void 0) || background.toString()));
           __out.push('</span>\n    </div>\n  ');
         }
       

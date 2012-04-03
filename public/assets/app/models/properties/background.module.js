@@ -87,7 +87,7 @@ this.require.define({"app/models/properties/background":function(exports, requir
     function ColorStop(color, length) {
       this.color = color;
       this.length = length;
-      this.color || (this.color = new Color);
+      this.color || (this.color = new Color.Black);
     }
 
     ColorStop.prototype.toString = function() {
@@ -129,6 +129,14 @@ this.require.define({"app/models/properties/background":function(exports, requir
         return a.length - b.length;
       });
       return "-webkit-linear-gradient(" + ([this.position].concat(__slice.call(stops)).join(',')) + ")";
+    };
+
+    LinearGradient.prototype.toDisplayString = function() {
+      var stops;
+      stops = this.stops.sort(function(a, b) {
+        return a.length - b.length;
+      });
+      return "linear-gradient(" + ([this.position].concat(__slice.call(stops)).join(', ')) + ")";
     };
 
     LinearGradient.prototype.addStop = function(stop) {
@@ -177,6 +185,8 @@ this.require.define({"app/models/properties/background":function(exports, requir
   })();
 
   module.exports = Background;
+
+  module.exports.BackgroundImage = BackgroundImage;
 
   module.exports.LinearGradient = LinearGradient;
 

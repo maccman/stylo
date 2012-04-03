@@ -11,7 +11,7 @@ class Element extends Spine.Controller
       left: 0
       top: 0
       opacity: 1
-      backgroundColor: new Color(0, 0, 0, 0.2)
+      backgroundColor: new Color.Black(0.2)
 
   events:
     'mousedown': 'select'

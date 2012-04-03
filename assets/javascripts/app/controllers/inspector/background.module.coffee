@@ -3,13 +3,14 @@ ColorPicker     = require('lib/color_picker')
 GradientPicker  = require('lib/gradient_picker')
 Color           = require('app/models/properties/color')
 Background      = require('app/models/properties/background')
+BackgroundImage = Background.BackgroundImage
 
 class Backgrounds extends Collection
   getColor: ->
-    (@filter (item) -> item instanceof Color)[0]
+    (@filter (item) -> item instanceof Color)[0] or new Color.Transparent
 
   getImages: ->
-    @filter (item) -> item not instanceof Color
+    @filter (item) -> item instanceof BackgroundImage
 
 class Edit extends Spine.Controller
   className: 'edit'

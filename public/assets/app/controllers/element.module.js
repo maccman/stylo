@@ -83,7 +83,7 @@ this.require.define({"app/controllers/element":function(exports, require, module
         left: 0,
         top: 0,
         opacity: 1,
-        backgroundColor: new Color(0, 0, 0, 0.2)
+        backgroundColor: new Color.Black(0.2)
       };
     };
 

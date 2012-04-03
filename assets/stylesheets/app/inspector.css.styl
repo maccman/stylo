@@ -132,13 +132,14 @@
     .items {
       min-height: 35px
       max-height: 100px
-      overflow-x: auto
+      // overflow-x: auto
     }
 
     .item {
       padding: 8px
       cursor: pointer
       border-bottom: 1px solid rgba(0, 0, 0, 0.25)
+      ellipsis()
 
       &:last-child {
         border-bottom: none
@@ -156,11 +157,7 @@
         height: 8px
         display: inline-block
       }
-
-      span {
-        ellipsis()
-      }
-    }
+   }
 
     footer {
       border-top: 1px solid rgba(0, 0, 0, 0.15)

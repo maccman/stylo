@@ -80,7 +80,7 @@ this.require.define({"app/models/properties/shadow":function(exports, require, m
       }
       this.x || (this.x = 0);
       this.y || (this.y = 0);
-      this.color || (this.color = new Color(0, 0, 0, 0.3));
+      this.color || (this.color = new Color.Black(0.3));
     }
 
     Shadow.prototype.toString = function() {

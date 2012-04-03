@@ -7,7 +7,7 @@ class Shadow extends Property
 
     @x      or= 0
     @y      or= 0
-    @color  or= new Color(0, 0, 0, 0.3)
+    @color  or= new Color.Black(0.3)
 
   toString: ->
     result = []

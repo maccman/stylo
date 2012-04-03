@@ -9,7 +9,7 @@ class Position
 
 class ColorStop
   constructor: (@color, @length) ->
-    @color or= new Color
+    @color or= new Color.Black
 
   toString: ->
     if @length
@@ -25,6 +25,10 @@ class LinearGradient extends BackgroundImage
   toString: ->
     stops = @stops.sort((a, b) -> a.length - b.length)
     "-webkit-linear-gradient(#{[@position, stops...].join(',')})"
+
+  toDisplayString: ->
+    stops = @stops.sort((a, b) -> a.length - b.length)
+    "linear-gradient(#{[@position, stops...].join(', ')})"
 
   addStop: (stop) ->
     @stops.push(stop)
@@ -45,8 +49,9 @@ class Background
   toString: ->
     "#{@color} #{@images}"
 
-module.exports                = Background
-module.exports.LinearGradient = LinearGradient
-module.exports.URL            = URL
-module.exports.Position       = Position
-module.exports.ColorStop      = ColorStop
+module.exports                 = Background
+module.exports.BackgroundImage = BackgroundImage
+module.exports.LinearGradient  = LinearGradient
+module.exports.URL             = URL
+module.exports.Position        = Position
+module.exports.ColorStop       = ColorStop

@@ -103,30 +103,42 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
       return new Color(0, 0, 0, alpha);
     };
 
+    Color.Transparent = function() {
+      return new Color;
+    };
+
     function Color(r, g, b, a) {
-      if (r == null) r = 0;
-      if (g == null) g = 0;
-      if (b == null) b = 0;
       if (a == null) a = 1;
-      this.r = parseInt(r, 10);
-      this.g = parseInt(g, 10);
-      this.b = parseInt(b, 10);
+      if (r != null) this.r = parseInt(r, 10);
+      if (g != null) this.g = parseInt(g, 10);
+      if (b != null) this.b = parseInt(b, 10);
       this.a = parseFloat(a);
     }
 
     Color.prototype.toHex = function() {
       var a;
+      if (!((this.r != null) && (this.g != null) && (this.b != null))) {
+        return 'transparent';
+      }
       a = (this.b | this.g << 8 | this.r << 16).toString(16);
       a = '#' + '000000'.substr(0, 6 - a.length) + a;
       return a.toUpperCase();
     };
 
     Color.prototype.isTransparent = function() {
-      return this.a === 0;
+      return !this.a;
     };
 
     Color.prototype.toString = function() {
-      return "rgba(" + this.r + "," + this.g + "," + this.b + "," + this.a + ")";
+      if ((this.r != null) && (this.g != null) && (this.b != null)) {
+        if (this.a != null) {
+          return "rgba(" + this.r + "," + this.g + "," + this.b + "," + this.a + ")";
+        } else {
+          return "rgb(" + this.r + "," + this.g + "," + this.b + ")";
+        }
+      } else {
+        return 'transparent';
+      }
     };
 
     Color.prototype.set = function(values) {
@@ -226,7 +238,7 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
     function Gradient() {
       Gradient.__super__.constructor.apply(this, arguments);
-      this.color || (this.color = new Color(0, 0, 0));
+      this.color || (this.color = new Color.Black);
       this.setColor(this.color);
     }
 

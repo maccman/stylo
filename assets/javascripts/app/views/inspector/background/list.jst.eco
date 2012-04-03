@@ -1,8 +1,8 @@
 <div class="items">
   <% for background in @backgrounds: %>
-    <div class="item">
+    <div class="item" title="<%= background.toString() %>">
       <div class="preview" style="background: <%= background.toString() %>"></div>
-      <span><%= background.toString() %></span>
+      <span><%= background.toDisplayString?() or background.toString() %></span>
     </div>
   <% end %>
 </div>

@@ -59,7 +59,7 @@
   return this.require;
 }).call(this);
 this.require.define({"app/controllers/inspector/background":function(exports, require, module){(function() {
-  var Background, BackgroundInspector, Backgrounds, Collection, Color, ColorPicker, Edit, GradientPicker, List,
+  var Background, BackgroundImage, BackgroundInspector, Backgrounds, Collection, Color, ColorPicker, Edit, GradientPicker, List,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -74,6 +74,8 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
 
   Background = require('app/models/properties/background');
 
+  BackgroundImage = Background.BackgroundImage;
+
   Backgrounds = (function(_super) {
 
     __extends(Backgrounds, _super);
@@ -85,12 +87,12 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
     Backgrounds.prototype.getColor = function() {
       return (this.filter(function(item) {
         return item instanceof Color;
-      }))[0];
+      }))[0] || new Color.Transparent;
     };
 
     Backgrounds.prototype.getImages = function() {
       return this.filter(function(item) {
-        return !(item instanceof Color);
+        return item instanceof BackgroundImage;
       });
     };
 

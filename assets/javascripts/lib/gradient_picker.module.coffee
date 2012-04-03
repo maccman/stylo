@@ -57,6 +57,7 @@ class Slider extends Spine.Controller
 
   move: (@length = 0) ->
     @length = Math.max(Math.min(@length, 100), 0)
+    @length = Math.round(@length)
     @colorStop.length = @length
 
     @el.css(left: "#{@length}%")

@@ -140,6 +140,7 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
     Slider.prototype.move = function(length) {
       this.length = length != null ? length : 0;
       this.length = Math.max(Math.min(this.length, 100), 0);
+      this.length = Math.round(this.length);
       this.colorStop.length = this.length;
       this.el.css({
         left: "" + this.length + "%"

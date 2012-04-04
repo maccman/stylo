@@ -2,7 +2,7 @@ Popup       = require('./popup')
 ColorPicker = require('./color_picker')
 Color       = ColorPicker.Color
 
-# TODO - abstract from properties
+# TODO - abstract from properties, remove assets/grid.png dependency
 Background      = require('app/models/properties/background')
 LinearGradient  = Background.LinearGradient
 ColorStop       = Background.ColorStop
@@ -100,7 +100,7 @@ class GradientPicker extends Spine.Controller
       @addSlider(new ColorStop(new Color.White, 0))
       @addSlider(new ColorStop(new Color.Black, 100))
 
-    @el.css(background: @gradient)
+    @el.css(background: "#{@gradient}, url(assets/grid.png) repeat")
 
   addSlider: (colorStop = new ColorStop) ->
     @gradient.addStop(colorStop)
@@ -111,7 +111,7 @@ class GradientPicker extends Spine.Controller
     @gradient.removeStop(slider.colorStop)
 
   set: ->
-    @el.css(background: @gradient)
+    @el.css(background: "#{@gradient}, url(assets/grid.png) repeat")
     @trigger('change', @gradient)
 
   createSlider: (e) ->

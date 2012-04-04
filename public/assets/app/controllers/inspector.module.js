@@ -91,6 +91,9 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
       this.append(new Background({
         stage: this.stage
       }));
+      this.append(new Border({
+        stage: this.stage
+      }));
       this.append(new Opacity({
         stage: this.stage
       }));

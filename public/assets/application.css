@@ -115,7 +115,7 @@ body {
   bottom: 0;
   margin: 0 0 -8px -5px;
   border-radius: 3px;
-  border: 1px solid rgba(0,0,0,0.30);
+  border: 1px solid #a3a3a3;
   box-shadow: 0 1px 2px rgba(0,0,0,0.10);
   background: url("grid.png") repeat;
   cursor: pointer;
@@ -134,21 +134,20 @@ body {
   width: auto;
 }
 #app .header {
-  height: 35px;
-  line-height: 35px;
-  background: #8f9398;
-  background: -webkit-gradient(linear, left top, left bottom, from(#8f9398), to(#5d646d));
-  background: -webkit-linear-gradient(top, #8f9398, #5d646d);
-  background: -moz-linear-gradient(top, #8f9398, #5d646d);
-  background: linear-gradient(top, #8f9398, #5d646d);
+  background: #ccc;
+  background: -webkit-gradient(linear, left top, right top, from(#ccc), to(#ddd));
+  background: -webkit-linear-gradient(left, #ccc, #ddd);
+  background: -moz-linear-gradient(left, #ccc, #ddd);
+  background: linear-gradient(left, #ccc, #ddd);
+  -moz-box-shadow: inset -1px 0 2px rgba(0,0,0,0.30);
+  -webkit-box-shadow: inset -1px 0 2px rgba(0,0,0,0.30);
+  box-shadow: inset -1px 0 2px rgba(0,0,0,0.30);
   display: -webkit-box;
-  -webkit-box-orient: horizontal;
+  -webkit-box-orient: vertical;
   -webkit-box-align: stretch;
-  -webkit-box-pack: start;
   display: -moz-box;
-  -moz-box-orient: horizontal;
+  -moz-box-orient: vertical;
   -moz-box-align: stretch;
-  -moz-box-pack: start;
 }
 #app .header h1 {
   display: block;
@@ -163,27 +162,19 @@ body {
   box-flex: 1;
 }
 #app .header nav {
-  height: 35px;
-  margin-right: 30px;
   display: -webkit-box;
-  -webkit-box-orient: horizontal;
+  -webkit-box-orient: vertical;
   -webkit-box-align: stretch;
-  -webkit-box-pack: start;
   display: -moz-box;
-  -moz-box-orient: horizontal;
+  -moz-box-orient: vertical;
   -moz-box-align: stretch;
-  -moz-box-pack: start;
-  border-right: 1px solid rgba(0,0,0,0.30);
-  -moz-box-shadow: 1px 0 0 rgba(255,255,255,0.20);
-  -webkit-box-shadow: 1px 0 0 rgba(255,255,255,0.20);
-  box-shadow: 1px 0 0 rgba(255,255,255,0.20);
 }
 #app .header nav div {
   padding: 8px 12px;
-  border-left: 1px solid rgba(0,0,0,0.30);
-  -moz-box-shadow: inset 1px 0 0 rgba(255,255,255,0.20);
-  -webkit-box-shadow: inset 1px 0 0 rgba(255,255,255,0.20);
-  box-shadow: inset 1px 0 0 rgba(255,255,255,0.20);
+  border-bottom: 1px solid rgba(0,0,0,0.30);
+  -moz-box-shadow: 0 1px 0 rgba(255,255,255,0.20);
+  -webkit-box-shadow: 0 1px 0 rgba(255,255,255,0.20);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.20);
 }
 #app .header nav div:active {
   -moz-box-shadow: inset 0 0 20px rgba(0,0,0,0.30);
@@ -211,11 +202,13 @@ body {
 }
 #app {
   display: -webkit-box;
-  -webkit-box-orient: vertical;
+  -webkit-box-orient: horizontal;
   -webkit-box-align: stretch;
+  -webkit-box-pack: start;
   display: -moz-box;
-  -moz-box-orient: vertical;
+  -moz-box-orient: horizontal;
   -moz-box-align: stretch;
+  -moz-box-pack: start;
   -webkit-box-flex: 1;
   -moz-box-flex: 1;
   box-flex: 1;
@@ -235,10 +228,6 @@ body {
 }
 #app .inspector {
   width: 220px;
-  position: absolute;
-  right: 0px;
-  bottom: 0px;
-  top: 35px;
   -moz-box-shadow: inset 1px 0 2px rgba(0,0,0,0.30);
   -webkit-box-shadow: inset 1px 0 2px rgba(0,0,0,0.30);
   box-shadow: inset 1px 0 2px rgba(0,0,0,0.30);
@@ -278,6 +267,34 @@ body {
 }
 #app .inspector label input {
   margin: 3px;
+}
+#app .inspector ::selection {
+  background: #e0edf8;
+  text-shadow: none;
+}
+#app .inspector input[type=text],
+#app .inspector input[type=url],
+#app .inspector textarea {
+  padding: 3px;
+  margin: 0;
+  border: 1px solid rgba(0,0,0,0.20);
+  -moz-box-shadow: inset 0 1px 2px rgba(0,0,0,0.10);
+  -webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,0.10);
+  -moz-box-shadow: inset 0 1px 2px rgba(0,0,0,0.10);
+  -webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,0.10);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.10);
+}
+#app .inspector input[type=text]:focus,
+#app .inspector input[type=url]:focus,
+#app .inspector textarea:focus,
+#app .inspector select:focus {
+  outline: none;
+  border-color: rgba(104,189,244,0.80);
+  -webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,0.20), 0 1px 5px 0 rgba(104,189,244,0.60);
+  -moz-box-shadow: inset 0 1px 2px rgba(0,0,0,0.20), 0 1px 5px 0 rgba(104,189,244,0.60);
+  -moz-box-shadow: inset 0 1px 2px rgba(0,0,0,0.20), 0 1px 5px 0 rgba(104,189,244,0.60);
+  -webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,0.20), 0 1px 5px 0 rgba(104,189,244,0.60);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.20), 0 1px 5px 0 rgba(104,189,244,0.60);
 }
 #app .inspector input[disabled] {
   opacity: 0.8;
@@ -412,10 +429,74 @@ body {
   box-shadow: inset 0 0 10px rgba(0,0,0,0.20);
 }
 #app .inspector .background .edit {
-  padding: 10px;
+  margin: 10px;
 }
 #app .inspector .background .gradientPicker {
   margin: 0px 5px 5px 5px;
+}
+#app .inspector > .border label span {
+  width: 60px;
+}
+#app .inspector > .border .borders {
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-align: stretch;
+  -webkit-box-pack: start;
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  -moz-box-align: stretch;
+  -moz-box-pack: start;
+  margin: 0 auto 10px auto;
+  background: #fcfcfc;
+  background: -webkit-gradient(linear, left top, left bottom, from(#fcfcfc), to(rgba(238,238,238,0.90)));
+  background: -webkit-linear-gradient(top, #fcfcfc, rgba(238,238,238,0.90));
+  background: -moz-linear-gradient(top, #fcfcfc, rgba(238,238,238,0.90));
+  background: linear-gradient(top, #fcfcfc, rgba(238,238,238,0.90));
+  border: 1px solid #ccc;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  -moz-box-shadow: 0 1px 0 #fff;
+  -webkit-box-shadow: 0 1px 0 #fff;
+  box-shadow: 0 1px 0 #fff;
+  -webkit-box-pack: center;
+  width: 185px;
+}
+#app .inspector > .border .borders div {
+  overflow: hidden;
+  border-right: 1px solid #ccc;
+}
+#app .inspector > .border .borders div:last-child {
+  border-right: none;
+}
+#app .inspector > .border .borders div:active,
+#app .inspector > .border .borders div.active {
+  -moz-box-shadow: inset 0 0 10px rgba(0,0,0,0.20);
+  -webkit-box-shadow: inset 0 0 10px rgba(0,0,0,0.20);
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.20);
+}
+#app .inspector > .border .borders span {
+  display: block;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  width: 12px;
+  height: 12px;
+  margin: 5px 12px;
+  border: 1px solid #777;
+  cursor: pointer;
+}
+#app .inspector > .border .borders .borderTop span {
+  border-top-width: 3px;
+}
+#app .inspector > .border .borders .borderRight span {
+  border-right-width: 3px;
+}
+#app .inspector > .border .borders .borderBottom span {
+  border-bottom-width: 3px;
+}
+#app .inspector > .border .borders .borderLeft span {
+  border-left-width: 3px;
 }
 #app .inspector .boxShadow .positionPicker {
   margin: 3px 5px 3px 0;
@@ -515,7 +596,6 @@ body {
   background: #fff;
   position: relative;
   overflow: auto;
-  margin-right: 220px;
 }
 #app .stage .element {
   outline: none;

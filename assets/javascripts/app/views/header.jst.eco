@@ -1,5 +1,3 @@
-<h1>Stylo</h1>
-
 <nav class="toolbar">
   <div class="rectangle" title="Rectangle"><span></span></div>
   <div class="ellipsis" title="Ellipsis"><span></span></div>

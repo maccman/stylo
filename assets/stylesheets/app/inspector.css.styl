@@ -2,10 +2,7 @@
 
 #app .inspector {
   width: 220px
-  position: absolute
-  right: 0px
-  bottom: 0px
-  top: 35px
+
   box-shadow: inset 1px 0 2px rgba(0, 0, 0, 0.3)
   background: #F5F5F5
   color: #000
@@ -43,6 +40,29 @@
 
     input {
       margin: 3px
+    }
+  }
+
+  ::selection {
+    background: #E0EDF8
+    text-shadow: none
+  }
+
+  input[type=text], input[type=url], textarea {
+    padding: 3px
+    margin: 0
+    border: 1px solid rgba(0, 0, 0, 0.2)
+    inset-box-shadow(0, 1px, 2px, rgba(0, 0, 0, 0.1))
+  }
+
+  input[type=text], input[type=url], textarea, select {
+    &:focus {
+      outline: none
+      border-color: rgba(104, 189, 244, 0.8)
+
+      -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(104, 189, 244, 0.6)
+      -moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(104, 189, 244, 0.6)
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(104, 189, 244, 0.6)
     }
   }
 

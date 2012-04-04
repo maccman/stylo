@@ -1,5 +1,37 @@
 <h3>Border</h3>
 
 <article>
-  Lorum
+  <div class="borders">
+    <div class="border" data-border="border"><span></span></div>
+    <div class="borderTop" data-border="borderTop"><span></span></div>
+    <div class="borderRight" data-border="borderRight"><span></span></div>
+    <div class="borderBottom" data-border="borderBottom"><span></span></div>
+    <div class="borderLeft" data-border="borderLeft"><span></span></div>
+  </div>
+
+  <label>
+    <span>Style</span>
+    <select name="style">
+      <option value="none">None</option>
+      <option value="hidden">Hidden</option>
+      <option value="solid">Solid</option>
+      <option value="dashed">Dashed</option>
+      <option value="hidden">Dotted</option>
+      <option value="double">Double</option>
+      <option value="groove">Groove</option>
+      <option value="ridge">Ridge</option>
+      <option value="inset">Inset</option>
+      <option value="outset">Outset</option>
+    </select>
+  </label>
+
+  <label>
+    <span>Color</span>
+    <input type="color">
+  </label>
+
+  <label>
+    <span>Thickness</span>
+    <input type="number" min="0" max="100">
+  </label>
 </article>

@@ -11924,7 +11924,7 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
         this.addSlider(new ColorStop(new Color.Black, 100));
       }
       this.el.css({
-        background: this.gradient
+        background: "" + this.gradient + ", url(assets/grid.png) repeat"
       });
     }
 
@@ -11941,7 +11941,7 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
 
     GradientPicker.prototype.set = function() {
       this.el.css({
-        background: this.gradient
+        background: "" + this.gradient + ", url(assets/grid.png) repeat"
       });
       return this.trigger('change', this.gradient);
     };
@@ -12815,6 +12815,9 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
       this.append(new Background({
         stage: this.stage
       }));
+      this.append(new Border({
+        stage: this.stage
+      }));
       this.append(new Opacity({
         stage: this.stage
       }));
@@ -13052,23 +13055,41 @@ this.require.define({"app/controllers/inspector/border":function(exports, requir
 
     Border.prototype.className = 'border';
 
-    Border.prototype.styles = ['borderColor'];
+    Border.prototype.styles = ['border', 'borderTop', 'borderRight', 'borderBottom', 'borderLeft'];
+
+    Border.prototype.events = {
+      'click [data-border]': 'borderClick',
+      'change input': 'inputChange'
+    };
+
+    Border.prototype.current = 'border';
 
     function Border() {
-      this.render = __bind(this.render, this);      Border.__super__.constructor.apply(this, arguments);
+      this.render = __bind(this.render, this);
+      var style, _i, _len, _ref;
+      Border.__super__.constructor.apply(this, arguments);
+      this.borders = {};
+      _ref = this.styles;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        style = _ref[_i];
+        this.borders[style] = this.stage.selection.get(style);
+      }
       this.render();
     }
 
     Border.prototype.render = function() {
-      var style, _i, _len, _ref;
-      this.border = {};
-      _ref = this.styles;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        style = _ref[_i];
-        this.border[style] = this.stage.selection.get(style);
-      }
       return this.html(JST['app/views/inspector/border'](this));
     };
+
+    Border.prototype.change = function(current) {
+      this.current = current;
+    };
+
+    Border.prototype.borderClick = function(e) {
+      return this.change($(e.target).data('border'));
+    };
+
+    Border.prototype.inputChange = function(e) {};
 
     return Border;
 
@@ -14647,7 +14668,7 @@ this.require.define({"app/models/property":function(exports, require, module){(f
     (function() {
       (function() {
       
-        __out.push('<h1>Stylo</h1>\n\n<nav class="toolbar">\n  <div class="rectangle" title="Rectangle"><span></span></div>\n  <div class="ellipsis" title="Ellipsis"><span></span></div>\n</nav>\n');
+        __out.push('<nav class="toolbar">\n  <div class="rectangle" title="Rectangle"><span></span></div>\n  <div class="ellipsis" title="Ellipsis"><span></span></div>\n</nav>\n');
       
       }).call(this);
       
@@ -14921,7 +14942,7 @@ this.require.define({"app/models/property":function(exports, require, module){(f
     (function() {
       (function() {
       
-        __out.push('<h3>Border</h3>\n\n<article>\n  Lorum\n</article>\n');
+        __out.push('<h3>Border</h3>\n\n<article>\n  <div class="borders">\n    <div class="border" data-border="border"><span></span></div>\n    <div class="borderTop" data-border="borderTop"><span></span></div>\n    <div class="borderRight" data-border="borderRight"><span></span></div>\n    <div class="borderBottom" data-border="borderBottom"><span></span></div>\n    <div class="borderLeft" data-border="borderLeft"><span></span></div>\n  </div>\n\n  <label>\n    <span>Style</span>\n    <select name="style">\n      <option value="none">None</option>\n      <option value="hidden">Hidden</option>\n      <option value="solid">Solid</option>\n      <option value="dashed">Dashed</option>\n      <option value="hidden">Dotted</option>\n      <option value="double">Double</option>\n      <option value="groove">Groove</option>\n      <option value="ridge">Ridge</option>\n      <option value="inset">Inset</option>\n      <option value="outset">Outset</option>\n    </select>\n  </label>\n\n  <label>\n    <span>Color</span>\n    <input type="color">\n  </label>\n\n  <label>\n    <span>Thickness</span>\n    <input type="number" min="0" max="100">\n  </label>\n</article>\n');
       
       }).call(this);
       

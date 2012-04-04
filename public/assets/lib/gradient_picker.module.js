@@ -198,7 +198,7 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
         this.addSlider(new ColorStop(new Color.Black, 100));
       }
       this.el.css({
-        background: this.gradient
+        background: "" + this.gradient + ", url(assets/grid.png) repeat"
       });
     }
 
@@ -215,7 +215,7 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
 
     GradientPicker.prototype.set = function() {
       this.el.css({
-        background: this.gradient
+        background: "" + this.gradient + ", url(assets/grid.png) repeat"
       });
       return this.trigger('change', this.gradient);
     };

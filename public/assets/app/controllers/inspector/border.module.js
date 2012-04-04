@@ -70,23 +70,41 @@ this.require.define({"app/controllers/inspector/border":function(exports, requir
 
     Border.prototype.className = 'border';
 
-    Border.prototype.styles = ['borderColor'];
+    Border.prototype.styles = ['border', 'borderTop', 'borderRight', 'borderBottom', 'borderLeft'];
+
+    Border.prototype.events = {
+      'click [data-border]': 'borderClick',
+      'change input': 'inputChange'
+    };
+
+    Border.prototype.current = 'border';
 
     function Border() {
-      this.render = __bind(this.render, this);      Border.__super__.constructor.apply(this, arguments);
+      this.render = __bind(this.render, this);
+      var style, _i, _len, _ref;
+      Border.__super__.constructor.apply(this, arguments);
+      this.borders = {};
+      _ref = this.styles;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        style = _ref[_i];
+        this.borders[style] = this.stage.selection.get(style);
+      }
       this.render();
     }
 
     Border.prototype.render = function() {
-      var style, _i, _len, _ref;
-      this.border = {};
-      _ref = this.styles;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        style = _ref[_i];
-        this.border[style] = this.stage.selection.get(style);
-      }
       return this.html(JST['app/views/inspector/border'](this));
     };
+
+    Border.prototype.change = function(current) {
+      this.current = current;
+    };
+
+    Border.prototype.borderClick = function(e) {
+      return this.change($(e.target).data('border'));
+    };
+
+    Border.prototype.inputChange = function(e) {};
 
     return Border;
 

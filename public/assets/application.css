@@ -7,9 +7,6 @@ html {
   overflow: hidden;
 }
 body {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-box-align: stretch;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   color: #626262;
@@ -134,6 +131,11 @@ body {
   width: auto;
 }
 #app .header {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 45px;
   background: #ccc;
   background: -webkit-gradient(linear, left top, right top, from(#ccc), to(#ddd));
   background: -webkit-linear-gradient(left, #ccc, #ddd);
@@ -201,17 +203,11 @@ body {
   border-radius: 50%;
 }
 #app {
-  display: -webkit-box;
-  -webkit-box-orient: horizontal;
-  -webkit-box-align: stretch;
-  -webkit-box-pack: start;
-  display: -moz-box;
-  -moz-box-orient: horizontal;
-  -moz-box-align: stretch;
-  -moz-box-pack: start;
-  -webkit-box-flex: 1;
-  -moz-box-flex: 1;
-  box-flex: 1;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
 }
 #app .hbox {
   -webkit-box-flex: 1;
@@ -228,6 +224,10 @@ body {
 }
 #app .inspector {
   width: 220px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
   -moz-box-shadow: inset 1px 0 2px rgba(0,0,0,0.30);
   -webkit-box-shadow: inset 1px 0 2px rgba(0,0,0,0.30);
   box-shadow: inset 1px 0 2px rgba(0,0,0,0.30);
@@ -584,17 +584,12 @@ body {
   background: linear-gradient(top, #bac4d8, #9aa8c7);
 }
 #app .stage {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-box-align: stretch;
-  display: -moz-box;
-  -moz-box-orient: vertical;
-  -moz-box-align: stretch;
-  -webkit-box-flex: 1;
-  -moz-box-flex: 1;
-  box-flex: 1;
+  position: absolute;
+  top: 0;
+  right: 220px;
+  bottom: 0;
+  left: 45px;
   background: #fff;
-  position: relative;
   overflow: auto;
 }
 #app .stage .element {

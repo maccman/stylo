@@ -1,4 +1,5 @@
 <nav class="toolbar">
   <div class="rectangle" title="Rectangle"><span></span></div>
   <div class="ellipsis" title="Ellipsis"><span></span></div>
+  <div class="text" title="Text"><span>A</span></div>
 </nav>

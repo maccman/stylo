@@ -88,8 +88,7 @@ this.require.define({"app/controllers/element":function(exports, require, module
     };
 
     Element.prototype.events = {
-      'mousedown': 'select',
-      'dblclick': 'edit'
+      'mousedown': 'select'
     };
 
     function Element(attrs) {
@@ -143,10 +142,6 @@ this.require.define({"app/controllers/element":function(exports, require, module
       area.top += toPosition.top;
       this.set(area);
       return this.el.trigger('moved', [this]);
-    };
-
-    Element.prototype.edit = function() {
-      return this.el.attr('contenteditable', true);
     };
 
     Element.prototype.remove = function() {

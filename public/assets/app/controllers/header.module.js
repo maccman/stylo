@@ -59,13 +59,15 @@
   return this.require;
 }).call(this);
 this.require.define({"app/controllers/header":function(exports, require, module){(function() {
-  var Ellipsis, Header, Rectangle,
+  var Ellipsis, Header, Rectangle, Text,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Rectangle = require('./elements/rectangle');
 
   Ellipsis = require('./elements/ellipsis');
+
+  Text = require('./elements/text');
 
   Header = (function(_super) {
 
@@ -77,7 +79,8 @@ this.require.define({"app/controllers/header":function(exports, require, module)
 
     Header.prototype.events = {
       'click .rectangle': 'addRectangle',
-      'click .ellipsis': 'addEllipsis'
+      'click .ellipsis': 'addEllipsis',
+      'click .text': 'addText'
     };
 
     function Header() {
@@ -87,23 +90,28 @@ this.require.define({"app/controllers/header":function(exports, require, module)
     }
 
     Header.prototype.addRectangle = function() {
-      var position, shape;
-      position = this.stage.center();
-      position.left -= 50;
-      position.top -= 50;
-      this.stage.add(shape = new Rectangle(position));
-      this.stage.selection.clear();
-      return this.stage.selection.add(shape);
+      return this.addElement(new Rectangle);
     };
 
     Header.prototype.addEllipsis = function() {
-      var position, shape;
+      return this.addElement(new Ellipsis);
+    };
+
+    Header.prototype.addText = function() {
+      var element;
+      this.addElement(element = new Text);
+      return element.startEditing();
+    };
+
+    Header.prototype.addElement = function(element) {
+      var position;
       position = this.stage.center();
-      position.left -= 50;
-      position.top -= 50;
-      this.stage.add(shape = new Ellipsis(position));
+      position.left -= element.get('width') || 50;
+      position.top -= element.get('height') || 50;
+      element.set(position);
+      this.stage.add(element);
       this.stage.selection.clear();
-      return this.stage.selection.add(shape);
+      return this.stage.selection.add(element);
     };
 
     return Header;

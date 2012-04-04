@@ -15,7 +15,6 @@ class Element extends Spine.Controller
 
   events:
     'mousedown': 'select'
-    'dblclick':  'edit'
 
   constructor: (attrs = {}) ->
     @el = attrs.el if 'el' of attrs
@@ -58,9 +57,6 @@ class Element extends Spine.Controller
 
     @set(area)
     @el.trigger('moved', [this])
-
-  edit: ->
-    @el.attr('contenteditable', true)
 
   remove: ->
     @el.remove()

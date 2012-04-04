@@ -1,5 +1,6 @@
 Rectangle  = require('./elements/rectangle')
 Ellipsis   = require('./elements/ellipsis')
+Text       = require('./elements/text')
 
 class Header extends Spine.Controller
   tag: 'header'
@@ -8,6 +9,7 @@ class Header extends Spine.Controller
   events:
     'click .rectangle': 'addRectangle'
     'click .ellipsis': 'addEllipsis'
+    'click .text': 'addText'
 
   constructor: ->
     super
@@ -15,19 +17,23 @@ class Header extends Spine.Controller
     @html JST['app/views/header'](this)
 
   addRectangle: ->
-    position = @stage.center()
-    position.left -= 50
-    position.top  -= 50
-    @stage.add(shape = new Rectangle(position))
-    @stage.selection.clear()
-    @stage.selection.add(shape)
+    @addElement(new Rectangle)
 
   addEllipsis: ->
-    position = @stage.center()
-    position.left -= 50
-    position.top  -= 50
-    @stage.add(shape = new Ellipsis(position))
+    @addElement(new Ellipsis)
+
+  addText: ->
+    @addElement(element = new Text)
+    element.startEditing()
+
+  addElement: (element) ->
+    position       = @stage.center()
+    position.left -= element.get('width') or 50
+    position.top  -= element.get('height') or 50
+    element.set(position)
+
+    @stage.add(element)
     @stage.selection.clear()
-    @stage.selection.add(shape)
+    @stage.selection.add(element)
 
 module.exports = Header

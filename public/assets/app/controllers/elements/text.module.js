@@ -59,9 +59,11 @@
   return this.require;
 }).call(this);
 this.require.define({"app/controllers/elements/text":function(exports, require, module){(function() {
-  var Element, Text,
+  var Element, Rectangle, Text,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  Rectangle = require('./rectangle');
 
   Element = require('../element');
 
@@ -74,6 +76,23 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
     }
 
     Text.prototype.className = 'text';
+
+    Text.prototype.events = {
+      'dblclick': 'startEditing'
+    };
+
+    Text.prototype.startEditing = function() {
+      return this.el.attr('contenteditable', true);
+    };
+
+    Text.prototype.stopEditing = function() {
+      return this.el.removeAttr('contenteditable');
+    };
+
+    Text.prototype.selected = function(bool) {
+      Text.__super__.selected.apply(this, arguments);
+      if (bool === false) return this.stopEditing();
+    };
 
     return Text;
 

@@ -29,6 +29,7 @@
     vbox()
 
     div {
+      cursor: pointer
       padding: 8px 12px
       border-bottom: 1px solid rgba(0, 0, 0, 0.2)
       box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4)
@@ -41,20 +42,27 @@
     span {
       height: 20px
       width: 20px
+      line-height: 20px
 
       display: block
       background: rgba(0, 0, 0, 0.2)
       box-shadow: inset 1px 1px 1px rgba(0, 0, 0, 0.35), 0 1px 0 rgba(255, 255, 255, 0.2)
 
-      color: #FFF
-      text-shadow: 0 -1px 0 rgba(0, 0, 0 ,0.3)
+      color: rgba(0, 0, 0, 0.4)
+      text-shadow: 0 1px 0 #FFF
       font-weight: bold
       text-transform: uppercase
-      font-size: 11px
+      font-size: 20px
+      text-align: center
     }
 
     .ellipsis span {
       border-radius: 50%
+    }
+
+    .text span {
+      background: none
+      box-shadow: none
     }
   }
 }

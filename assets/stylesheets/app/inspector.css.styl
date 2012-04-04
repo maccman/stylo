@@ -53,14 +53,12 @@
     text-shadow: none
   }
 
-  input[type=text], input[type=url], textarea {
-    padding: 3px
-    margin: 0
-    border: 1px solid rgba(0, 0, 0, 0.2)
+  input[type=text], input[type=url], input[type=number], input[type=color], textarea {
+    border: 1px solid rgba(0, 0, 0, 0.3)
     inset-box-shadow(0, 1px, 2px, rgba(0, 0, 0, 0.1))
   }
 
-  input[type=text], input[type=url], textarea, select {
+  input[type=text], input[type=url], input[type=number], input[type=color], textarea, select {
     &:focus {
       outline: none
       border-color: rgba(104, 189, 244, 0.8)

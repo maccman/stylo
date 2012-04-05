@@ -58,45 +58,70 @@
 
   return this.require;
 }).call(this);
-this.require.define({"app/controllers/elements/text":function(exports, require, module){(function() {
-  var Rectangle, Text,
-    __hasProp = Object.prototype.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+this.require.define({"app/controllers/stage/zindex":function(exports, require, module){(function() {
+  var Collection, ZIndex;
 
-  Rectangle = require('./rectangle');
+  Collection = require('lib/collection');
 
-  Text = (function(_super) {
+  ZIndex = (function() {
 
-    __extends(Text, _super);
-
-    function Text() {
-      Text.__super__.constructor.apply(this, arguments);
+    function ZIndex(stage) {
+      this.stage = stage;
+      this.order = this.stage.elements;
     }
 
-    Text.prototype.className = 'text';
-
-    Text.prototype.events = {
-      'dblclick': 'startEditing'
+    ZIndex.prototype.bringForward = function(element) {
+      var index;
+      index = this.order.indexOf(element);
+      if (index !== -1) {
+        this.order[index] = this.order[index + 1];
+        this.order[index + 1] = element;
+      }
+      return this.set();
     };
 
-    Text.prototype.startEditing = function() {
-      return this.el.attr('contenteditable', true);
+    ZIndex.prototype.bringBack = function(element) {
+      var index;
+      index = this.order.indexOf(element);
+      if (index !== -1 || index !== 0) {
+        this.order[index] = this.order[index - 1];
+        this.order[index - 1] = element;
+      }
+      return this.set();
     };
 
-    Text.prototype.stopEditing = function() {
-      return this.el.removeAttr('contenteditable');
+    ZIndex.prototype.bringToFront = function(element) {
+      var index;
+      index = this.order.indexOf(element);
+      this.order.splice(index, 1);
+      this.order.push(element);
+      return this.set();
     };
 
-    Text.prototype.selected = function(bool) {
-      Text.__super__.selected.apply(this, arguments);
-      if (bool === false) return this.stopEditing();
+    ZIndex.prototype.bringToBack = function(element) {
+      var index;
+      index = this.order.indexOf(element);
+      this.order.splice(index, 1);
+      this.order.unshift(element);
+      return this.set();
     };
 
-    return Text;
+    ZIndex.prototype.set = function() {
+      var element, index, _len, _ref, _results;
+      _ref = this.order;
+      _results = [];
+      for (index = 0, _len = _ref.length; index < _len; index++) {
+        element = _ref[index];
+        _results.push(element.set('order', index));
+      }
+      return _results;
+    };
 
-  })(Rectangle);
+    return ZIndex;
 
-  module.exports = Text;
+  })();
+
+  module.exports = ZIndex;
 
 }).call(this);
 ;}});

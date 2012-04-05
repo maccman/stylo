@@ -12,6 +12,7 @@ class Element extends Spine.Controller
       top: 0
       opacity: 1
       backgroundColor: new Color.Black(0.2)
+      order: -1
 
   events:
     'mousedown': 'select'
@@ -57,6 +58,11 @@ class Element extends Spine.Controller
 
     @set(area)
     @el.trigger('moved', [this])
+
+  order: (i) ->
+    # Make sure zIndex doesn't conflict
+    # with other interface elements
+    @set('zIndex', i + 100)
 
   remove: ->
     @el.remove()

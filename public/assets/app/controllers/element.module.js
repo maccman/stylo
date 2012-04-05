@@ -83,7 +83,8 @@ this.require.define({"app/controllers/element":function(exports, require, module
         left: 0,
         top: 0,
         opacity: 1,
-        backgroundColor: new Color.Black(0.2)
+        backgroundColor: new Color.Black(0.2),
+        order: -1
       };
     };
 
@@ -142,6 +143,10 @@ this.require.define({"app/controllers/element":function(exports, require, module
       area.top += toPosition.top;
       this.set(area);
       return this.el.trigger('moved', [this]);
+    };
+
+    Element.prototype.order = function(i) {
+      return this.set('zIndex', i + 100);
     };
 
     Element.prototype.remove = function() {

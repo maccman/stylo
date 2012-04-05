@@ -4,6 +4,7 @@ Resizing    = require('./stage/resizing')
 SelectArea  = require('./stage/select_area')
 Snapping    = require('./stage/snapping')
 KeyBindings = require('./stage/key_bindings')
+ZIndex      = require('./stage/zindex')
 
 Rectangle  = require('./elements/rectangle')
 Ellipsis   = require('./elements/ellipsis')
@@ -29,6 +30,7 @@ class Stage extends Spine.Controller
     @selectArea  = new SelectArea(this)
     @snapping    = new Snapping(this)
     @keybindings = new KeyBindings(this)
+    @zindex      = new ZIndex(this)
 
     @selection.bind 'change', =>
       @el.trigger('selection.change', [this])
@@ -90,6 +92,30 @@ class Stage extends Spine.Controller
 
   resizeEnd: ->
     @$('.thumb').show()
+
+  # ZIndex
+
+  bringForward: ->
+    for element in @selection.elements
+      @zindex.bringForward(element)
+    true
+
+  bringBack: ->
+    for element in @selection.elements
+      @zindex.bringBack(element)
+    true
+
+  bringToFront: ->
+    for element in @selection.elements
+      @zindex.bringToFront(element)
+    true
+
+  bringToBack: ->
+    for element in @selection.elements
+      @zindex.bringToBack(element)
+    true
+
+  # Attributes
 
   area: ->
     area        = @el.position()

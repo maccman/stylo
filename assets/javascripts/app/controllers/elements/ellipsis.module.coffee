@@ -5,6 +5,11 @@ class Ellipsis extends Element
 
   constructor: ->
     super
-    @set(borderRadius: '50%')
+    @properties['borderRadius'] = '50%'
+    @paint()
+
+  # Disable setting borderRadius in
+  # the element inspector
+  borderRadius: false
 
 module.exports = Ellipsis

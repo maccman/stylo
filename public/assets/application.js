@@ -12165,63 +12165,6 @@ this.require.define({"lib/position_picker":function(exports, require, module){(f
     return __out.join('');
   };
 }).call(this);
-this.require.define({"app/controllers/canvas":function(exports, require, module){(function() {
-  var Canvas, Element,
-    __hasProp = Object.prototype.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
-
-  Element = require('./element');
-
-  Canvas = (function(_super) {
-
-    __extends(Canvas, _super);
-
-    Canvas.prototype.tag = 'canvas';
-
-    Canvas.prototype.points = [];
-
-    function Canvas() {
-      Canvas.__super__.constructor.apply(this, arguments);
-      this.ctx = this.el[0].getContext('2d');
-    }
-
-    Canvas.prototype.paint = function() {
-      var first, point, points, _i, _len, _ref, _ref2, _ref3;
-      first = this.points[0];
-      points = this.points.slice(1, this.points.length);
-      if (!first) return;
-      this.ctx.beginPath();
-      (_ref = this.ctx).moveTo.apply(_ref, first);
-      _ref2 = this.points;
-      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-        point = _ref2[_i];
-        (_ref3 = this.ctx).lineTo.apply(_ref3, point);
-      }
-      return this.ctx.fill();
-    };
-
-    Canvas.prototype.width = function(val) {};
-
-    Canvas.prototype.height = function(val) {};
-
-    Canvas.prototype.backgroundImage = function(val) {};
-
-    Canvas.prototype.backgroundColor = function(val) {};
-
-    Canvas.prototype.borderBottom = function(val) {};
-
-    Canvas.prototype.boxShadow = function(val) {};
-
-    Canvas.prototype.borderRadius = function(val) {};
-
-    return Canvas;
-
-  })(Element);
-
-  module.exports = Canvas;
-
-}).call(this);
-;}});
 this.require.define({"app/controllers/element":function(exports, require, module){(function() {
   var Background, Color, Element, Resizing,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
@@ -12247,7 +12190,8 @@ this.require.define({"app/controllers/element":function(exports, require, module
         left: 0,
         top: 0,
         opacity: 1,
-        backgroundColor: new Color.Black(0.2)
+        backgroundColor: new Color.Black(0.2),
+        order: -1
       };
     };
 
@@ -12306,6 +12250,10 @@ this.require.define({"app/controllers/element":function(exports, require, module
       area.top += toPosition.top;
       this.set(area);
       return this.el.trigger('moved', [this]);
+    };
+
+    Element.prototype.order = function(i) {
+      return this.set('zIndex', i + 100);
     };
 
     Element.prototype.remove = function() {
@@ -12516,6 +12464,63 @@ this.require.define({"app/controllers/element/resizing":function(exports, requir
 
 }).call(this);
 ;}});
+this.require.define({"app/controllers/elements/canvas":function(exports, require, module){(function() {
+  var Canvas, Element,
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  Element = require('../element');
+
+  Canvas = (function(_super) {
+
+    __extends(Canvas, _super);
+
+    Canvas.prototype.tag = 'canvas';
+
+    Canvas.prototype.points = [];
+
+    function Canvas() {
+      Canvas.__super__.constructor.apply(this, arguments);
+      this.ctx = this.el[0].getContext('2d');
+    }
+
+    Canvas.prototype.paint = function() {
+      var first, point, points, _i, _len, _ref, _ref2, _ref3;
+      first = this.points[0];
+      points = this.points.slice(1, this.points.length);
+      if (!first) return;
+      this.ctx.beginPath();
+      (_ref = this.ctx).moveTo.apply(_ref, first);
+      _ref2 = this.points;
+      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+        point = _ref2[_i];
+        (_ref3 = this.ctx).lineTo.apply(_ref3, point);
+      }
+      return this.ctx.fill();
+    };
+
+    Canvas.prototype.width = function(val) {};
+
+    Canvas.prototype.height = function(val) {};
+
+    Canvas.prototype.backgroundImage = function(val) {};
+
+    Canvas.prototype.backgroundColor = function(val) {};
+
+    Canvas.prototype.borderBottom = function(val) {};
+
+    Canvas.prototype.boxShadow = function(val) {};
+
+    Canvas.prototype.borderRadius = function(val) {};
+
+    return Canvas;
+
+  })(Element);
+
+  module.exports = Canvas;
+
+}).call(this);
+;}});
 this.require.define({"app/controllers/elements/ellipsis":function(exports, require, module){(function() {
   var Element, Ellipsis,
     __hasProp = Object.prototype.hasOwnProperty,
@@ -12531,10 +12536,11 @@ this.require.define({"app/controllers/elements/ellipsis":function(exports, requi
 
     function Ellipsis() {
       Ellipsis.__super__.constructor.apply(this, arguments);
-      this.set({
-        borderRadius: '50%'
-      });
+      this.properties['borderRadius'] = '50%';
+      this.paint();
     }
+
+    Ellipsis.prototype.borderRadius = false;
 
     return Ellipsis;
 
@@ -12670,13 +12676,11 @@ this.require.define({"app/controllers/elements/rectangle":function(exports, requ
 }).call(this);
 ;}});
 this.require.define({"app/controllers/elements/text":function(exports, require, module){(function() {
-  var Element, Rectangle, Text,
+  var Rectangle, Text,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Rectangle = require('./rectangle');
-
-  Element = require('../element');
 
   Text = (function(_super) {
 
@@ -12714,11 +12718,11 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
 }).call(this);
 ;}});
 this.require.define({"app/controllers/elements/triangle":function(exports, require, module){(function() {
-  var Element, Triangle,
+  var Canvas, Triangle,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  Element = require('../element');
+  Canvas = require('./canvas');
 
   Triangle = (function(_super) {
 
@@ -13464,7 +13468,7 @@ this.require.define({"app/controllers/inspector/text_shadow":function(exports, r
 }).call(this);
 ;}});
 this.require.define({"app/controllers/stage":function(exports, require, module){(function() {
-  var Dragging, Ellipsis, KeyBindings, Properties, Rectangle, Resizing, SelectArea, Selection, Snapping, Stage,
+  var Dragging, Ellipsis, KeyBindings, Properties, Rectangle, Resizing, SelectArea, Selection, Snapping, Stage, ZIndex,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
@@ -13481,6 +13485,8 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
   Snapping = require('./stage/snapping');
 
   KeyBindings = require('./stage/key_bindings');
+
+  ZIndex = require('./stage/zindex');
 
   Rectangle = require('./elements/rectangle');
 
@@ -13517,6 +13523,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       this.selectArea = new SelectArea(this);
       this.snapping = new Snapping(this);
       this.keybindings = new KeyBindings(this);
+      this.zindex = new ZIndex(this);
       this.selection.bind('change', function() {
         return _this.el.trigger('selection.change', [_this]);
       });
@@ -13607,6 +13614,46 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
 
     Stage.prototype.resizeEnd = function() {
       return this.$('.thumb').show();
+    };
+
+    Stage.prototype.bringForward = function() {
+      var element, _i, _len, _ref;
+      _ref = this.selection.elements;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        element = _ref[_i];
+        this.zindex.bringForward(element);
+      }
+      return true;
+    };
+
+    Stage.prototype.bringBack = function() {
+      var element, _i, _len, _ref;
+      _ref = this.selection.elements;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        element = _ref[_i];
+        this.zindex.bringBack(element);
+      }
+      return true;
+    };
+
+    Stage.prototype.bringToFront = function() {
+      var element, _i, _len, _ref;
+      _ref = this.selection.elements;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        element = _ref[_i];
+        this.zindex.bringToFront(element);
+      }
+      return true;
+    };
+
+    Stage.prototype.bringToBack = function() {
+      var element, _i, _len, _ref;
+      _ref = this.selection.elements;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        element = _ref[_i];
+        this.zindex.bringToBack(element);
+      }
+      return true;
     };
 
     Stage.prototype.area = function() {
@@ -14339,6 +14386,73 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
   })(Spine.Controller);
 
   module.exports = Snapping;
+
+}).call(this);
+;}});
+this.require.define({"app/controllers/stage/zindex":function(exports, require, module){(function() {
+  var Collection, ZIndex;
+
+  Collection = require('lib/collection');
+
+  ZIndex = (function() {
+
+    function ZIndex(stage) {
+      this.stage = stage;
+      this.order = this.stage.elements;
+    }
+
+    ZIndex.prototype.bringForward = function(element) {
+      var index;
+      index = this.order.indexOf(element);
+      if (index !== -1) {
+        this.order[index] = this.order[index + 1];
+        this.order[index + 1] = element;
+      }
+      return this.set();
+    };
+
+    ZIndex.prototype.bringBack = function(element) {
+      var index;
+      index = this.order.indexOf(element);
+      if (index !== -1 || index !== 0) {
+        this.order[index] = this.order[index - 1];
+        this.order[index - 1] = element;
+      }
+      return this.set();
+    };
+
+    ZIndex.prototype.bringToFront = function(element) {
+      var index;
+      index = this.order.indexOf(element);
+      this.order.splice(index, 1);
+      this.order.push(element);
+      return this.set();
+    };
+
+    ZIndex.prototype.bringToBack = function(element) {
+      var index;
+      index = this.order.indexOf(element);
+      this.order.splice(index, 1);
+      this.order.unshift(element);
+      return this.set();
+    };
+
+    ZIndex.prototype.set = function() {
+      var element, index, _len, _ref, _results;
+      _ref = this.order;
+      _results = [];
+      for (index = 0, _len = _ref.length; index < _len; index++) {
+        element = _ref[index];
+        _results.push(element.set('order', index));
+      }
+      return _results;
+    };
+
+    return ZIndex;
+
+  })();
+
+  module.exports = ZIndex;
 
 }).call(this);
 ;}});

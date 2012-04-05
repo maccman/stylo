@@ -58,32 +58,9 @@
 
   return this.require;
 }).call(this);
-this.require.define({"app/controllers/elements/ellipsis":function(exports, require, module){(function() {
-  var Element, Ellipsis,
-    __hasProp = Object.prototype.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+this.require.define({"app/controllers/stage/selection/zindex":function(exports, require, module){(function() {
 
-  Element = require('../element');
 
-  Ellipsis = (function(_super) {
-
-    __extends(Ellipsis, _super);
-
-    Ellipsis.prototype.className = 'ellipsis';
-
-    function Ellipsis() {
-      Ellipsis.__super__.constructor.apply(this, arguments);
-      this.properties['borderRadius'] = '50%';
-      this.paint();
-    }
-
-    Ellipsis.prototype.borderRadius = false;
-
-    return Ellipsis;
-
-  })(Element);
-
-  module.exports = Ellipsis;
 
 }).call(this);
 ;}});

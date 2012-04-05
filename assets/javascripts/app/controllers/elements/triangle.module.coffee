@@ -1,4 +1,4 @@
-Element = require('../element')
+Canvas = require('./canvas')
 
 class Triangle extends Canvas
   className: 'triangle'

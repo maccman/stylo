@@ -59,7 +59,7 @@
   return this.require;
 }).call(this);
 this.require.define({"app/controllers/stage":function(exports, require, module){(function() {
-  var Dragging, Ellipsis, KeyBindings, Properties, Rectangle, Resizing, SelectArea, Selection, Snapping, Stage,
+  var Dragging, Ellipsis, KeyBindings, Properties, Rectangle, Resizing, SelectArea, Selection, Snapping, Stage, ZIndex,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
@@ -76,6 +76,8 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
   Snapping = require('./stage/snapping');
 
   KeyBindings = require('./stage/key_bindings');
+
+  ZIndex = require('./stage/zindex');
 
   Rectangle = require('./elements/rectangle');
 
@@ -112,6 +114,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       this.selectArea = new SelectArea(this);
       this.snapping = new Snapping(this);
       this.keybindings = new KeyBindings(this);
+      this.zindex = new ZIndex(this);
       this.selection.bind('change', function() {
         return _this.el.trigger('selection.change', [_this]);
       });
@@ -202,6 +205,46 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
 
     Stage.prototype.resizeEnd = function() {
       return this.$('.thumb').show();
+    };
+
+    Stage.prototype.bringForward = function() {
+      var element, _i, _len, _ref;
+      _ref = this.selection.elements;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        element = _ref[_i];
+        this.zindex.bringForward(element);
+      }
+      return true;
+    };
+
+    Stage.prototype.bringBack = function() {
+      var element, _i, _len, _ref;
+      _ref = this.selection.elements;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        element = _ref[_i];
+        this.zindex.bringBack(element);
+      }
+      return true;
+    };
+
+    Stage.prototype.bringToFront = function() {
+      var element, _i, _len, _ref;
+      _ref = this.selection.elements;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        element = _ref[_i];
+        this.zindex.bringToFront(element);
+      }
+      return true;
+    };
+
+    Stage.prototype.bringToBack = function() {
+      var element, _i, _len, _ref;
+      _ref = this.selection.elements;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        element = _ref[_i];
+        this.zindex.bringToBack(element);
+      }
+      return true;
     };
 
     Stage.prototype.area = function() {

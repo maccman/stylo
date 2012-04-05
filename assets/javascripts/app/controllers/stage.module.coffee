@@ -96,23 +96,23 @@ class Stage extends Spine.Controller
   # ZIndex
 
   bringForward: ->
-    for element in @selection.elements
-      @zindex.bringForward(element)
+    elements = @selection.elements.slice(0).reverse()
+    @zindex.bringForward(element) for element in elements
     true
 
   bringBack: ->
-    for element in @selection.elements
-      @zindex.bringBack(element)
+    elements = @selection.elements.slice(0).reverse()
+    @zindex.bringBack(element) for element in elements
     true
 
   bringToFront: ->
-    for element in @selection.elements
-      @zindex.bringToFront(element)
+    elements = @selection.elements.slice(0).reverse()
+    @zindex.bringToFront(element) for element in elements
     true
 
   bringToBack: ->
-    for element in @selection.elements
-      @zindex.bringToBack(element)
+    elements = @selection.elements.slice(0).reverse()
+    @zindex.bringToBack(element) for element in elements
     true
 
   # Attributes

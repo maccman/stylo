@@ -546,6 +546,7 @@ body {
   background: #fff;
   min-width: 400px;
   color: #000;
+  z-index: 10000;
 }
 .popup article {
   padding: 5px;
@@ -667,6 +668,7 @@ body {
 #app .stage .snapLine {
   background: #fbff40;
   position: absolute;
+  z-index: 9999;
 }
 #app .stage .snapLine.vertical {
   width: 1px;
@@ -683,6 +685,7 @@ body {
   -moz-box-shadow: 1px 1px 3px rgba(0,0,0,0.30);
   -webkit-box-shadow: 1px 1px 3px rgba(0,0,0,0.30);
   box-shadow: 1px 1px 3px rgba(0,0,0,0.30);
+  z-index: 10001;
 }
 /*
 

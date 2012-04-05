@@ -73,7 +73,7 @@ this.require.define({"app/controllers/stage/zindex":function(exports, require, m
     ZIndex.prototype.bringForward = function(element) {
       var index;
       index = this.order.indexOf(element);
-      if (index !== -1) {
+      if (index !== -1 || index !== (this.order.length - 1)) {
         this.order[index] = this.order[index + 1];
         this.order[index + 1] = element;
       }

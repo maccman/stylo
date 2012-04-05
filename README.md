@@ -40,7 +40,9 @@ Nice to have:
 * Exporting HTML
 * Share (dropbox/email?)
 * Clone HTML components
+* WebFonts
 * Layers
+* Context menu
 
 Inherit Ellipsis from Rectangle (resizing & lines).
 

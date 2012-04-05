@@ -8,13 +8,21 @@ class Undo
     redo()
 
   @undo: ->
-    [undo, redo] = @undoStack.pop()
+    action = @undoStack.pop()
+    return unless action
+
+    [undo, redo] = action
     undo()
-    @redoStack.push([undo, redo])
+
+    @redoStack.push(action)
 
   @redo: ->
-    [undo, redo] = @redoStack.pop()
+    action = @redoStack.pop()
+    return unless action
+
+    [undo, redo] = action
     redo()
-    @undoStack.push([undo, redo])
+
+    @undoStack.push(action)
 
 module.exports = Undo

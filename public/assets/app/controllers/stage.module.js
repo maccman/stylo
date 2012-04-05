@@ -208,40 +208,40 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
     };
 
     Stage.prototype.bringForward = function() {
-      var element, _i, _len, _ref;
-      _ref = this.selection.elements;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        element = _ref[_i];
+      var element, elements, _i, _len;
+      elements = this.selection.elements.slice(0).reverse();
+      for (_i = 0, _len = elements.length; _i < _len; _i++) {
+        element = elements[_i];
         this.zindex.bringForward(element);
       }
       return true;
     };
 
     Stage.prototype.bringBack = function() {
-      var element, _i, _len, _ref;
-      _ref = this.selection.elements;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        element = _ref[_i];
+      var element, elements, _i, _len;
+      elements = this.selection.elements.slice(0).reverse();
+      for (_i = 0, _len = elements.length; _i < _len; _i++) {
+        element = elements[_i];
         this.zindex.bringBack(element);
       }
       return true;
     };
 
     Stage.prototype.bringToFront = function() {
-      var element, _i, _len, _ref;
-      _ref = this.selection.elements;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        element = _ref[_i];
+      var element, elements, _i, _len;
+      elements = this.selection.elements.slice(0).reverse();
+      for (_i = 0, _len = elements.length; _i < _len; _i++) {
+        element = elements[_i];
         this.zindex.bringToFront(element);
       }
       return true;
     };
 
     Stage.prototype.bringToBack = function() {
-      var element, _i, _len, _ref;
-      _ref = this.selection.elements;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        element = _ref[_i];
+      var element, elements, _i, _len;
+      elements = this.selection.elements.slice(0).reverse();
+      for (_i = 0, _len = elements.length; _i < _len; _i++) {
+        element = elements[_i];
         this.zindex.bringToBack(element);
       }
       return true;

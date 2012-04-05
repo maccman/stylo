@@ -7,7 +7,7 @@ class ZIndex
   bringForward: (element) ->
     index = @order.indexOf(element)
 
-    if index isnt -1
+    if index isnt -1 or index isnt (@order.length - 1)
       # Swap item forwards
       @order[index]     = @order[index + 1]
       @order[index + 1] = element

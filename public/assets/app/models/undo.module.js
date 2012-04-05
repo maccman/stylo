@@ -76,17 +76,21 @@ this.require.define({"app/models/undo":function(exports, require, module){(funct
     };
 
     Undo.undo = function() {
-      var redo, undo, _ref;
-      _ref = this.undoStack.pop(), undo = _ref[0], redo = _ref[1];
+      var action, redo, undo;
+      action = this.undoStack.pop();
+      if (!action) return;
+      undo = action[0], redo = action[1];
       undo();
-      return this.redoStack.push([undo, redo]);
+      return this.redoStack.push(action);
     };
 
     Undo.redo = function() {
-      var redo, undo, _ref;
-      _ref = this.redoStack.pop(), undo = _ref[0], redo = _ref[1];
+      var action, redo, undo;
+      action = this.redoStack.pop();
+      if (!action) return;
+      undo = action[0], redo = action[1];
       redo();
-      return this.undoStack.push([undo, redo]);
+      return this.undoStack.push(action);
     };
 
     return Undo;

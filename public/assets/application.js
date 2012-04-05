@@ -13619,40 +13619,40 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
     };
 
     Stage.prototype.bringForward = function() {
-      var element, _i, _len, _ref;
-      _ref = this.selection.elements;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        element = _ref[_i];
+      var element, elements, _i, _len;
+      elements = this.selection.elements.slice(0).reverse();
+      for (_i = 0, _len = elements.length; _i < _len; _i++) {
+        element = elements[_i];
         this.zindex.bringForward(element);
       }
       return true;
     };
 
     Stage.prototype.bringBack = function() {
-      var element, _i, _len, _ref;
-      _ref = this.selection.elements;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        element = _ref[_i];
+      var element, elements, _i, _len;
+      elements = this.selection.elements.slice(0).reverse();
+      for (_i = 0, _len = elements.length; _i < _len; _i++) {
+        element = elements[_i];
         this.zindex.bringBack(element);
       }
       return true;
     };
 
     Stage.prototype.bringToFront = function() {
-      var element, _i, _len, _ref;
-      _ref = this.selection.elements;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        element = _ref[_i];
+      var element, elements, _i, _len;
+      elements = this.selection.elements.slice(0).reverse();
+      for (_i = 0, _len = elements.length; _i < _len; _i++) {
+        element = elements[_i];
         this.zindex.bringToFront(element);
       }
       return true;
     };
 
     Stage.prototype.bringToBack = function() {
-      var element, _i, _len, _ref;
-      _ref = this.selection.elements;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        element = _ref[_i];
+      var element, elements, _i, _len;
+      elements = this.selection.elements.slice(0).reverse();
+      for (_i = 0, _len = elements.length; _i < _len; _i++) {
+        element = elements[_i];
         this.zindex.bringToBack(element);
       }
       return true;
@@ -14406,7 +14406,7 @@ this.require.define({"app/controllers/stage/zindex":function(exports, require, m
     ZIndex.prototype.bringForward = function(element) {
       var index;
       index = this.order.indexOf(element);
-      if (index !== -1) {
+      if (index !== -1 || index !== (this.order.length - 1)) {
         this.order[index] = this.order[index + 1];
         this.order[index + 1] = element;
       }
@@ -14763,17 +14763,21 @@ this.require.define({"app/models/undo":function(exports, require, module){(funct
     };
 
     Undo.undo = function() {
-      var redo, undo, _ref;
-      _ref = this.undoStack.pop(), undo = _ref[0], redo = _ref[1];
+      var action, redo, undo;
+      action = this.undoStack.pop();
+      if (!action) return;
+      undo = action[0], redo = action[1];
       undo();
-      return this.redoStack.push([undo, redo]);
+      return this.redoStack.push(action);
     };
 
     Undo.redo = function() {
-      var redo, undo, _ref;
-      _ref = this.redoStack.pop(), undo = _ref[0], redo = _ref[1];
+      var action, redo, undo;
+      action = this.redoStack.pop();
+      if (!action) return;
+      undo = action[0], redo = action[1];
       redo();
-      return this.undoStack.push([undo, redo]);
+      return this.undoStack.push(action);
     };
 
     return Undo;

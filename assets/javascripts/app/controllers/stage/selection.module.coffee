@@ -1,4 +1,3 @@
-
 min = (a = 0, b = 0) ->
   return b if a is 0
   Math.min(a, b)

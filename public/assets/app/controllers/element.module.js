@@ -74,6 +74,8 @@ this.require.define({"app/controllers/element":function(exports, require, module
 
     __extends(Element, _super);
 
+    Element.prototype.className = 'element';
+
     Element.prototype.defaults = function() {
       var result;
       return result = {
@@ -95,9 +97,9 @@ this.require.define({"app/controllers/element":function(exports, require, module
     function Element(attrs) {
       if (attrs == null) attrs = {};
       this.selected = __bind(this.selected, this);
-      if ('el' in attrs) this.el = attrs.el;
-      Element.__super__.constructor.call(this);
-      this.el.addClass('element');
+      Element.__super__.constructor.call(this, {
+        el: attrs.el
+      });
       this.properties = {};
       this.set(this.defaults());
       this.set(attrs);

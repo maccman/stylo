@@ -12181,6 +12181,8 @@ this.require.define({"app/controllers/element":function(exports, require, module
 
     __extends(Element, _super);
 
+    Element.prototype.className = 'element';
+
     Element.prototype.defaults = function() {
       var result;
       return result = {
@@ -12202,9 +12204,9 @@ this.require.define({"app/controllers/element":function(exports, require, module
     function Element(attrs) {
       if (attrs == null) attrs = {};
       this.selected = __bind(this.selected, this);
-      if ('el' in attrs) this.el = attrs.el;
-      Element.__super__.constructor.call(this);
-      this.el.addClass('element');
+      Element.__super__.constructor.call(this, {
+        el: attrs.el
+      });
       this.properties = {};
       this.set(this.defaults());
       this.set(attrs);
@@ -14456,25 +14458,6 @@ this.require.define({"app/controllers/stage/zindex":function(exports, require, m
 
 }).call(this);
 ;}});
-this.require.define({"app/controllers/undo":function(exports, require, module){(function() {
-  var Undo;
-
-  Undo = (function() {
-
-    function Undo() {}
-
-    Undo.commands = [];
-
-    Undo.add = function(undo, redo) {};
-
-    return Undo;
-
-  })();
-
-  module["extends"] = Undo;
-
-}).call(this);
-;}});
 this.require.define({"app/index":function(exports, require, module){(function() {
   var App, Header, Inspector, Stage,
     __hasProp = Object.prototype.hasOwnProperty,
@@ -14759,6 +14742,45 @@ this.require.define({"app/models/property":function(exports, require, module){(f
   module.exports = Property;
 
   module.exports.Values = Values;
+
+}).call(this);
+;}});
+this.require.define({"app/models/undo":function(exports, require, module){(function() {
+  var Undo;
+
+  Undo = (function() {
+
+    function Undo() {}
+
+    Undo.undoStack = [];
+
+    Undo.redoStack = [];
+
+    Undo.add = function(undo, redo) {
+      this.undoStack.push([undo, redo]);
+      this.redoStack = [];
+      return redo();
+    };
+
+    Undo.undo = function() {
+      var redo, undo, _ref;
+      _ref = this.undoStack.pop(), undo = _ref[0], redo = _ref[1];
+      undo();
+      return this.redoStack.push([undo, redo]);
+    };
+
+    Undo.redo = function() {
+      var redo, undo, _ref;
+      _ref = this.redoStack.pop(), undo = _ref[0], redo = _ref[1];
+      redo();
+      return this.undoStack.push([undo, redo]);
+    };
+
+    return Undo;
+
+  })();
+
+  module.exports = Undo;
 
 }).call(this);
 ;}});

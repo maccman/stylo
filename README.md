@@ -10,8 +10,8 @@ Phase 1:
 * ✓ Select multiple items
 * ✓ Toolbar menu
 * Inspector panel (Element/Text/Ruler)
-  * ✓ Background
-  * Border
+  * ½ Background
+  * ½ Border
   * ✓ Shadow
   * Font alignment
   * Font family/size/style/color
@@ -24,19 +24,18 @@ Phase 2:
 
 * ✓ Stage snapping
 * ✓ Color picker
-* Complete background inspector
 * Scaling stage & size
-* Z-index
+* ✓ Z-index
 * Copy paste
-* Undo/redo (on set())
+* ½ Undo/redo
 * Saving/opening
 * Resizing snapping
 * Element snapping
 * Pen tool
-* Keyboard shortcuts
 
 Nice to have:
 
+* Keyboard shortcuts
 * Versioning
 * Exporting HTML
 * Share (dropbox/email?)
@@ -44,6 +43,17 @@ Nice to have:
 * Layers
 
 Inherit Ellipsis from Rectangle (resizing & lines).
+
+##Elements
+
+* Triangle
+* ✓ Rectangle
+* ✓ Ellipsis
+* Form elements
+* Text
+* Image
+* Line tool?
+* Link?
 
 ##Rulers & Snap
 
@@ -58,53 +68,6 @@ Two types of snapping:
   * Middle of elements
 * Width snapping:
   * Detect distance between elements - snap when two distances are the same.
-
-##Elements
-
-* Triangle
-* ✓ Rectangle
-* ✓ Ellipsis
-* Form elements
-* Text
-* Image
-* Line tool?
-* Link?
-
-##Canvas CSS properties
-
-background-clip: border-box;
-background-color: transparent;
-background-image: none;
-background-position: 0% 0%;
-background-repeat: repeat;
-background-size: auto;
-
-border-bottom-color: #555;
-border-bottom-left-radius: 0px;
-border-bottom-right-radius: 0px;
-border-bottom-style: none;
-border-bottom-width: 0px;
-
-border-left-color: #555;
-border-left-style: none;
-border-left-width: 0px;
-border-right-color: #555;
-border-right-style: none;
-border-right-width: 0px;
-border-top-color: #555;
-border-top-left-radius: 0px;
-border-top-right-radius: 0px;
-border-top-style: none;
-border-top-width: 0px;
-
-box-shadow: none;
-color: #555;
-
-filter: none;
-height: 20px;
-
-width: 848px;
-z-index: auto;
 
 #Save to png
 

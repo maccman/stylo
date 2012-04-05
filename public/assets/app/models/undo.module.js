@@ -58,7 +58,7 @@
 
   return this.require;
 }).call(this);
-this.require.define({"app/controllers/undo":function(exports, require, module){(function() {
+this.require.define({"app/models/undo":function(exports, require, module){(function() {
   var Undo;
 
   Undo = (function() {

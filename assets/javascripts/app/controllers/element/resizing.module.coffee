@@ -20,6 +20,7 @@ class Thumb extends Spine.Controller
     difference =
       left: e.pageX - @dragPosition.left
       top:  e.pageY - @dragPosition.top
+
     @dragPosition = {left: e.pageX, top: e.pageY}
     @el.trigger('resize.start', [@type, difference, e.shiftKey])
 
@@ -96,7 +97,7 @@ class Resizing extends Spine.Controller
         area.left   += position.left
 
     if lockAR
-      # TODO - FIXME
+      # TODO - FIXME, this doesn't lock AR properly
       area.width  = Math.max(area.width, area.height)
       area.height = area.width
 

@@ -58,7 +58,7 @@
 
   return this.require;
 }).call(this);
-this.require.define({"app/controllers/undo":function(exports, require, module){(function() {
+this.require.define({"app/controllers/element/undo":function(exports, require, module){(function() {
   var Undo;
 
   Undo = (function() {
@@ -69,31 +69,18 @@ this.require.define({"app/controllers/undo":function(exports, require, module){(
 
     Undo.redoStack = [];
 
-    Undo.add = function(undo, redo) {
-      this.undoStack.push([undo, redo]);
-      this.redoStack = [];
-      return redo();
+    Undo.add = function(undo, action) {
+      this.undoStack.push(undo);
+      return this.redoStack = [];
     };
 
-    Undo.undo = function() {
-      var redo, undo, _ref;
-      _ref = this.undoStack.pop(), undo = _ref[0], redo = _ref[1];
-      undo();
-      return this.redoStack.push([undo, redo]);
-    };
-
-    Undo.redo = function() {
-      var redo, undo, _ref;
-      _ref = this.redoStack.pop(), undo = _ref[0], redo = _ref[1];
-      redo();
-      return this.undoStack.push([undo, redo]);
-    };
+    Undo.undo = function() {};
 
     return Undo;
 
   })();
 
-  module.exports = Undo;
+  module["extends"] = Undo;
 
 }).call(this);
 ;}});

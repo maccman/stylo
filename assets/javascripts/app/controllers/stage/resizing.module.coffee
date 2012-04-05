@@ -32,7 +32,6 @@ class Resizing extends Spine.Controller
     @areaTitle.change(area)
 
   resizeEnd: ->
-    # Reset areaTitle
     @areaTitle?.remove()
     @areaTitle = null
 

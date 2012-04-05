@@ -3,6 +3,8 @@ Background = require('app/models/properties/background')
 Color      = require('app/models/properties/color')
 
 class Element extends Spine.Controller
+  className: 'element'
+
   defaults: ->
     result =
       position: 'absolute'
@@ -18,9 +20,7 @@ class Element extends Spine.Controller
     'mousedown': 'select'
 
   constructor: (attrs = {}) ->
-    @el = attrs.el if 'el' of attrs
-    super()
-    @el.addClass('element')
+    super(el: attrs.el)
 
     @properties = {}
 
@@ -60,15 +60,13 @@ class Element extends Spine.Controller
     @el.trigger('moved', [this])
 
   order: (i) ->
-    # Make sure zIndex doesn't conflict
-    # with other interface elements
     @set('zIndex', i + 100)
 
   remove: ->
     @el.remove()
 
   clone: ->
-    # TODO - inheritance...
+    # TODO - @properties inheritance...
     new @constructor(@properties)
 
   # Selecting elements

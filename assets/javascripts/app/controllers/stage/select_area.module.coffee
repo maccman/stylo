@@ -50,9 +50,7 @@ class SelectArea extends Spine.Controller
     $(document).mouseup(@drop)
 
   drag: (e) =>
-    # Mouse events need to be offset
-    # by the height of the header,
-    # We also offset by 1, so it doesn't
+    # We offset by 1, so it doesn't
     # mess up click events
     unless @selectArea
       @selectArea = new Area(

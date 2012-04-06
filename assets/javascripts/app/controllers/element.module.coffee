@@ -136,7 +136,9 @@ class Element extends Spine.Controller
         value += 'px'
 
       # Format as CSS property
-      name = Utils.dasherize(name)
+      name  = Utils.dasherize(name)
+      value = value.toString()
+      continue unless value
 
       styles[name] = value
 

@@ -217,6 +217,8 @@ this.require.define({"app/controllers/element":function(exports, require, module
         if (__indexOf.call(this.ignoredStyles, name) >= 0) continue;
         if (typeof value === 'number' && !$.cssNumber[name]) value += 'px';
         name = Utils.dasherize(name);
+        value = value.toString();
+        if (!value) continue;
         styles[name] = value;
       }
       styles = ((function() {

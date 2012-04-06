@@ -25,11 +25,14 @@ Phase 2:
 
 * ✓ Stage snapping
 * ✓ Color picker
-* Scaling stage & size
+* Stage inspector
 * ✓ Z-index
-* Copy paste
+* ✓ Copy paste
 * ½ Undo/redo
-* Saving/opening
+* ½ Saving/opening
+
+Phase 3:
+
 * Resizing snapping
 * Element snapping
 * Pen tool

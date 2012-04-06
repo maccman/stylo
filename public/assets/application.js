@@ -13869,6 +13869,7 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
       e.preventDefault();
       e = e.originalEvent;
       json = e.clipboardData.getData('json/x-stylo');
+      if (!json) return;
       elements = Serialize.fromJSON(json);
       for (_i = 0, _len = elements.length; _i < _len; _i++) {
         el = elements[_i];

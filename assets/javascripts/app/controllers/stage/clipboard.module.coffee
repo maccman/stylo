@@ -35,6 +35,8 @@ class Clipboard
     e = e.originalEvent
 
     json     = e.clipboardData.getData('json/x-stylo')
+    return unless json
+
     elements = Serialize.fromJSON(json)
 
     @stage.add(el) for el in elements

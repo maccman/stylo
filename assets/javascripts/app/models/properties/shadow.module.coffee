@@ -2,6 +2,8 @@ Property = require('app/models/property')
 Color    = require('./color')
 
 class Shadow extends Property
+  id: module.id
+
   constructor: (properties = {}) ->
     @[k] = v for k, v of properties
 
@@ -18,5 +20,11 @@ class Shadow extends Property
     result.push(@spread + 'px') if @spread?
     result.push(@color.toString())
     result.join(' ')
+
+  toValue: ->
+    value =
+      x: @x
+      y: @y
+      color: @color
 
 module.exports = Shadow

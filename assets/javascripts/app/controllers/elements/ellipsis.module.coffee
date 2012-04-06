@@ -2,6 +2,7 @@ Element = require('../element')
 
 class Ellipsis extends Element
   className: 'ellipsis'
+  id: module.id
 
   constructor: ->
     super

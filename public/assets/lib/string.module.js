@@ -58,48 +58,9 @@
 
   return this.require;
 }).call(this);
-this.require.define({"app/models/property":function(exports, require, module){(function() {
-  var Collection, Property, Serialize, Values,
-    __hasProp = Object.prototype.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+this.require.define({"lib/string":function(exports, require, module){(function() {
 
-  Collection = require('lib/collection');
 
-  Serialize = require('./serialize').Serialize;
-
-  Values = (function(_super) {
-
-    __extends(Values, _super);
-
-    function Values() {
-      Values.__super__.constructor.apply(this, arguments);
-    }
-
-    Values.prototype.toString = function() {
-      return this.join(', ');
-    };
-
-    return Values;
-
-  })(Collection);
-
-  Property = (function(_super) {
-
-    __extends(Property, _super);
-
-    function Property() {
-      Property.__super__.constructor.apply(this, arguments);
-    }
-
-    Property.include(Serialize);
-
-    return Property;
-
-  })(Spine.Module);
-
-  module.exports = Property;
-
-  module.exports.Values = Values;
 
 }).call(this);
 ;}});

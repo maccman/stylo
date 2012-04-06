@@ -59,22 +59,31 @@
   return this.require;
 }).call(this);
 this.require.define({"app/controllers/element":function(exports, require, module){(function() {
-  var Background, Color, Element, Resizing,
+  var Background, Color, Element, Resizing, Serialize, Utils,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
+    __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   Resizing = require('./element/resizing');
+
+  Serialize = require('app/models/serialize').Serialize;
 
   Background = require('app/models/properties/background');
 
   Color = require('app/models/properties/color');
 
+  Utils = require('lib/utils');
+
   Element = (function(_super) {
 
     __extends(Element, _super);
 
+    Element.include(Serialize);
+
     Element.prototype.className = 'element';
+
+    Element.prototype.id = module.id;
 
     Element.prototype.defaults = function() {
       var result;
@@ -127,10 +136,8 @@ this.require.define({"app/controllers/element":function(exports, require, module
       return this.el.css(this.properties);
     };
 
-    Element.prototype.toJSON = function() {
-      return {
-        properties: this.properties
-      };
+    Element.prototype.toValue = function() {
+      return this.properties;
     };
 
     Element.prototype.resize = function(area) {
@@ -193,6 +200,35 @@ this.require.define({"app/controllers/element":function(exports, require, module
         return true;
       }
       return false;
+    };
+
+    Element.prototype.outerHTML = function() {
+      return this.el.clone().empty()[0].outerHTML;
+    };
+
+    Element.prototype.ignoredStyles = ['left', 'top', 'zIndex', 'position'];
+
+    Element.prototype.outerCSS = function() {
+      var k, name, styles, v, value, _ref;
+      styles = {};
+      _ref = this.properties;
+      for (name in _ref) {
+        value = _ref[name];
+        if (__indexOf.call(this.ignoredStyles, name) >= 0) continue;
+        if (typeof value === 'number' && !$.cssNumber[name]) value += 'px';
+        name = Utils.dasherize(name);
+        styles[name] = value;
+      }
+      styles = ((function() {
+        var _results;
+        _results = [];
+        for (k in styles) {
+          v = styles[k];
+          _results.push("\t" + k + ": " + v + ";");
+        }
+        return _results;
+      })()).join("\n");
+      return "." + this.className + " {\n" + styles + "\n}";
     };
 
     return Element;

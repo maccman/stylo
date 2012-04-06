@@ -71,6 +71,8 @@ this.require.define({"app/controllers/elements/ellipsis":function(exports, requi
 
     Ellipsis.prototype.className = 'ellipsis';
 
+    Ellipsis.prototype.id = module.id;
+
     function Ellipsis() {
       Ellipsis.__super__.constructor.apply(this, arguments);
       this.properties['borderRadius'] = '50%';

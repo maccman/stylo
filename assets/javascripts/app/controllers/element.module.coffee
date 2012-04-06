@@ -1,9 +1,14 @@
 Resizing   = require('./element/resizing')
+Serialize  = require('app/models/serialize').Serialize
 Background = require('app/models/properties/background')
 Color      = require('app/models/properties/color')
+Utils      = require('lib/utils')
 
 class Element extends Spine.Controller
+  @include Serialize
+
   className: 'element'
+  id: module.id
 
   defaults: ->
     result =
@@ -37,13 +42,14 @@ class Element extends Spine.Controller
       @set(k, v) for k, v of key
     else
       @[key]?(value) or @properties[key] = value
+
     @paint()
 
   paint: ->
     @el.css(@properties)
 
-  toJSON: ->
-    {properties: @properties}
+  toValue: ->
+    @properties
 
   # Manipulating elements
 
@@ -104,5 +110,38 @@ class Element extends Spine.Controller
             return true
 
     false
+
+  # Exporting
+
+  outerHTML: ->
+    @el.clone().empty()[0].outerHTML
+
+  ignoredStyles: [
+    'left'
+    'top'
+    'zIndex'
+    'position'
+  ]
+
+  outerCSS: ->
+    # Clone properties object
+    styles = {}
+
+    for name, value of @properties
+      continue if name in @ignoredStyles
+
+      # If a number was passed in, add 'px' to
+      # it (except for certain CSS properties)
+      if typeof value is 'number' and not $.cssNumber[name]
+        value += 'px'
+
+      # Format as CSS property
+      name = Utils.dasherize(name)
+
+      styles[name] = value
+
+    # Format as CSS properties
+    styles = ("\t#{k}: #{v};" for k, v of styles).join("\n")
+    ".#{@className} {\n#{styles}\n}"
 
 module.exports = Element

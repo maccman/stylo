@@ -59,11 +59,13 @@
   return this.require;
 }).call(this);
 this.require.define({"app/controllers/stage":function(exports, require, module){(function() {
-  var Dragging, Ellipsis, KeyBindings, Properties, Rectangle, Resizing, SelectArea, Selection, Snapping, Stage, ZIndex,
+  var Clipboard, Dragging, Ellipsis, KeyBindings, Properties, Rectangle, Resizing, SelectArea, Selection, Serialize, Snapping, Stage, ZIndex,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __slice = Array.prototype.slice;
+
+  Serialize = require('app/models/serialize').Serialize;
 
   Selection = require('./stage/selection');
 
@@ -78,6 +80,8 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
   KeyBindings = require('./stage/key_bindings');
 
   ZIndex = require('./stage/zindex');
+
+  Clipboard = require('./stage/clipboard');
 
   Rectangle = require('./elements/rectangle');
 
@@ -108,6 +112,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       var _this = this;
       Stage.__super__.constructor.apply(this, arguments);
       this.elements = [];
+      this.properties = {};
       this.selection = new Selection;
       this.dragging = new Dragging(this);
       this.resizing = new Resizing(this);
@@ -115,6 +120,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       this.snapping = new Snapping(this);
       this.keybindings = new KeyBindings(this);
       this.zindex = new ZIndex(this);
+      this.clipboard = new Clipboard(this);
       this.selection.bind('change', function() {
         return _this.el.trigger('selection.change', [_this]);
       });
@@ -261,6 +267,39 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       return position = {
         left: area.width / 2,
         top: area.height / 2
+      };
+    };
+
+    Stage.prototype.get = function(key) {
+      return (typeof this[key] === "function" ? this[key]() : void 0) || this.properties[key];
+    };
+
+    Stage.prototype.set = function(key, value) {
+      var k, v;
+      if (typeof key === 'object') {
+        for (k in key) {
+          v = key[k];
+          this.set(k, v);
+        }
+      } else {
+        (typeof this[key] === "function" ? this[key](value) : void 0) || (this.properties[key] = value);
+      }
+      return this.paint();
+    };
+
+    Stage.prototype.paint = function() {
+      return this.el.css(this.properties);
+    };
+
+    Stage.include(Serialize);
+
+    Stage.prototype.id = module.id;
+
+    Stage.prototype.toValue = function() {
+      var result;
+      return result = {
+        elements: this.elements,
+        properties: this.properties
       };
     };
 

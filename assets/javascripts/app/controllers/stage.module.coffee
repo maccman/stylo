@@ -1,3 +1,4 @@
+Serialize   = require('app/models/serialize').Serialize
 Selection   = require('./stage/selection')
 Dragging    = require('./stage/dragging')
 Resizing    = require('./stage/resizing')
@@ -5,6 +6,7 @@ SelectArea  = require('./stage/select_area')
 Snapping    = require('./stage/snapping')
 KeyBindings = require('./stage/key_bindings')
 ZIndex      = require('./stage/zindex')
+Clipboard   = require('./stage/clipboard')
 
 Rectangle  = require('./elements/rectangle')
 Ellipsis   = require('./elements/ellipsis')
@@ -23,7 +25,10 @@ class Stage extends Spine.Controller
 
   constructor: ->
     super
+
     @elements    = []
+    @properties  = {}
+
     @selection   = new Selection
     @dragging    = new Dragging(this)
     @resizing    = new Resizing(this)
@@ -31,6 +36,7 @@ class Stage extends Spine.Controller
     @snapping    = new Snapping(this)
     @keybindings = new KeyBindings(this)
     @zindex      = new ZIndex(this)
+    @clipboard   = new Clipboard(this)
 
     @selection.bind 'change', =>
       @el.trigger('selection.change', [this])
@@ -128,5 +134,32 @@ class Stage extends Spine.Controller
     position =
       left: area.width / 2
       top:  area.height / 2
+
+  # Properties
+
+  get: (key) ->
+    @[key]?() or @properties[key]
+
+  set: (key, value) ->
+    if typeof key is 'object'
+      @set(k, v) for k, v of key
+    else
+      @[key]?(value) or @properties[key] = value
+
+    @paint()
+
+  paint: ->
+    @el.css(@properties)
+
+  # Serialization
+
+  @include Serialize
+
+  id: module.id
+
+  toValue: ->
+    result =
+      elements:   @elements
+      properties: @properties
 
 module.exports = Stage

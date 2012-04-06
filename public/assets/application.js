@@ -11274,18 +11274,6 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
       return !this.a;
     };
 
-    Color.prototype.toString = function() {
-      if ((this.r != null) && (this.g != null) && (this.b != null)) {
-        if (this.a != null) {
-          return "rgba(" + this.r + "," + this.g + "," + this.b + "," + this.a + ")";
-        } else {
-          return "rgb(" + this.r + "," + this.g + "," + this.b + ")";
-        }
-      } else {
-        return 'transparent';
-      }
-    };
-
     Color.prototype.set = function(values) {
       var key, value;
       for (key in values) {
@@ -11304,8 +11292,44 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
       };
     };
 
+    Color.prototype.rgba = function() {
+      var result;
+      return result = {
+        r: this.r,
+        g: this.g,
+        b: this.b,
+        a: this.a
+      };
+    };
+
     Color.prototype.clone = function() {
       return new this.constructor(this.r, this.g, this.b, this.a);
+    };
+
+    Color.prototype.toString = function() {
+      if ((this.r != null) && (this.g != null) && (this.b != null)) {
+        if (this.a != null) {
+          return "rgba(" + this.r + ", " + this.g + ", " + this.b + ", " + this.a + ")";
+        } else {
+          return "rgb(" + this.r + ", " + this.g + ", " + this.b + ")";
+        }
+      } else {
+        return 'transparent';
+      }
+    };
+
+    Color.prototype.id = "" + module.id + ".Color";
+
+    Color.prototype.toJSON = function() {
+      var result;
+      return result = {
+        id: this.id,
+        value: this.toValue()
+      };
+    };
+
+    Color.prototype.toValue = function() {
+      return [this.r, this.g, this.b, this.a];
     };
 
     return Color;
@@ -12114,6 +12138,19 @@ this.require.define({"lib/position_picker":function(exports, require, module){(f
 
 }).call(this);
 ;}});
+this.require.define({"lib/utils":function(exports, require, module){(function() {
+  var dasherize;
+
+  dasherize = function(str) {
+    return str.replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2').replace(/([a-z\d])([A-Z])/g, '$1-$2').toLowerCase();
+  };
+
+  module.exports = {
+    dasherize: dasherize
+  };
+
+}).call(this);
+;}});
 (function() {
   this.JST || (this.JST = {});
   this.JST["lib/views/color_picker"] = function(__obj) {
@@ -12166,22 +12203,31 @@ this.require.define({"lib/position_picker":function(exports, require, module){(f
   };
 }).call(this);
 this.require.define({"app/controllers/element":function(exports, require, module){(function() {
-  var Background, Color, Element, Resizing,
+  var Background, Color, Element, Resizing, Serialize, Utils,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
+    __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   Resizing = require('./element/resizing');
+
+  Serialize = require('app/models/serialize').Serialize;
 
   Background = require('app/models/properties/background');
 
   Color = require('app/models/properties/color');
 
+  Utils = require('lib/utils');
+
   Element = (function(_super) {
 
     __extends(Element, _super);
 
+    Element.include(Serialize);
+
     Element.prototype.className = 'element';
+
+    Element.prototype.id = module.id;
 
     Element.prototype.defaults = function() {
       var result;
@@ -12234,10 +12280,8 @@ this.require.define({"app/controllers/element":function(exports, require, module
       return this.el.css(this.properties);
     };
 
-    Element.prototype.toJSON = function() {
-      return {
-        properties: this.properties
-      };
+    Element.prototype.toValue = function() {
+      return this.properties;
     };
 
     Element.prototype.resize = function(area) {
@@ -12300,6 +12344,35 @@ this.require.define({"app/controllers/element":function(exports, require, module
         return true;
       }
       return false;
+    };
+
+    Element.prototype.outerHTML = function() {
+      return this.el.clone().empty()[0].outerHTML;
+    };
+
+    Element.prototype.ignoredStyles = ['left', 'top', 'zIndex', 'position'];
+
+    Element.prototype.outerCSS = function() {
+      var k, name, styles, v, value, _ref;
+      styles = {};
+      _ref = this.properties;
+      for (name in _ref) {
+        value = _ref[name];
+        if (__indexOf.call(this.ignoredStyles, name) >= 0) continue;
+        if (typeof value === 'number' && !$.cssNumber[name]) value += 'px';
+        name = Utils.dasherize(name);
+        styles[name] = value;
+      }
+      styles = ((function() {
+        var _results;
+        _results = [];
+        for (k in styles) {
+          v = styles[k];
+          _results.push("\t" + k + ": " + v + ";");
+        }
+        return _results;
+      })()).join("\n");
+      return "." + this.className + " {\n" + styles + "\n}";
     };
 
     return Element;
@@ -12536,6 +12609,8 @@ this.require.define({"app/controllers/elements/ellipsis":function(exports, requi
 
     Ellipsis.prototype.className = 'ellipsis';
 
+    Ellipsis.prototype.id = module.id;
+
     function Ellipsis() {
       Ellipsis.__super__.constructor.apply(this, arguments);
       this.properties['borderRadius'] = '50%';
@@ -12669,6 +12744,8 @@ this.require.define({"app/controllers/elements/rectangle":function(exports, requ
 
     Rectangle.prototype.className = 'rectangle';
 
+    Rectangle.prototype.id = module.id;
+
     return Rectangle;
 
   })(Element);
@@ -12694,6 +12771,8 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
 
     Text.prototype.className = 'text';
 
+    Text.prototype.id = module.id;
+
     Text.prototype.events = {
       'dblclick': 'startEditing'
     };
@@ -12709,6 +12788,18 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
     Text.prototype.selected = function(bool) {
       Text.__super__.selected.apply(this, arguments);
       if (bool === false) return this.stopEditing();
+    };
+
+    Text.prototype.text = function(text) {
+      if (text != null) this.el.text(text);
+      return this.el.text();
+    };
+
+    Text.prototype.toValue = function() {
+      var result;
+      result = this.properties;
+      result.text = this.text();
+      return result;
     };
 
     return Text;
@@ -13470,11 +13561,13 @@ this.require.define({"app/controllers/inspector/text_shadow":function(exports, r
 }).call(this);
 ;}});
 this.require.define({"app/controllers/stage":function(exports, require, module){(function() {
-  var Dragging, Ellipsis, KeyBindings, Properties, Rectangle, Resizing, SelectArea, Selection, Snapping, Stage, ZIndex,
+  var Clipboard, Dragging, Ellipsis, KeyBindings, Properties, Rectangle, Resizing, SelectArea, Selection, Serialize, Snapping, Stage, ZIndex,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __slice = Array.prototype.slice;
+
+  Serialize = require('app/models/serialize').Serialize;
 
   Selection = require('./stage/selection');
 
@@ -13489,6 +13582,8 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
   KeyBindings = require('./stage/key_bindings');
 
   ZIndex = require('./stage/zindex');
+
+  Clipboard = require('./stage/clipboard');
 
   Rectangle = require('./elements/rectangle');
 
@@ -13519,6 +13614,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       var _this = this;
       Stage.__super__.constructor.apply(this, arguments);
       this.elements = [];
+      this.properties = {};
       this.selection = new Selection;
       this.dragging = new Dragging(this);
       this.resizing = new Resizing(this);
@@ -13526,6 +13622,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       this.snapping = new Snapping(this);
       this.keybindings = new KeyBindings(this);
       this.zindex = new ZIndex(this);
+      this.clipboard = new Clipboard(this);
       this.selection.bind('change', function() {
         return _this.el.trigger('selection.change', [_this]);
       });
@@ -13675,11 +13772,108 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       };
     };
 
+    Stage.prototype.get = function(key) {
+      return (typeof this[key] === "function" ? this[key]() : void 0) || this.properties[key];
+    };
+
+    Stage.prototype.set = function(key, value) {
+      var k, v;
+      if (typeof key === 'object') {
+        for (k in key) {
+          v = key[k];
+          this.set(k, v);
+        }
+      } else {
+        (typeof this[key] === "function" ? this[key](value) : void 0) || (this.properties[key] = value);
+      }
+      return this.paint();
+    };
+
+    Stage.prototype.paint = function() {
+      return this.el.css(this.properties);
+    };
+
+    Stage.include(Serialize);
+
+    Stage.prototype.id = module.id;
+
+    Stage.prototype.toValue = function() {
+      var result;
+      return result = {
+        elements: this.elements,
+        properties: this.properties
+      };
+    };
+
     return Stage;
 
   })(Spine.Controller);
 
   module.exports = Stage;
+
+}).call(this);
+;}});
+this.require.define({"app/controllers/stage/clipboard":function(exports, require, module){(function() {
+  var Clipboard,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
+  Clipboard = (function() {
+
+    function Clipboard(stage) {
+      this.stage = stage;
+      this.paste = __bind(this.paste, this);
+      this.copy = __bind(this.copy, this);
+      this.cancel = __bind(this.cancel, this);
+      $(window).bind('beforecopy', this.cancel);
+      $(window).bind('copy', this.copy);
+      $(window).bind('beforepaste', this.cancel);
+      $(window).bind('paste', this.paste);
+    }
+
+    Clipboard.prototype.cancel = function(e) {
+      return e.preventDefault();
+    };
+
+    Clipboard.prototype.copy = function(e) {
+      var el, html, json, styles;
+      if (!this.stage.selection.isAny()) return;
+      e.preventDefault();
+      e = e.originalEvent;
+      json = JSON.stringify(this.stage.selection.elements);
+      e.clipboardData.setData('json/x-stylo', json);
+      html = (function() {
+        var _i, _len, _ref, _results;
+        _ref = this.stage.selection.elements;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          el = _ref[_i];
+          _results.push(el.outerHTML());
+        }
+        return _results;
+      }).call(this);
+      e.clipboardData.setData('text/html', html.join("\n"));
+      styles = (function() {
+        var _i, _len, _ref, _results;
+        _ref = this.stage.selection.elements;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          el = _ref[_i];
+          _results.push(el.outerCSS());
+        }
+        return _results;
+      }).call(this);
+      return e.clipboardData.setData('text/plain', styles.join("\n\n"));
+    };
+
+    Clipboard.prototype.paste = function(e) {
+      return console.log('paste', e);
+    };
+
+    return Clipboard;
+
+  })();
+
+  module.exports = Clipboard;
 
 }).call(this);
 ;}});
@@ -14524,6 +14718,8 @@ this.require.define({"app/models/properties/background":function(exports, requir
 
   Position = (function() {
 
+    Position.prototype.id = "" + module.id + ".Position";
+
     function Position(angle) {
       this.angle = angle != null ? angle : 0;
     }
@@ -14532,11 +14728,17 @@ this.require.define({"app/models/properties/background":function(exports, requir
       return "" + this.angle + "deg";
     };
 
+    Position.prototype.toValue = function() {
+      return this.angle;
+    };
+
     return Position;
 
   })();
 
   ColorStop = (function() {
+
+    ColorStop.prototype.id = "" + module.id + ".ColorStop";
 
     function ColorStop(color, length) {
       this.color = color;
@@ -14552,6 +14754,10 @@ this.require.define({"app/models/properties/background":function(exports, requir
       }
     };
 
+    ColorStop.prototype.toValue = function() {
+      return [this.color, this.length];
+    };
+
     return ColorStop;
 
   })();
@@ -14564,6 +14770,8 @@ this.require.define({"app/models/properties/background":function(exports, requir
       BackgroundImage.__super__.constructor.apply(this, arguments);
     }
 
+    BackgroundImage.prototype.id = "" + module.id + ".BackgroundImage";
+
     return BackgroundImage;
 
   })(Property);
@@ -14571,6 +14779,8 @@ this.require.define({"app/models/properties/background":function(exports, requir
   LinearGradient = (function(_super) {
 
     __extends(LinearGradient, _super);
+
+    LinearGradient.prototype.id = "" + module.id + ".LinearGradient";
 
     function LinearGradient(position, stops) {
       this.position = position != null ? position : new Position;
@@ -14582,7 +14792,7 @@ this.require.define({"app/models/properties/background":function(exports, requir
       stops = this.stops.sort(function(a, b) {
         return a.length - b.length;
       });
-      return "-webkit-linear-gradient(" + ([this.position].concat(__slice.call(stops)).join(',')) + ")";
+      return "-webkit-linear-gradient(" + ([this.position].concat(__slice.call(stops)).join(', ')) + ")";
     };
 
     LinearGradient.prototype.toDisplayString = function() {
@@ -14591,6 +14801,10 @@ this.require.define({"app/models/properties/background":function(exports, requir
         return a.length - b.length;
       });
       return "linear-gradient(" + ([this.position].concat(__slice.call(stops)).join(', ')) + ")";
+    };
+
+    LinearGradient.prototype.toValue = function() {
+      return [this.position, this.stops];
     };
 
     LinearGradient.prototype.addStop = function(stop) {
@@ -14611,6 +14825,8 @@ this.require.define({"app/models/properties/background":function(exports, requir
 
     __extends(URL, _super);
 
+    URL.prototype.id = "" + module.id + ".URL";
+
     function URL(url) {
       this.url = url;
     }
@@ -14619,11 +14835,17 @@ this.require.define({"app/models/properties/background":function(exports, requir
       return "url('" + this.url + "')";
     };
 
+    URL.prototype.toValue = function() {
+      return this.url;
+    };
+
     return URL;
 
   })(BackgroundImage);
 
   Background = (function() {
+
+    Background.prototype.id = module.id;
 
     function Background(color, images) {
       this.color = color;
@@ -14632,6 +14854,10 @@ this.require.define({"app/models/properties/background":function(exports, requir
 
     Background.prototype.toString = function() {
       return "" + this.color + " " + this.images;
+    };
+
+    Background.prototype.toValue = function() {
+      return [this.color, this.images];
     };
 
     return Background;
@@ -14676,6 +14902,8 @@ this.require.define({"app/models/properties/shadow":function(exports, require, m
 
     __extends(Shadow, _super);
 
+    Shadow.prototype.id = module.id;
+
     function Shadow(properties) {
       var k, v;
       if (properties == null) properties = {};
@@ -14700,6 +14928,15 @@ this.require.define({"app/models/properties/shadow":function(exports, require, m
       return result.join(' ');
     };
 
+    Shadow.prototype.toValue = function() {
+      var value;
+      return value = {
+        x: this.x,
+        y: this.y,
+        color: this.color
+      };
+    };
+
     return Shadow;
 
   })(Property);
@@ -14709,11 +14946,13 @@ this.require.define({"app/models/properties/shadow":function(exports, require, m
 }).call(this);
 ;}});
 this.require.define({"app/models/property":function(exports, require, module){(function() {
-  var Collection, Property, Values,
+  var Collection, Property, Serialize, Values,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Collection = require('lib/collection');
+
+  Serialize = require('./serialize').Serialize;
 
   Values = (function(_super) {
 
@@ -14731,17 +14970,85 @@ this.require.define({"app/models/property":function(exports, require, module){(f
 
   })(Collection);
 
-  Property = (function() {
+  Property = (function(_super) {
 
-    function Property() {}
+    __extends(Property, _super);
+
+    function Property() {
+      Property.__super__.constructor.apply(this, arguments);
+    }
+
+    Property.include(Serialize);
 
     return Property;
 
-  })();
+  })(Spine.Module);
 
   module.exports = Property;
 
   module.exports.Values = Values;
+
+}).call(this);
+;}});
+this.require.define({"app/models/serialize":function(exports, require, module){(function() {
+  var Serialize, fromJSON, fromObject;
+
+  fromObject = function(object) {
+    var args, constructor, k, name, o, path, result, v, _ref;
+    if (typeof object !== 'object') return object;
+    if (Array.isArray(object)) {
+      return (function() {
+        var _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = object.length; _i < _len; _i++) {
+          o = object[_i];
+          _results.push(fromObject(o));
+        }
+        return _results;
+      })();
+    }
+    if (!object.id) {
+      for (k in object) {
+        v = object[k];
+        object[k] = fromObject(v);
+      }
+      return object;
+    }
+    _ref = object.id.split('.', 2), path = _ref[0], name = _ref[1];
+    constructor = require(path);
+    if (name) constructor = constructor[name];
+    if (result = typeof constructor.fromValue === "function" ? constructor.fromValue(object) : void 0) {
+      return result;
+    }
+    args = fromObject(object.value);
+    if (Array.isArray(args)) {
+      return new constructor(args[0], args[1], args[2], args[3], args[4], args[5]);
+    } else {
+      return new constructor(args);
+    }
+  };
+
+  fromJSON = function(object) {
+    if (typeof object === 'string') object = JSON.parse(object);
+    return fromObject(object);
+  };
+
+  Serialize = {
+    id: function() {
+      return module.id;
+    },
+    toJSON: function() {
+      var result;
+      return result = {
+        id: (typeof this.id === "function" ? this.id() : void 0) || this.id,
+        value: (typeof this.toValue === "function" ? this.toValue() : void 0) || this.toValue
+      };
+    }
+  };
+
+  module.exports.Serialize = Serialize;
+
+  module.exports.fromJSON = fromJSON;
 
 }).call(this);
 ;}});

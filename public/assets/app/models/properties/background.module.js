@@ -70,6 +70,8 @@ this.require.define({"app/models/properties/background":function(exports, requir
 
   Position = (function() {
 
+    Position.prototype.id = "" + module.id + ".Position";
+
     function Position(angle) {
       this.angle = angle != null ? angle : 0;
     }
@@ -78,11 +80,17 @@ this.require.define({"app/models/properties/background":function(exports, requir
       return "" + this.angle + "deg";
     };
 
+    Position.prototype.toValue = function() {
+      return this.angle;
+    };
+
     return Position;
 
   })();
 
   ColorStop = (function() {
+
+    ColorStop.prototype.id = "" + module.id + ".ColorStop";
 
     function ColorStop(color, length) {
       this.color = color;
@@ -98,6 +106,10 @@ this.require.define({"app/models/properties/background":function(exports, requir
       }
     };
 
+    ColorStop.prototype.toValue = function() {
+      return [this.color, this.length];
+    };
+
     return ColorStop;
 
   })();
@@ -110,6 +122,8 @@ this.require.define({"app/models/properties/background":function(exports, requir
       BackgroundImage.__super__.constructor.apply(this, arguments);
     }
 
+    BackgroundImage.prototype.id = "" + module.id + ".BackgroundImage";
+
     return BackgroundImage;
 
   })(Property);
@@ -117,6 +131,8 @@ this.require.define({"app/models/properties/background":function(exports, requir
   LinearGradient = (function(_super) {
 
     __extends(LinearGradient, _super);
+
+    LinearGradient.prototype.id = "" + module.id + ".LinearGradient";
 
     function LinearGradient(position, stops) {
       this.position = position != null ? position : new Position;
@@ -128,7 +144,7 @@ this.require.define({"app/models/properties/background":function(exports, requir
       stops = this.stops.sort(function(a, b) {
         return a.length - b.length;
       });
-      return "-webkit-linear-gradient(" + ([this.position].concat(__slice.call(stops)).join(',')) + ")";
+      return "-webkit-linear-gradient(" + ([this.position].concat(__slice.call(stops)).join(', ')) + ")";
     };
 
     LinearGradient.prototype.toDisplayString = function() {
@@ -137,6 +153,10 @@ this.require.define({"app/models/properties/background":function(exports, requir
         return a.length - b.length;
       });
       return "linear-gradient(" + ([this.position].concat(__slice.call(stops)).join(', ')) + ")";
+    };
+
+    LinearGradient.prototype.toValue = function() {
+      return [this.position, this.stops];
     };
 
     LinearGradient.prototype.addStop = function(stop) {
@@ -157,6 +177,8 @@ this.require.define({"app/models/properties/background":function(exports, requir
 
     __extends(URL, _super);
 
+    URL.prototype.id = "" + module.id + ".URL";
+
     function URL(url) {
       this.url = url;
     }
@@ -165,11 +187,17 @@ this.require.define({"app/models/properties/background":function(exports, requir
       return "url('" + this.url + "')";
     };
 
+    URL.prototype.toValue = function() {
+      return this.url;
+    };
+
     return URL;
 
   })(BackgroundImage);
 
   Background = (function() {
+
+    Background.prototype.id = module.id;
 
     function Background(color, images) {
       this.color = color;
@@ -178,6 +206,10 @@ this.require.define({"app/models/properties/background":function(exports, requir
 
     Background.prototype.toString = function() {
       return "" + this.color + " " + this.images;
+    };
+
+    Background.prototype.toValue = function() {
+      return [this.color, this.images];
     };
 
     return Background;

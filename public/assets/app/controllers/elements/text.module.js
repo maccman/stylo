@@ -75,6 +75,8 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
 
     Text.prototype.className = 'text';
 
+    Text.prototype.id = module.id;
+
     Text.prototype.events = {
       'dblclick': 'startEditing'
     };
@@ -90,6 +92,18 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
     Text.prototype.selected = function(bool) {
       Text.__super__.selected.apply(this, arguments);
       if (bool === false) return this.stopEditing();
+    };
+
+    Text.prototype.text = function(text) {
+      if (text != null) this.el.text(text);
+      return this.el.text();
+    };
+
+    Text.prototype.toValue = function() {
+      var result;
+      result = this.properties;
+      result.text = this.text();
+      return result;
     };
 
     return Text;

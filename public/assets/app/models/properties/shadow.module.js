@@ -71,6 +71,8 @@ this.require.define({"app/models/properties/shadow":function(exports, require, m
 
     __extends(Shadow, _super);
 
+    Shadow.prototype.id = module.id;
+
     function Shadow(properties) {
       var k, v;
       if (properties == null) properties = {};
@@ -93,6 +95,15 @@ this.require.define({"app/models/properties/shadow":function(exports, require, m
       if (this.spread != null) result.push(this.spread + 'px');
       result.push(this.color.toString());
       return result.join(' ');
+    };
+
+    Shadow.prototype.toValue = function() {
+      var value;
+      return value = {
+        x: this.x,
+        y: this.y,
+        color: this.color
+      };
     };
 
     return Shadow;

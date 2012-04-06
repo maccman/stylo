@@ -129,18 +129,6 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
       return !this.a;
     };
 
-    Color.prototype.toString = function() {
-      if ((this.r != null) && (this.g != null) && (this.b != null)) {
-        if (this.a != null) {
-          return "rgba(" + this.r + "," + this.g + "," + this.b + "," + this.a + ")";
-        } else {
-          return "rgb(" + this.r + "," + this.g + "," + this.b + ")";
-        }
-      } else {
-        return 'transparent';
-      }
-    };
-
     Color.prototype.set = function(values) {
       var key, value;
       for (key in values) {
@@ -159,8 +147,44 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
       };
     };
 
+    Color.prototype.rgba = function() {
+      var result;
+      return result = {
+        r: this.r,
+        g: this.g,
+        b: this.b,
+        a: this.a
+      };
+    };
+
     Color.prototype.clone = function() {
       return new this.constructor(this.r, this.g, this.b, this.a);
+    };
+
+    Color.prototype.toString = function() {
+      if ((this.r != null) && (this.g != null) && (this.b != null)) {
+        if (this.a != null) {
+          return "rgba(" + this.r + ", " + this.g + ", " + this.b + ", " + this.a + ")";
+        } else {
+          return "rgb(" + this.r + ", " + this.g + ", " + this.b + ")";
+        }
+      } else {
+        return 'transparent';
+      }
+    };
+
+    Color.prototype.id = "" + module.id + ".Color";
+
+    Color.prototype.toJSON = function() {
+      var result;
+      return result = {
+        id: this.id,
+        value: this.toValue()
+      };
+    };
+
+    Color.prototype.toValue = function() {
+      return [this.r, this.g, this.b, this.a];
     };
 
     return Color;

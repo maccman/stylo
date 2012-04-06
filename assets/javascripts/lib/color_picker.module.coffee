@@ -55,16 +55,6 @@ class Color
   isTransparent: ->
     not @a
 
-  toString: ->
-    if @r? and @g? and @b?
-      if @a?
-        "rgba(#{@r},#{@g},#{@b},#{@a})"
-      else
-        "rgb(#{@r},#{@g},#{@b})"
-
-    else
-      'transparent'
-
   set: (values) ->
     @[key] = value for key, value of values
     this
@@ -75,8 +65,35 @@ class Color
       g: @g
       b: @b
 
+  rgba: ->
+    result =
+      r: @r
+      g: @g
+      b: @b
+      a: @a
+
   clone: ->
     new @constructor(@r, @g, @b, @a)
+
+  toString: ->
+    if @r? and @g? and @b?
+      if @a?
+        "rgba(#{@r}, #{@g}, #{@b}, #{@a})"
+      else
+        "rgb(#{@r}, #{@g}, #{@b})"
+
+    else
+      'transparent'
+
+  id: "#{module.id}.Color"
+
+  toJSON: ->
+    result =
+      id:    @id
+      value: @toValue()
+
+  toValue: ->
+    [@r, @g, @b, @a]
 
 class Canvas extends Spine.Controller
   tag: 'canvas'

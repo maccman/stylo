@@ -75,6 +75,8 @@ this.require.define({"app/controllers/elements/rectangle":function(exports, requ
 
     Rectangle.prototype.className = 'rectangle';
 
+    Rectangle.prototype.id = module.id;
+
     return Rectangle;
 
   })(Element);

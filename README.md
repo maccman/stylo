@@ -19,6 +19,7 @@ Phase 1:
   * Text-spacing
   * Rotation
   * ✓ Opacity
+  * content editable
 
 Phase 2:
 

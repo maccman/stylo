@@ -13564,8 +13564,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
   var Clipboard, Dragging, Ellipsis, KeyBindings, Properties, Rectangle, Resizing, SelectArea, Selection, Serialize, Snapping, Stage, ZIndex,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
-    __slice = Array.prototype.slice;
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Serialize = require('app/models/serialize').Serialize;
 
@@ -13611,7 +13610,8 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       this.select = __bind(this.select, this);
       this.remove = __bind(this.remove, this);
       this.add = __bind(this.add, this);
-      var _this = this;
+      var rectangle1, rectangle2,
+        _this = this;
       Stage.__super__.constructor.apply(this, arguments);
       this.elements = [];
       this.properties = {};
@@ -13626,25 +13626,19 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       this.selection.bind('change', function() {
         return _this.el.trigger('selection.change', [_this]);
       });
-      this.rectangle1 = new Rectangle({
+      rectangle1 = new Rectangle({
         left: 200,
         top: 200,
         backgroundImage: [new Properties.Background.URL('assets/blacky.png')]
       });
-      this.rectangle2 = new Rectangle();
-      this.add(this.rectangle1, this.rectangle2);
+      rectangle2 = new Rectangle();
+      this.add(rectangle1);
+      this.add(rectangle2);
     }
 
-    Stage.prototype.add = function() {
-      var element, elements, _i, _len, _results;
-      elements = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-      _results = [];
-      for (_i = 0, _len = elements.length; _i < _len; _i++) {
-        element = elements[_i];
-        this.elements.push(element);
-        _results.push(this.append(element));
-      }
-      return _results;
+    Stage.prototype.add = function(element) {
+      this.elements.push(element);
+      return this.append(element);
     };
 
     Stage.prototype.remove = function(element) {
@@ -13814,8 +13808,10 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
 }).call(this);
 ;}});
 this.require.define({"app/controllers/stage/clipboard":function(exports, require, module){(function() {
-  var Clipboard,
+  var Clipboard, Serialize,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
+  Serialize = require('app/models/serialize');
 
   Clipboard = (function() {
 
@@ -13866,7 +13862,23 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
     };
 
     Clipboard.prototype.paste = function(e) {
-      return console.log('paste', e);
+      var el, elements, json, _i, _j, _len, _len2, _results;
+      if ('value' in e.target) return;
+      e.preventDefault();
+      e = e.originalEvent;
+      json = e.clipboardData.getData('json/x-stylo');
+      elements = Serialize.fromJSON(json);
+      for (_i = 0, _len = elements.length; _i < _len; _i++) {
+        el = elements[_i];
+        this.stage.add(el);
+      }
+      this.stage.selection.clear();
+      _results = [];
+      for (_j = 0, _len2 = elements.length; _j < _len2; _j++) {
+        el = elements[_j];
+        _results.push(this.stage.selection.add(el));
+      }
+      return _results;
     };
 
     return Clipboard;

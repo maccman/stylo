@@ -1,3 +1,5 @@
+Serialize = require('app/models/serialize')
+
 class Clipboard
   constructor: (@stage) ->
     $(window).bind 'beforecopy', @cancel
@@ -27,6 +29,17 @@ class Clipboard
     e.clipboardData.setData('text/plain', styles.join("\n\n"))
 
   paste: (e) =>
-    console.log('paste', e)
+    return if 'value' of e.target
+
+    e.preventDefault()
+    e = e.originalEvent
+
+    json     = e.clipboardData.getData('json/x-stylo')
+    elements = Serialize.fromJSON(json)
+
+    @stage.add(el) for el in elements
+    @stage.selection.clear()
+    @stage.selection.add(el) for el in elements
+
 
 module.exports = Clipboard

@@ -42,18 +42,18 @@ class Stage extends Spine.Controller
       @el.trigger('selection.change', [this])
 
     # FIXME: Test data
-    @rectangle1 = new Rectangle(
+    rectangle1 = new Rectangle(
       left: 200, top: 200,
       backgroundImage: [new Properties.Background.URL('assets/blacky.png')]
     )
-    @rectangle2 = new Rectangle()
+    rectangle2 = new Rectangle()
 
-    @add(@rectangle1, @rectangle2)
+    @add(rectangle1)
+    @add(rectangle2)
 
-  add: (elements...) =>
-    for element in elements
-      @elements.push(element)
-      @append(element)
+  add: (element) =>
+    @elements.push(element)
+    @append(element)
 
   remove: (element) =>
     @selection.remove(element)

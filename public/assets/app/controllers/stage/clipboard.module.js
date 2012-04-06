@@ -59,8 +59,10 @@
   return this.require;
 }).call(this);
 this.require.define({"app/controllers/stage/clipboard":function(exports, require, module){(function() {
-  var Clipboard,
+  var Clipboard, Serialize,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
+  Serialize = require('app/models/serialize');
 
   Clipboard = (function() {
 
@@ -111,7 +113,23 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
     };
 
     Clipboard.prototype.paste = function(e) {
-      return console.log('paste', e);
+      var el, elements, json, _i, _j, _len, _len2, _results;
+      if ('value' in e.target) return;
+      e.preventDefault();
+      e = e.originalEvent;
+      json = e.clipboardData.getData('json/x-stylo');
+      elements = Serialize.fromJSON(json);
+      for (_i = 0, _len = elements.length; _i < _len; _i++) {
+        el = elements[_i];
+        this.stage.add(el);
+      }
+      this.stage.selection.clear();
+      _results = [];
+      for (_j = 0, _len2 = elements.length; _j < _len2; _j++) {
+        el = elements[_j];
+        _results.push(this.stage.selection.add(el));
+      }
+      return _results;
     };
 
     return Clipboard;

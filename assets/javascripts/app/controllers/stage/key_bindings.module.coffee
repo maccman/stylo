@@ -9,8 +9,10 @@ class KeyBindings extends Spine.Module
     40:  'downArrow'
     46:  'backspace'
     65:  'aKey'
+    67:  'cKey'
     68:  'dKey'
     83:  'sKey'
+    86:  'vKey'
     187: 'plusKey'
     189: 'minusKey'
 
@@ -20,7 +22,6 @@ class KeyBindings extends Spine.Module
   keypress: (e) =>
     # Disable keyboard shortcuts in inputs
     return if 'value' of e.target
-
     @[@mapping[e.which]]?(e)
 
   backspace: (e) ->
@@ -75,5 +76,13 @@ class KeyBindings extends Spine.Module
     return unless e.metaKey
     e.preventDefault()
     @log('zoomOut')
+
+  cKey: (e) ->
+    return unless e.metaKey
+    @stage.clipboard.copyInternal()
+
+  vKey: (e) ->
+    return unless e.metaKey
+    @stage.clipboard.pasteInternal()
 
 module.exports = KeyBindings

@@ -34,12 +34,12 @@ Phase 2:
 Phase 3:
 
 * Resizing snapping
-* Element snapping
+* ✓ Element snapping
 * Pen tool
 
 Nice to have:
 
-* Keyboard shortcuts
+* ✓ Keyboard shortcuts
 * Versioning
 * Exporting HTML
 * Share (dropbox/email?)

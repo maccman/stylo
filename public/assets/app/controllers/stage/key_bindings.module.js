@@ -78,8 +78,10 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       40: 'downArrow',
       46: 'backspace',
       65: 'aKey',
+      67: 'cKey',
       68: 'dKey',
       83: 'sKey',
+      86: 'vKey',
       187: 'plusKey',
       189: 'minusKey'
     };
@@ -173,6 +175,16 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       if (!e.metaKey) return;
       e.preventDefault();
       return this.log('zoomOut');
+    };
+
+    KeyBindings.prototype.cKey = function(e) {
+      if (!e.metaKey) return;
+      return this.stage.clipboard.copyInternal();
+    };
+
+    KeyBindings.prototype.vKey = function(e) {
+      if (!e.metaKey) return;
+      return this.stage.clipboard.pasteInternal();
     };
 
     return KeyBindings;

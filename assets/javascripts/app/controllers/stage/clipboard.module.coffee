@@ -1,4 +1,5 @@
 Serialize = require('app/models/serialize')
+Utils     = require('lib/utils')
 
 class Clipboard
   constructor: (@stage) ->
@@ -21,9 +22,7 @@ class Clipboard
 
     json = JSON.stringify(@stage.selection.elements)
     e.clipboardData.setData('json/x-stylo', json)
-
-    html = (el.outerHTML() for el in @stage.selection.elements)
-    e.clipboardData.setData('text/html', html.join("\n"))
+    e.clipboardData.setData('text/html', json)
 
     styles = (el.outerCSS() for el in @stage.selection.elements)
     e.clipboardData.setData('text/plain', styles.join("\n\n"))
@@ -34,14 +33,38 @@ class Clipboard
     e.preventDefault()
     e = e.originalEvent
 
-    json     = e.clipboardData.getData('json/x-stylo')
+    # Some browsers restrict the clipboard data types,
+    # so we need to revert back to text/html
+    json = e.clipboardData.getData('json/x-stylo')
+    json or= e.clipboardData.getData('text/html')
     return unless json
 
     elements = Serialize.fromJSON(json)
 
     @stage.add(el) for el in elements
-    @stage.selection.clear()
-    @stage.selection.add(el) for el in elements
+    @stage.selection.refresh(elements)
+    @stage.selection.set('moveBy', left: 10, top: 10)
 
+  data: null
+
+  copyInternal: ->
+    return if Utils.browser.chrome
+    @data = (el.clone() for el in @stage.selection.elements)
+
+  pasteInternal: (e) ->
+    # At the moment, only Chrome supports
+    # the non-focused paste event
+    return if Utils.browser.chrome
+    return unless @data
+
+    @stage.add(el) for el in @data
+    @stage.selection.refresh(@data)
+    @stage.selection.set('moveBy', left: 10, top: 10)
+
+    # Re-clone the elements
+    @copyInternal()
+
+    # Cancel event propogation
+    false
 
 module.exports = Clipboard

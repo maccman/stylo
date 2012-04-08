@@ -59,10 +59,12 @@
   return this.require;
 }).call(this);
 this.require.define({"app/controllers/stage/clipboard":function(exports, require, module){(function() {
-  var Clipboard, Serialize,
+  var Clipboard, Serialize, Utils,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   Serialize = require('app/models/serialize');
+
+  Utils = require('lib/utils');
 
   Clipboard = (function() {
 
@@ -82,23 +84,13 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
     };
 
     Clipboard.prototype.copy = function(e) {
-      var el, html, json, styles;
+      var el, json, styles;
       if (!this.stage.selection.isAny()) return;
       e.preventDefault();
       e = e.originalEvent;
       json = JSON.stringify(this.stage.selection.elements);
       e.clipboardData.setData('json/x-stylo', json);
-      html = (function() {
-        var _i, _len, _ref, _results;
-        _ref = this.stage.selection.elements;
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          el = _ref[_i];
-          _results.push(el.outerHTML());
-        }
-        return _results;
-      }).call(this);
-      e.clipboardData.setData('text/html', html.join("\n"));
+      e.clipboardData.setData('text/html', json);
       styles = (function() {
         var _i, _len, _ref, _results;
         _ref = this.stage.selection.elements;
@@ -113,24 +105,58 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
     };
 
     Clipboard.prototype.paste = function(e) {
-      var el, elements, json, _i, _j, _len, _len2, _results;
+      var el, elements, json, _i, _len;
       if ('value' in e.target) return;
       e.preventDefault();
       e = e.originalEvent;
       json = e.clipboardData.getData('json/x-stylo');
+      json || (json = e.clipboardData.getData('text/html'));
       if (!json) return;
       elements = Serialize.fromJSON(json);
       for (_i = 0, _len = elements.length; _i < _len; _i++) {
         el = elements[_i];
         this.stage.add(el);
       }
-      this.stage.selection.clear();
-      _results = [];
-      for (_j = 0, _len2 = elements.length; _j < _len2; _j++) {
-        el = elements[_j];
-        _results.push(this.stage.selection.add(el));
+      this.stage.selection.refresh(elements);
+      return this.stage.selection.set('moveBy', {
+        left: 10,
+        top: 10
+      });
+    };
+
+    Clipboard.prototype.data = null;
+
+    Clipboard.prototype.copyInternal = function() {
+      var el;
+      if (Utils.browser.chrome) return;
+      return this.data = (function() {
+        var _i, _len, _ref, _results;
+        _ref = this.stage.selection.elements;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          el = _ref[_i];
+          _results.push(el.clone());
+        }
+        return _results;
+      }).call(this);
+    };
+
+    Clipboard.prototype.pasteInternal = function(e) {
+      var el, _i, _len, _ref;
+      if (Utils.browser.chrome) return;
+      if (!this.data) return;
+      _ref = this.data;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        el = _ref[_i];
+        this.stage.add(el);
       }
-      return _results;
+      this.stage.selection.refresh(this.data);
+      this.stage.selection.set('moveBy', {
+        left: 10,
+        top: 10
+      });
+      this.copyInternal();
+      return false;
     };
 
     return Clipboard;

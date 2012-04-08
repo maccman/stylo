@@ -12145,8 +12145,11 @@ this.require.define({"lib/utils":function(exports, require, module){(function() 
     return str.replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2').replace(/([a-z\d])([A-Z])/g, '$1-$2').toLowerCase();
   };
 
+  $.browser.chrome = /chrome/.test(navigator.userAgent.toLowerCase());
+
   module.exports = {
-    dasherize: dasherize
+    dasherize: dasherize,
+    browser: $.browser
   };
 
 }).call(this);
@@ -13810,10 +13813,12 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
 }).call(this);
 ;}});
 this.require.define({"app/controllers/stage/clipboard":function(exports, require, module){(function() {
-  var Clipboard, Serialize,
+  var Clipboard, Serialize, Utils,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   Serialize = require('app/models/serialize');
+
+  Utils = require('lib/utils');
 
   Clipboard = (function() {
 
@@ -13833,23 +13838,13 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
     };
 
     Clipboard.prototype.copy = function(e) {
-      var el, html, json, styles;
+      var el, json, styles;
       if (!this.stage.selection.isAny()) return;
       e.preventDefault();
       e = e.originalEvent;
       json = JSON.stringify(this.stage.selection.elements);
       e.clipboardData.setData('json/x-stylo', json);
-      html = (function() {
-        var _i, _len, _ref, _results;
-        _ref = this.stage.selection.elements;
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          el = _ref[_i];
-          _results.push(el.outerHTML());
-        }
-        return _results;
-      }).call(this);
-      e.clipboardData.setData('text/html', html.join("\n"));
+      e.clipboardData.setData('text/html', json);
       styles = (function() {
         var _i, _len, _ref, _results;
         _ref = this.stage.selection.elements;
@@ -13864,24 +13859,58 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
     };
 
     Clipboard.prototype.paste = function(e) {
-      var el, elements, json, _i, _j, _len, _len2, _results;
+      var el, elements, json, _i, _len;
       if ('value' in e.target) return;
       e.preventDefault();
       e = e.originalEvent;
       json = e.clipboardData.getData('json/x-stylo');
+      json || (json = e.clipboardData.getData('text/html'));
       if (!json) return;
       elements = Serialize.fromJSON(json);
       for (_i = 0, _len = elements.length; _i < _len; _i++) {
         el = elements[_i];
         this.stage.add(el);
       }
-      this.stage.selection.clear();
-      _results = [];
-      for (_j = 0, _len2 = elements.length; _j < _len2; _j++) {
-        el = elements[_j];
-        _results.push(this.stage.selection.add(el));
+      this.stage.selection.refresh(elements);
+      return this.stage.selection.set('moveBy', {
+        left: 10,
+        top: 10
+      });
+    };
+
+    Clipboard.prototype.data = null;
+
+    Clipboard.prototype.copyInternal = function() {
+      var el;
+      if (Utils.browser.chrome) return;
+      return this.data = (function() {
+        var _i, _len, _ref, _results;
+        _ref = this.stage.selection.elements;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          el = _ref[_i];
+          _results.push(el.clone());
+        }
+        return _results;
+      }).call(this);
+    };
+
+    Clipboard.prototype.pasteInternal = function(e) {
+      var el, _i, _len, _ref;
+      if (Utils.browser.chrome) return;
+      if (!this.data) return;
+      _ref = this.data;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        el = _ref[_i];
+        this.stage.add(el);
       }
-      return _results;
+      this.stage.selection.refresh(this.data);
+      this.stage.selection.set('moveBy', {
+        left: 10,
+        top: 10
+      });
+      this.copyInternal();
+      return false;
     };
 
     return Clipboard;
@@ -14023,8 +14052,10 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       40: 'downArrow',
       46: 'backspace',
       65: 'aKey',
+      67: 'cKey',
       68: 'dKey',
       83: 'sKey',
+      86: 'vKey',
       187: 'plusKey',
       189: 'minusKey'
     };
@@ -14118,6 +14149,16 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       if (!e.metaKey) return;
       e.preventDefault();
       return this.log('zoomOut');
+    };
+
+    KeyBindings.prototype.cKey = function(e) {
+      if (!e.metaKey) return;
+      return this.stage.clipboard.copyInternal();
+    };
+
+    KeyBindings.prototype.vKey = function(e) {
+      if (!e.metaKey) return;
+      return this.stage.clipboard.pasteInternal();
     };
 
     return KeyBindings;
@@ -14461,9 +14502,10 @@ this.require.define({"app/controllers/stage/selection":function(exports, require
 }).call(this);
 ;}});
 this.require.define({"app/controllers/stage/snapping":function(exports, require, module){(function() {
-  var SnapLine, Snapping,
+  var HorizontalCenterSnap, HorizontalElementSnap, Snap, SnapLine, Snapping, VerticalCenterSnap, VerticalElementSnap,
     __hasProp = Object.prototype.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
+    __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   SnapLine = (function(_super) {
 
@@ -14475,19 +14517,261 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
       this.type = type;
       SnapLine.__super__.constructor.call(this);
       this.el.addClass(this.type);
+      if (this.type === 'horizontal') {
+        this.set({
+          left: 0,
+          right: 0
+        });
+      } else if (this.type === 'vertical') {
+        this.set({
+          top: 0,
+          bottom: 0
+        });
+      }
     }
 
-    SnapLine.prototype.set = function(values) {
-      return this.el.css(values);
+    SnapLine.prototype.setValue = function(value) {
+      if (this.type === 'horizontal') {
+        return this.set({
+          top: value
+        });
+      } else {
+        return this.set({
+          left: value
+        });
+      }
     };
 
     SnapLine.prototype.remove = function() {
       return this.el.remove();
     };
 
+    SnapLine.prototype.set = function(values) {
+      return this.el.css(values);
+    };
+
     return SnapLine;
 
   })(Spine.Controller);
+
+  Snap = (function(_super) {
+
+    __extends(Snap, _super);
+
+    Snap.prototype.threshold = 6;
+
+    Snap.prototype.escapeThreshold = 10;
+
+    Snap.prototype.value = 0;
+
+    Snap.prototype.active = false;
+
+    Snap.prototype.type = 'horizontal';
+
+    function Snap(stage) {
+      this.stage = stage;
+      Snap.__super__.constructor.call(this, {
+        el: this.stage.el
+      });
+      if (this.type === 'horizontal') {
+        this.direction = 'top';
+      } else {
+        this.direction = 'left';
+      }
+      this.line = new SnapLine(this.type);
+    }
+
+    Snap.prototype.activate = function(value) {
+      this.line.setValue(value);
+      this.append(this.line);
+      this.active = true;
+      return this.value = 0;
+    };
+
+    Snap.prototype.remove = function() {
+      this.line.remove();
+      return this.active = false;
+    };
+
+    Snap.prototype.snap = function(area, difference) {
+      if (this.active) {
+        return this.snapOut(area, difference);
+      } else {
+        return this.snapIn(area, difference);
+      }
+    };
+
+    Snap.prototype.snapOut = function(area, difference) {
+      this.value += difference[this.direction];
+      if (this.withinThreshold(this.value, this.escapeThreshold)) {
+        difference[this.direction] = 0;
+      } else {
+        difference[this.direction] = this.value;
+        this.remove();
+      }
+      return difference;
+    };
+
+    Snap.prototype.snapIn = function(area, difference) {
+      return difference;
+    };
+
+    Snap.prototype.withinThreshold = function(value, threshold) {
+      if (threshold == null) threshold = this.threshold;
+      return value > -threshold && value < threshold;
+    };
+
+    return Snap;
+
+  })(Spine.Controller);
+
+  VerticalCenterSnap = (function(_super) {
+
+    __extends(VerticalCenterSnap, _super);
+
+    function VerticalCenterSnap() {
+      VerticalCenterSnap.__super__.constructor.apply(this, arguments);
+    }
+
+    VerticalCenterSnap.prototype.type = 'vertical';
+
+    VerticalCenterSnap.prototype.snapIn = function(area, difference) {
+      var left, middle;
+      left = area.left + (area.width / 2);
+      middle = this.stage.area().width / 2;
+      if (this.withinThreshold(left - middle)) {
+        this.activate(middle);
+        difference[this.direction] = middle - left;
+      }
+      return difference;
+    };
+
+    return VerticalCenterSnap;
+
+  })(Snap);
+
+  HorizontalCenterSnap = (function(_super) {
+
+    __extends(HorizontalCenterSnap, _super);
+
+    function HorizontalCenterSnap() {
+      HorizontalCenterSnap.__super__.constructor.apply(this, arguments);
+    }
+
+    HorizontalCenterSnap.prototype.type = 'horizontal';
+
+    HorizontalCenterSnap.prototype.snapIn = function(area, difference) {
+      var middle, top;
+      top = area.top + (area.height / 2);
+      middle = this.stage.area().height / 2;
+      if (this.withinThreshold(top - middle)) {
+        this.activate(middle);
+        difference[this.direction] = middle - top;
+      }
+      return difference;
+    };
+
+    return HorizontalCenterSnap;
+
+  })(Snap);
+
+  HorizontalElementSnap = (function(_super) {
+
+    __extends(HorizontalElementSnap, _super);
+
+    function HorizontalElementSnap() {
+      HorizontalElementSnap.__super__.constructor.apply(this, arguments);
+    }
+
+    HorizontalElementSnap.prototype.type = 'horizontal';
+
+    HorizontalElementSnap.prototype.snapIn = function(currentArea, difference) {
+      var area, areas, current, element, i, typeA, typeB, valueA, valueB, _i, _j, _len, _len2, _len3, _ref;
+      areas = [currentArea];
+      _ref = this.stage.elements;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        element = _ref[_i];
+        if (__indexOf.call(this.stage.selection.elements, element) >= 0) continue;
+        areas.push(element.area());
+      }
+      for (i = 0, _len2 = areas.length; i < _len2; i++) {
+        area = areas[i];
+        areas[i] = {
+          top: area.top,
+          middle: area.top + area.height / 2,
+          bottom: area.top + area.height
+        };
+      }
+      current = areas.shift();
+      for (_j = 0, _len3 = areas.length; _j < _len3; _j++) {
+        area = areas[_j];
+        for (typeA in current) {
+          valueA = current[typeA];
+          for (typeB in area) {
+            valueB = area[typeB];
+            if (this.withinThreshold(valueA - valueB)) {
+              this.activate(valueB);
+              difference[this.direction] = valueB - valueA;
+              return difference;
+            }
+          }
+        }
+      }
+      return difference;
+    };
+
+    return HorizontalElementSnap;
+
+  })(Snap);
+
+  VerticalElementSnap = (function(_super) {
+
+    __extends(VerticalElementSnap, _super);
+
+    function VerticalElementSnap() {
+      VerticalElementSnap.__super__.constructor.apply(this, arguments);
+    }
+
+    VerticalElementSnap.prototype.type = 'vertical';
+
+    VerticalElementSnap.prototype.snapIn = function(currentArea, difference) {
+      var area, areas, current, element, i, typeA, typeB, valueA, valueB, _i, _j, _len, _len2, _len3, _ref;
+      areas = [currentArea];
+      _ref = this.stage.elements;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        element = _ref[_i];
+        if (__indexOf.call(this.stage.selection.elements, element) >= 0) continue;
+        areas.push(element.area());
+      }
+      for (i = 0, _len2 = areas.length; i < _len2; i++) {
+        area = areas[i];
+        areas[i] = {
+          left: area.left,
+          middle: area.left + area.width / 2,
+          right: area.left + area.width
+        };
+      }
+      current = areas.shift();
+      for (_j = 0, _len3 = areas.length; _j < _len3; _j++) {
+        area = areas[_j];
+        for (typeA in current) {
+          valueA = current[typeA];
+          for (typeB in area) {
+            valueB = area[typeB];
+            if (this.withinThreshold(valueA - valueB)) {
+              this.activate(valueB);
+              difference[this.direction] = valueB - valueA;
+              return difference;
+            }
+          }
+        }
+      }
+      return difference;
+    };
+
+    return VerticalElementSnap;
+
+  })(Snap);
 
   Snapping = (function(_super) {
 
@@ -14504,92 +14788,36 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
       Snapping.__super__.constructor.call(this, {
         el: this.stage.el
       });
-      this.lines = {};
-      this.snapped = {};
+      this.snaps = [];
+      this.snaps.push(new VerticalCenterSnap(this.stage));
+      this.snaps.push(new HorizontalCenterSnap(this.stage));
+      this.snaps.push(new HorizontalElementSnap(this.stage));
+      this.snaps.push(new VerticalElementSnap(this.stage));
     }
-
-    Snapping.prototype.snapElement = function(element, difference) {
-      return this.snap(element.area(), difference);
-    };
 
     Snapping.prototype.snapSelection = function(difference) {
       return this.snap(this.stage.selection.area(), difference);
     };
 
     Snapping.prototype.snap = function(area, difference) {
-      this.stageArea = this.stage.area();
-      difference = this.verticalStageSnap(area, difference);
-      difference = this.horizontalStageSnap(area, difference);
-      return difference;
-    };
-
-    Snapping.prototype.threshold = 6;
-
-    Snapping.prototype.escapeThreshold = 10;
-
-    Snapping.prototype.withinThreshold = function(a, b, threshold) {
-      if (threshold == null) threshold = this.threshold;
-      return (a - b) > -threshold && (a - b) < threshold;
-    };
-
-    Snapping.prototype.verticalStageSnap = function(area, difference) {
-      var left, middle, _ref, _ref2;
-      left = area.left + (area.width / 2);
-      middle = this.stageArea.width / 2;
-      if (this.snapped.vertical) {
-        this.snapped.vertical += difference.left;
-        if (this.snapped.vertical > this.escapeThreshold || this.snapped.vertical < -this.escapeThreshold) {
-          difference.left = this.snapped.vertical;
-          this.snapped.vertical = 0;
-          if ((_ref = this.lines.vertical) != null) _ref.remove();
-        } else {
-          difference.left = 0;
-        }
-      } else if (this.withinThreshold(left, middle)) {
-        this.snapped.vertical = 1;
-        difference.left = middle - left;
-        if ((_ref2 = this.lines.vertical) != null) _ref2.remove();
-        this.lines.vertical = new SnapLine('vertical');
-        this.lines.vertical.set({
-          left: middle,
-          top: 0,
-          bottom: 0
-        });
-        this.append(this.lines.vertical);
-      }
-      return difference;
-    };
-
-    Snapping.prototype.horizontalStageSnap = function(area, difference) {
-      var middle, top, _ref, _ref2;
-      top = area.top + (area.height / 2);
-      middle = this.stageArea.height / 2;
-      if (this.snapped.horizontal) {
-        this.snapped.horizontal += difference.top;
-        if (this.snapped.horizontal > this.escapeThreshold || this.snapped.horizontal < -this.escapeThreshold) {
-          difference.top = this.snapped.horizontal;
-          this.snapped.horizontal = 0;
-          if ((_ref = this.lines.horizontal) != null) _ref.remove();
-        } else {
-          difference.top = 0;
-        }
-      } else if (this.withinThreshold(top, middle)) {
-        this.snapped.horizontal = 1;
-        difference.top = middle - top;
-        if ((_ref2 = this.lines.horizontal) != null) _ref2.remove();
-        this.lines.horizontal = new SnapLine('horizontal');
-        this.lines.horizontal.set({
-          top: middle,
-          left: 0,
-          right: 0
-        });
-        this.append(this.lines.horizontal);
+      var snap, _i, _len, _ref;
+      _ref = this.snaps;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        snap = _ref[_i];
+        difference = snap.snap(area, difference);
       }
       return difference;
     };
 
     Snapping.prototype.removeLines = function() {
-      return this.$('.snapLine').remove();
+      var snap, _i, _len, _ref, _results;
+      _ref = this.snaps;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        snap = _ref[_i];
+        _results.push(snap.remove());
+      }
+      return _results;
     };
 
     return Snapping;

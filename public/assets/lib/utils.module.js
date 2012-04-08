@@ -65,8 +65,11 @@ this.require.define({"lib/utils":function(exports, require, module){(function() 
     return str.replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2').replace(/([a-z\d])([A-Z])/g, '$1-$2').toLowerCase();
   };
 
+  $.browser.chrome = /chrome/.test(navigator.userAgent.toLowerCase());
+
   module.exports = {
-    dasherize: dasherize
+    dasherize: dasherize,
+    browser: $.browser
   };
 
 }).call(this);

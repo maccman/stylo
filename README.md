@@ -47,6 +47,7 @@ Nice to have:
 * WebFonts
 * Layers
 * Context menu
+* Similar distance snapping
 
 Inherit Ellipsis from Rectangle (resizing & lines).
 

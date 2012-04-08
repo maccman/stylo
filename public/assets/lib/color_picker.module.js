@@ -649,6 +649,14 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
       return this.picker.open(this.el.offset());
     };
 
+    Preview.prototype.val = function(color) {
+      if (color != null) {
+        this.color = color;
+        this.render();
+      }
+      return this.color;
+    };
+
     return Preview;
 
   })(Spine.Controller);

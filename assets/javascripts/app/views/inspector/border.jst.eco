@@ -32,6 +32,6 @@
 
   <label>
     <span>Thickness</span>
-    <input type="number" min="0" max="100">
+    <input name="thickness" type="number" min="0" max="100">
   </label>
 </article>

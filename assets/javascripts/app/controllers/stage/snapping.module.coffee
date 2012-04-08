@@ -188,8 +188,6 @@ class Snapping extends Spine.Controller
 
     difference
 
-  # Private
-
   removeLines: ->
     snap.remove() for snap in @snaps
 

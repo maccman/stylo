@@ -111,6 +111,9 @@ this.require.define({"app/models/serialize":function(exports, require, module){(
         id: (typeof this.id === "function" ? this.id() : void 0) || this.id,
         value: (typeof this.toValue === "function" ? this.toValue() : void 0) || this.toValue
       };
+    },
+    clone: function() {
+      return fromJSON(JSON.stringify(this));
     }
   };
 

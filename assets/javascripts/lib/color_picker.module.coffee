@@ -428,6 +428,12 @@ class Preview extends Spine.Controller
 
     @picker.open(@el.offset())
 
+  val: (color) ->
+    if color?
+      @color = color
+      @render()
+    @color
+
 module.exports = ColorPicker
 module.exports.Color = Color
 module.exports.Input = Input

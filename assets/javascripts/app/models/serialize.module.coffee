@@ -70,5 +70,8 @@ Serialize =
       id: @id?() or @id
       value: @toValue?() or @toValue
 
+  clone: ->
+    fromJSON(JSON.stringify(this))
+
 module.exports.Serialize = Serialize
 module.exports.fromJSON  = fromJSON

@@ -102,6 +102,44 @@ class HorizontalCenterSnap extends Snap
 
     difference
 
+class HorizontalEdgeSnap extends Snap
+  type: 'horizontal'
+
+  snapIn: (area, difference) ->
+    bottom      = area.top + area.height
+    stageHeight = @stage.area().height
+
+    # Top edge
+    if @withinThreshold(area.top)
+      @activate(0)
+      difference[@direction] = -area.top
+
+    # Bottom edge
+    else if @withinThreshold(bottom - stageHeight)
+      @activate(stageHeight)
+      difference[@direction] = stageHeight - bottom
+
+    difference
+
+class VerticalEdgeSnap extends Snap
+  type: 'vertical'
+
+  snapIn: (area, difference) ->
+    right      = area.left + area.width
+    stageWidth = @stage.area().width
+
+    # Left edge
+    if @withinThreshold(area.left)
+      @activate(0)
+      difference[@direction] = -area.left
+
+    # Right edge
+    else if @withinThreshold(right - stageWidth)
+      @activate(stageWidth)
+      difference[@direction] = stageWidth - right
+
+    difference
+
 class HorizontalElementSnap extends Snap
   type: 'horizontal'
 
@@ -176,6 +214,8 @@ class Snapping extends Spine.Controller
 
     @snaps.push(new VerticalCenterSnap(@stage))
     @snaps.push(new HorizontalCenterSnap(@stage))
+    @snaps.push(new VerticalEdgeSnap(@stage))
+    @snaps.push(new HorizontalEdgeSnap(@stage))
     @snaps.push(new HorizontalElementSnap(@stage))
     @snaps.push(new VerticalElementSnap(@stage))
 

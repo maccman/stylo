@@ -59,7 +59,7 @@
   return this.require;
 }).call(this);
 this.require.define({"app/controllers/stage/snapping":function(exports, require, module){(function() {
-  var HorizontalCenterSnap, HorizontalElementSnap, Snap, SnapLine, Snapping, VerticalCenterSnap, VerticalElementSnap,
+  var HorizontalCenterSnap, HorizontalEdgeSnap, HorizontalElementSnap, Snap, SnapLine, Snapping, VerticalCenterSnap, VerticalEdgeSnap, VerticalElementSnap,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
@@ -232,6 +232,62 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
 
   })(Snap);
 
+  HorizontalEdgeSnap = (function(_super) {
+
+    __extends(HorizontalEdgeSnap, _super);
+
+    function HorizontalEdgeSnap() {
+      HorizontalEdgeSnap.__super__.constructor.apply(this, arguments);
+    }
+
+    HorizontalEdgeSnap.prototype.type = 'horizontal';
+
+    HorizontalEdgeSnap.prototype.snapIn = function(area, difference) {
+      var bottom, stageHeight;
+      bottom = area.top + area.height;
+      stageHeight = this.stage.area().height;
+      if (this.withinThreshold(area.top)) {
+        this.activate(0);
+        difference[this.direction] = -area.top;
+      } else if (this.withinThreshold(bottom - stageHeight)) {
+        this.activate(stageHeight);
+        difference[this.direction] = stageHeight - bottom;
+      }
+      return difference;
+    };
+
+    return HorizontalEdgeSnap;
+
+  })(Snap);
+
+  VerticalEdgeSnap = (function(_super) {
+
+    __extends(VerticalEdgeSnap, _super);
+
+    function VerticalEdgeSnap() {
+      VerticalEdgeSnap.__super__.constructor.apply(this, arguments);
+    }
+
+    VerticalEdgeSnap.prototype.type = 'vertical';
+
+    VerticalEdgeSnap.prototype.snapIn = function(area, difference) {
+      var right, stageWidth;
+      right = area.left + area.width;
+      stageWidth = this.stage.area().width;
+      if (this.withinThreshold(area.left)) {
+        this.activate(0);
+        difference[this.direction] = -area.left;
+      } else if (this.withinThreshold(right - stageWidth)) {
+        this.activate(stageWidth);
+        difference[this.direction] = stageWidth - right;
+      }
+      return difference;
+    };
+
+    return VerticalEdgeSnap;
+
+  })(Snap);
+
   HorizontalElementSnap = (function(_super) {
 
     __extends(HorizontalElementSnap, _super);
@@ -348,6 +404,8 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
       this.snaps = [];
       this.snaps.push(new VerticalCenterSnap(this.stage));
       this.snaps.push(new HorizontalCenterSnap(this.stage));
+      this.snaps.push(new VerticalEdgeSnap(this.stage));
+      this.snaps.push(new HorizontalEdgeSnap(this.stage));
       this.snaps.push(new HorizontalElementSnap(this.stage));
       this.snaps.push(new VerticalElementSnap(this.stage));
     }

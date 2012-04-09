@@ -4,7 +4,7 @@ A Photoshop replacement. Inspired by Keynote. Democratizing design.
 
 Background image
 Background gradient rotation
-
+Color inspector movable window
 
 Phase 1:
 
@@ -38,6 +38,7 @@ Phase 2:
 Phase 3:
 
 * Resizing snapping
+* ✓ Edge snapping
 * ✓ Element snapping
 * Pen tool
 

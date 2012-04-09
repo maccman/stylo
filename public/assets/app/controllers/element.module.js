@@ -93,7 +93,6 @@ this.require.define({"app/controllers/element":function(exports, require, module
         height: 100,
         left: 0,
         top: 0,
-        opacity: 1,
         backgroundColor: new Color.Black(0.2),
         order: -1
       };

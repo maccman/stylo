@@ -115,6 +115,7 @@ class BoxShadow extends Spine.Controller
 
   render: ->
     @disabled = not @stage.selection.isAny()
+    @el.toggleClass('disabled', @disabled)
 
     @shadows  = @stage.selection.get('boxShadow')
     @shadows = new Collection(@shadows)

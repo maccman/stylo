@@ -215,6 +215,7 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
     BoxShadow.prototype.render = function() {
       var _this = this;
       this.disabled = !this.stage.selection.isAny();
+      this.el.toggleClass('disabled', this.disabled);
       this.shadows = this.stage.selection.get('boxShadow');
       this.shadows = new Collection(this.shadows);
       this.current = this.shadows.first();

@@ -1,0 +1,22 @@
+<h3>Border Radius</h3>
+
+<article>
+  <div class="borders">
+    <div class="borderRadius"            data-border-radius="borderRadius" title="All borders"><span></span></div>
+    <div class="borderRadiusTopLeft"     data-border-radius="borderTopLeftRadius" title="Top left"><span></span></div>
+    <div class="borderRadiusTopRight"    data-border-radius="borderTopRightRadius" title="Top right"><span></span></div>
+    <div class="borderRadiusBottomRight" data-border-radius="borderBottomRightRadius" title="Bottom right"><span></span></div>
+    <div class="borderRadiusBottomLeft"  data-border-radius="borderBottomLeftRadius" title="Bottom left"><span></span></div>
+  </div>
+
+  <label>
+    <input
+      type="range"
+      name="border-radius"
+      min="0" max="100" step="1">
+
+    <input
+      type="number"
+      min="0" max="100" step="1">
+  </label>
+</article>

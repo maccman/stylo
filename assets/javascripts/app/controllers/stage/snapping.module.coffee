@@ -166,9 +166,9 @@ class VerticalElementSnap extends Snap
 
 class Snapping extends Spine.Controller
   events:
-    'resized':          'removeLines'
-    'selection.change': 'removeLines'
-    'dragging.end':     'removeLines'
+    'resized':          'remove'
+    'selection.change': 'remove'
+    'dragging.end':     'remove'
 
   constructor: (@stage) ->
     super(el: @stage.el)
@@ -185,10 +185,9 @@ class Snapping extends Spine.Controller
   snap: (area, difference) ->
     for snap in @snaps
       difference = snap.snap(area, difference)
-
     difference
 
-  removeLines: ->
+  remove: ->
     snap.remove() for snap in @snaps
 
 module.exports = Snapping

@@ -138,7 +138,11 @@ this.require.define({"app/controllers/stage/dragging":function(exports, require,
       };
       this.stageArea = this.stage.area();
       this.selectionArea = this.stage.selection.area();
-      difference = this.stage.snapping.snap(this.selectionArea, difference);
+      if (e.altKey || e.metaKey) {
+        this.stage.snapping.remove();
+      } else {
+        difference = this.stage.snapping.snap(this.selectionArea, difference);
+      }
       this.moveCoordTitle(e);
       return this.stage.selection.set('moveBy', difference);
     };

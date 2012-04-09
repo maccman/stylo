@@ -335,9 +335,9 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
     __extends(Snapping, _super);
 
     Snapping.prototype.events = {
-      'resized': 'removeLines',
-      'selection.change': 'removeLines',
-      'dragging.end': 'removeLines'
+      'resized': 'remove',
+      'selection.change': 'remove',
+      'dragging.end': 'remove'
     };
 
     function Snapping(stage) {
@@ -366,7 +366,7 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
       return difference;
     };
 
-    Snapping.prototype.removeLines = function() {
+    Snapping.prototype.remove = function() {
       var snap, _i, _len, _ref, _results;
       _ref = this.snaps;
       _results = [];

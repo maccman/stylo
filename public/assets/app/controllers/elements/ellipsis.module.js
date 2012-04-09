@@ -79,7 +79,9 @@ this.require.define({"app/controllers/elements/ellipsis":function(exports, requi
       this.paint();
     }
 
-    Ellipsis.prototype.borderRadius = false;
+    Ellipsis.prototype.borderRadius = function() {
+      return false;
+    };
 
     return Ellipsis;
 

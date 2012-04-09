@@ -116,7 +116,8 @@ this.require.define({"app/controllers/element":function(exports, require, module
     }
 
     Element.prototype.get = function(key) {
-      return (typeof this[key] === "function" ? this[key]() : void 0) || this.properties[key];
+      var _ref;
+      return (_ref = typeof this[key] === "function" ? this[key]() : void 0) != null ? _ref : this.properties[key];
     };
 
     Element.prototype.set = function(key, value) {
@@ -160,10 +161,6 @@ this.require.define({"app/controllers/element":function(exports, require, module
 
     Element.prototype.remove = function() {
       return this.el.remove();
-    };
-
-    Element.prototype.clone = function() {
-      return new this.constructor(this.properties);
     };
 
     Element.prototype.select = function(e) {
@@ -215,6 +212,7 @@ this.require.define({"app/controllers/element":function(exports, require, module
       for (name in _ref) {
         value = _ref[name];
         if (__indexOf.call(this.ignoredStyles, name) >= 0) continue;
+        if (!value) continue;
         if (typeof value === 'number' && !$.cssNumber[name]) value += 'px';
         name = Utils.dasherize(name);
         value = value.toString();

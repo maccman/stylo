@@ -2,6 +2,10 @@ A Photoshop replacement. Inspired by Keynote. Democratizing design.
 
 ##TODO
 
+Background image
+Background gradient rotation
+
+
 Phase 1:
 
 * ✓ Move
@@ -11,7 +15,7 @@ Phase 1:
 * ✓ Toolbar menu
 * Inspector panel (Element/Text/Ruler)
   * ½ Background
-  * ½ Border
+  * ✓ Border
   * ✓ Shadow
   * Font alignment
   * Font family/size/style/color
@@ -93,3 +97,8 @@ http://10k.aneventapart.com/2/Uploads/504/
 AN EASY WAY TO CHOOSE COLORS - I.E. BURN ETC
 Video of desiging various interfaces = include Stylo.
 Tool to generate noise.
+
+https://developers.google.com/webfonts
+https://typekit.com/
+
+Issue with border radius is that properties are being applied in the wrong order.

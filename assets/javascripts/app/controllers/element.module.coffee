@@ -35,7 +35,7 @@ class Element extends Spine.Controller
     @resizing = new Resizing(this)
 
   get: (key) ->
-    @[key]?() or @properties[key]
+    @[key]?() ? @properties[key]
 
   set: (key, value) ->
     if typeof key is 'object'
@@ -70,10 +70,6 @@ class Element extends Spine.Controller
 
   remove: ->
     @el.remove()
-
-  clone: ->
-    # TODO - @properties inheritance...
-    new @constructor(@properties)
 
   # Selecting elements
 
@@ -129,6 +125,7 @@ class Element extends Spine.Controller
 
     for name, value of @properties
       continue if name in @ignoredStyles
+      continue unless value
 
       # If a number was passed in, add 'px' to
       # it (except for certain CSS properties)

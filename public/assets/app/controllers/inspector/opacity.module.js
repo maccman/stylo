@@ -83,13 +83,12 @@ this.require.define({"app/controllers/inspector/opacity":function(exports, requi
     Opacity.prototype.render = function() {
       this.disabled = !this.stage.selection.isAny();
       this.opacity = this.stage.selection.get('opacity');
-      if (this.opacity) this.opacity = parseFloat(this.opacity).toPrecision(2);
       return this.html(JST['app/views/inspector/opacity'](this));
     };
 
     Opacity.prototype.change = function(e) {
       var val;
-      val = $(e.currentTarget).val();
+      val = parseFloat($(e.currentTarget).val());
       this.stage.selection.set('opacity', val);
       return this.$('input').val(val);
     };

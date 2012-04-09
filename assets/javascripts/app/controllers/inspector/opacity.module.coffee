@@ -12,13 +12,11 @@ class Opacity extends Spine.Controller
   render: =>
     @disabled = not @stage.selection.isAny()
     @opacity  = @stage.selection.get('opacity')
-    if @opacity
-      @opacity = parseFloat(@opacity).toPrecision(2)
 
     @html JST['app/views/inspector/opacity'](this)
 
   change: (e) ->
-    val = $(e.currentTarget).val()
+    val = parseFloat($(e.currentTarget).val())
     @stage.selection.set('opacity', val)
     @$('input').val(val)
 

@@ -11,6 +11,6 @@ class Ellipsis extends Element
 
   # Disable setting borderRadius in
   # the element inspector
-  borderRadius: false
+  borderRadius: -> false
 
 module.exports = Ellipsis

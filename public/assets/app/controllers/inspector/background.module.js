@@ -228,6 +228,7 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
       var backgroundColor,
         _this = this;
       this.disabled = !this.stage.selection.isAny();
+      this.el.toggleClass('disabled', this.disabled);
       this.backgrounds = this.stage.selection.get('backgroundImage');
       this.backgrounds = new Backgrounds(this.backgrounds);
       backgroundColor = this.stage.selection.get('backgroundColor');

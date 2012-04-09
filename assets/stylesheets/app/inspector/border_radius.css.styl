@@ -1,33 +1,9 @@
 @import 'mixins'
 
-#app .inspector > .border {
-  label {
-    margin-bottom: 3px
-
-    span {
-      width: 35px
-    }
-
-    select {
-      width: 130px
-    }
-
-    input {
-      margin-right: 10px
-    }
-
-    .colorPreview {
-      margin: 3px 0 -5px 0
-    }
-  }
-
-  .hbox label {
-    margin-bottom: 0px
-  }
-
+#app .inspector > .borderRadius {
   .borders {
     hbox()
-    margin: 2px auto 10px auto
+    margin: 3px auto 3px auto
     vbg-gradient(lighten(rgba(238, 238, 238, 1), 80%), rgba(238, 238, 238, 0.9))
     border: 1px solid #CCC
     border-radius: 5px
@@ -58,25 +34,42 @@
       cursor: pointer
     }
 
-    .borderTop span {
-      border-top-width: 3px
+    .borderRadius span {
+      border-radius: 4px
     }
 
-    .borderRight span {
-      border-right-width: 3px
+    .borderRadiusTopLeft span {
+      border-top-left-radius: 4px
     }
 
-    .borderBottom span {
-      border-bottom-width: 3px
+    .borderRadiusTopRight span {
+      border-top-right-radius: 4px
     }
 
-    .borderLeft span {
-      border-left-width: 3px
+    .borderRadiusBottomRight span {
+      border-bottom-right-radius: 4px
+    }
+
+    .borderRadiusBottomLeft span {
+      border-bottom-left-radius: 4px
+    }
+  }
+
+  label {
+    input[type=range] {
+      width: 135px
+      margin: 5px
+      position: relative
+      bottom: -4px
+    }
+
+    input[type=number] {
+      width: 40px
     }
   }
 
   &.disabled {
-    .borders, input, select {
+    .borders, input {
       opacity: 0.6
     }
   }

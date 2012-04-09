@@ -11,7 +11,8 @@ class BorderController extends Spine.Controller
   elements:
     '.borders div': '$borders'
     'select[name=style]': '$style'
-    'input[name=thickness]': '$thickness'
+    'input[name=width]': '$width'
+    'input, select': '$inputs'
 
   current: 'border'
 
@@ -20,6 +21,9 @@ class BorderController extends Spine.Controller
     @render()
 
   render: =>
+    @disabled = not @stage.selection.isAny()
+    @disabled = true if @stage.selection.get('border') is false
+
     @html JST['app/views/inspector/border'](this)
 
     # Color input
@@ -29,7 +33,12 @@ class BorderController extends Spine.Controller
     @$('input[type=color]').replaceWith(@$color.el)
     @change(@current)
 
+    @el.toggleClass('disabled', @disabled)
+    @$inputs.attr('disabled', @disabled)
+
   change: (@current) ->
+    return if @disabled
+
     @$borders.removeClass('active')
     @$borders.filter("[data-border=#{@current}]").addClass('active')
 
@@ -40,7 +49,7 @@ class BorderController extends Spine.Controller
       @currentBorder = @stage.selection.get('border')?.clone()
       @currentBorder or= new Border
 
-    @$thickness.val(@currentBorder.width)
+    @$width.val(@currentBorder.width)
     @$style.val(@currentBorder.style)
     @$color.val(@currentBorder.color)
 
@@ -48,12 +57,21 @@ class BorderController extends Spine.Controller
     @change($(e.currentTarget).data('border'))
 
   inputChange: ->
-    @currentBorder.width = parseInt(@$thickness.val(), 10)
+    @currentBorder.width = parseInt(@$width.val(), 10)
     @currentBorder.style = @$style.val()
     @currentBorder.color = @$color.val()
     @set()
 
   set: ->
+    # Border overrides everything else
+    if @current is 'border'
+      @stage.selection.set(
+        borderTop: null
+        borderRight: null
+        borderBottom: null
+        borderLeft: null
+      )
+
     @stage.selection.set(@current, @currentBorder)
 
 module.exports = BorderController

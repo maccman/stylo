@@ -58,100 +58,84 @@
 
   return this.require;
 }).call(this);
-this.require.define({"app/controllers/inspector/border":function(exports, require, module){(function() {
-  var Border, BorderController, ColorPicker,
+this.require.define({"app/controllers/inspector/border_radius":function(exports, require, module){(function() {
+  var BorderRadius,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  Border = require('app/models/properties/border');
+  BorderRadius = (function(_super) {
 
-  ColorPicker = require('lib/color_picker');
+    __extends(BorderRadius, _super);
 
-  BorderController = (function(_super) {
+    BorderRadius.prototype.className = 'borderRadius';
 
-    __extends(BorderController, _super);
-
-    BorderController.prototype.className = 'border';
-
-    BorderController.prototype.events = {
-      'click [data-border]': 'borderClick',
-      'change': 'inputChange'
+    BorderRadius.prototype.events = {
+      'click [data-border-radius]': 'borderClick',
+      'change input': 'inputChange'
     };
 
-    BorderController.prototype.elements = {
+    BorderRadius.prototype.elements = {
       '.borders div': '$borders',
-      'select[name=style]': '$style',
-      'input[name=width]': '$width',
-      'input, select': '$inputs'
+      'input': '$inputs'
     };
 
-    BorderController.prototype.current = 'border';
+    BorderRadius.prototype.current = 'borderRadius';
 
-    function BorderController() {
-      this.render = __bind(this.render, this);      BorderController.__super__.constructor.apply(this, arguments);
+    function BorderRadius() {
+      this.render = __bind(this.render, this);      BorderRadius.__super__.constructor.apply(this, arguments);
+      if (!this.stage) throw 'stage required';
       this.render();
     }
 
-    BorderController.prototype.render = function() {
-      var _this = this;
+    BorderRadius.prototype.render = function() {
       this.disabled = !this.stage.selection.isAny();
-      if (this.stage.selection.get('border') === false) this.disabled = true;
-      this.html(JST['app/views/inspector/border'](this));
-      this.$color = new ColorPicker.Preview;
-      this.$color.bind('change', function() {
-        return _this.inputChange();
-      });
-      this.$('input[type=color]').replaceWith(this.$color.el);
+      if (this.stage.selection.get('borderRadius') === false) this.disabled = true;
+      this.html(JST['app/views/inspector/border_radius'](this));
       this.change(this.current);
       this.el.toggleClass('disabled', this.disabled);
       return this.$inputs.attr('disabled', this.disabled);
     };
 
-    BorderController.prototype.change = function(current) {
-      var _ref;
+    BorderRadius.prototype.change = function(current) {
       this.current = current;
       if (this.disabled) return;
       this.$borders.removeClass('active');
-      this.$borders.filter("[data-border=" + this.current + "]").addClass('active');
-      this.currentBorder = this.stage.selection.get(this.current);
-      if (!this.currentBorder) {
-        this.currentBorder = (_ref = this.stage.selection.get('border')) != null ? _ref.clone() : void 0;
-        this.currentBorder || (this.currentBorder = new Border);
-      }
-      this.$width.val(this.currentBorder.width);
-      this.$style.val(this.currentBorder.style);
-      return this.$color.val(this.currentBorder.color);
+      this.$borders.filter("[data-border-radius=" + this.current + "]").addClass('active');
+      this.radius = this.stage.selection.get(this.current);
+      this.radius || (this.radius = this.stage.selection.get('borderRadius'));
+      this.radius || (this.radius = 0);
+      return this.$inputs.val(this.radius);
     };
 
-    BorderController.prototype.borderClick = function(e) {
-      return this.change($(e.currentTarget).data('border'));
+    BorderRadius.prototype.borderClick = function(e) {
+      return this.change($(e.currentTarget).data('border-radius'));
     };
 
-    BorderController.prototype.inputChange = function() {
-      this.currentBorder.width = parseInt(this.$width.val(), 10);
-      this.currentBorder.style = this.$style.val();
-      this.currentBorder.color = this.$color.val();
-      return this.set();
+    BorderRadius.prototype.inputChange = function(e) {
+      var val;
+      val = parseInt($(e.currentTarget).val(), 10);
+      this.$inputs.val(val);
+      return this.set(val);
     };
 
-    BorderController.prototype.set = function() {
-      if (this.current === 'border') {
+    BorderRadius.prototype.set = function(val) {
+      if (this.current === 'borderRadius') {
         this.stage.selection.set({
-          borderTop: null,
-          borderRight: null,
-          borderBottom: null,
-          borderLeft: null
+          borderTopLeftRadius: null,
+          borderTopRightRadius: null,
+          borderBottomRightRadius: null,
+          borderBottomLeftRadius: null
         });
       }
-      return this.stage.selection.set(this.current, this.currentBorder);
+      return this.stage.selection.set(this.current, val);
     };
 
-    return BorderController;
+    return BorderRadius;
 
   })(Spine.Controller);
 
-  module.exports = BorderController;
+  module.exports = BorderRadius;
 
 }).call(this);
 ;}});

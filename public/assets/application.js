@@ -12271,7 +12271,8 @@ this.require.define({"app/controllers/element":function(exports, require, module
     }
 
     Element.prototype.get = function(key) {
-      return (typeof this[key] === "function" ? this[key]() : void 0) || this.properties[key];
+      var _ref;
+      return (_ref = typeof this[key] === "function" ? this[key]() : void 0) != null ? _ref : this.properties[key];
     };
 
     Element.prototype.set = function(key, value) {
@@ -12315,10 +12316,6 @@ this.require.define({"app/controllers/element":function(exports, require, module
 
     Element.prototype.remove = function() {
       return this.el.remove();
-    };
-
-    Element.prototype.clone = function() {
-      return new this.constructor(this.properties);
     };
 
     Element.prototype.select = function(e) {
@@ -12370,6 +12367,7 @@ this.require.define({"app/controllers/element":function(exports, require, module
       for (name in _ref) {
         value = _ref[name];
         if (__indexOf.call(this.ignoredStyles, name) >= 0) continue;
+        if (!value) continue;
         if (typeof value === 'number' && !$.cssNumber[name]) value += 'px';
         name = Utils.dasherize(name);
         value = value.toString();
@@ -12630,7 +12628,9 @@ this.require.define({"app/controllers/elements/ellipsis":function(exports, requi
       this.paint();
     }
 
-    Ellipsis.prototype.borderRadius = false;
+    Ellipsis.prototype.borderRadius = function() {
+      return false;
+    };
 
     return Ellipsis;
 
@@ -12915,7 +12915,7 @@ this.require.define({"app/controllers/header":function(exports, require, module)
 }).call(this);
 ;}});
 this.require.define({"app/controllers/inspector":function(exports, require, module){(function() {
-  var Background, Border, BoxShadow, Inspector, Opacity, TextShadow,
+  var Background, Border, BorderRadius, BoxShadow, Inspector, Opacity, TextShadow,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -12923,6 +12923,8 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
   Background = require('./inspector/background');
 
   Border = require('./inspector/border');
+
+  BorderRadius = require('./inspector/border_radius');
 
   Opacity = require('./inspector/opacity');
 
@@ -12950,10 +12952,13 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
       this.append(new Border({
         stage: this.stage
       }));
-      this.append(new Opacity({
+      this.append(new BorderRadius({
         stage: this.stage
       }));
-      return this.append(new BoxShadow({
+      this.append(new BoxShadow({
+        stage: this.stage
+      }));
+      return this.append(new Opacity({
         stage: this.stage
       }));
     };
@@ -13136,6 +13141,7 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
       var backgroundColor,
         _this = this;
       this.disabled = !this.stage.selection.isAny();
+      this.el.toggleClass('disabled', this.disabled);
       this.backgrounds = this.stage.selection.get('backgroundImage');
       this.backgrounds = new Backgrounds(this.backgrounds);
       backgroundColor = this.stage.selection.get('backgroundColor');
@@ -13199,7 +13205,8 @@ this.require.define({"app/controllers/inspector/border":function(exports, requir
     BorderController.prototype.elements = {
       '.borders div': '$borders',
       'select[name=style]': '$style',
-      'input[name=thickness]': '$thickness'
+      'input[name=width]': '$width',
+      'input, select': '$inputs'
     };
 
     BorderController.prototype.current = 'border';
@@ -13211,18 +13218,23 @@ this.require.define({"app/controllers/inspector/border":function(exports, requir
 
     BorderController.prototype.render = function() {
       var _this = this;
+      this.disabled = !this.stage.selection.isAny();
+      if (this.stage.selection.get('border') === false) this.disabled = true;
       this.html(JST['app/views/inspector/border'](this));
       this.$color = new ColorPicker.Preview;
       this.$color.bind('change', function() {
         return _this.inputChange();
       });
       this.$('input[type=color]').replaceWith(this.$color.el);
-      return this.change(this.current);
+      this.change(this.current);
+      this.el.toggleClass('disabled', this.disabled);
+      return this.$inputs.attr('disabled', this.disabled);
     };
 
     BorderController.prototype.change = function(current) {
       var _ref;
       this.current = current;
+      if (this.disabled) return;
       this.$borders.removeClass('active');
       this.$borders.filter("[data-border=" + this.current + "]").addClass('active');
       this.currentBorder = this.stage.selection.get(this.current);
@@ -13230,7 +13242,7 @@ this.require.define({"app/controllers/inspector/border":function(exports, requir
         this.currentBorder = (_ref = this.stage.selection.get('border')) != null ? _ref.clone() : void 0;
         this.currentBorder || (this.currentBorder = new Border);
       }
-      this.$thickness.val(this.currentBorder.width);
+      this.$width.val(this.currentBorder.width);
       this.$style.val(this.currentBorder.style);
       return this.$color.val(this.currentBorder.color);
     };
@@ -13240,13 +13252,21 @@ this.require.define({"app/controllers/inspector/border":function(exports, requir
     };
 
     BorderController.prototype.inputChange = function() {
-      this.currentBorder.width = parseInt(this.$thickness.val(), 10);
+      this.currentBorder.width = parseInt(this.$width.val(), 10);
       this.currentBorder.style = this.$style.val();
       this.currentBorder.color = this.$color.val();
       return this.set();
     };
 
     BorderController.prototype.set = function() {
+      if (this.current === 'border') {
+        this.stage.selection.set({
+          borderTop: null,
+          borderRight: null,
+          borderBottom: null,
+          borderLeft: null
+        });
+      }
       return this.stage.selection.set(this.current, this.currentBorder);
     };
 
@@ -13255,6 +13275,87 @@ this.require.define({"app/controllers/inspector/border":function(exports, requir
   })(Spine.Controller);
 
   module.exports = BorderController;
+
+}).call(this);
+;}});
+this.require.define({"app/controllers/inspector/border_radius":function(exports, require, module){(function() {
+  var BorderRadius,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  BorderRadius = (function(_super) {
+
+    __extends(BorderRadius, _super);
+
+    BorderRadius.prototype.className = 'borderRadius';
+
+    BorderRadius.prototype.events = {
+      'click [data-border-radius]': 'borderClick',
+      'change input': 'inputChange'
+    };
+
+    BorderRadius.prototype.elements = {
+      '.borders div': '$borders',
+      'input': '$inputs'
+    };
+
+    BorderRadius.prototype.current = 'borderRadius';
+
+    function BorderRadius() {
+      this.render = __bind(this.render, this);      BorderRadius.__super__.constructor.apply(this, arguments);
+      if (!this.stage) throw 'stage required';
+      this.render();
+    }
+
+    BorderRadius.prototype.render = function() {
+      this.disabled = !this.stage.selection.isAny();
+      if (this.stage.selection.get('borderRadius') === false) this.disabled = true;
+      this.html(JST['app/views/inspector/border_radius'](this));
+      this.change(this.current);
+      this.el.toggleClass('disabled', this.disabled);
+      return this.$inputs.attr('disabled', this.disabled);
+    };
+
+    BorderRadius.prototype.change = function(current) {
+      this.current = current;
+      if (this.disabled) return;
+      this.$borders.removeClass('active');
+      this.$borders.filter("[data-border-radius=" + this.current + "]").addClass('active');
+      this.radius = this.stage.selection.get(this.current);
+      this.radius || (this.radius = this.stage.selection.get('borderRadius'));
+      this.radius || (this.radius = 0);
+      return this.$inputs.val(this.radius);
+    };
+
+    BorderRadius.prototype.borderClick = function(e) {
+      return this.change($(e.currentTarget).data('border-radius'));
+    };
+
+    BorderRadius.prototype.inputChange = function(e) {
+      var val;
+      val = parseInt($(e.currentTarget).val(), 10);
+      this.$inputs.val(val);
+      return this.set(val);
+    };
+
+    BorderRadius.prototype.set = function(val) {
+      if (this.current === 'borderRadius') {
+        this.stage.selection.set({
+          borderTopLeftRadius: null,
+          borderTopRightRadius: null,
+          borderBottomRightRadius: null,
+          borderBottomLeftRadius: null
+        });
+      }
+      return this.stage.selection.set(this.current, val);
+    };
+
+    return BorderRadius;
+
+  })(Spine.Controller);
+
+  module.exports = BorderRadius;
 
 }).call(this);
 ;}});
@@ -13415,6 +13516,7 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
     BoxShadow.prototype.render = function() {
       var _this = this;
       this.disabled = !this.stage.selection.isAny();
+      this.el.toggleClass('disabled', this.disabled);
       this.shadows = this.stage.selection.get('boxShadow');
       this.shadows = new Collection(this.shadows);
       this.current = this.shadows.first();
@@ -13478,13 +13580,12 @@ this.require.define({"app/controllers/inspector/opacity":function(exports, requi
     Opacity.prototype.render = function() {
       this.disabled = !this.stage.selection.isAny();
       this.opacity = this.stage.selection.get('opacity');
-      if (this.opacity) this.opacity = parseFloat(this.opacity).toPrecision(2);
       return this.html(JST['app/views/inspector/opacity'](this));
     };
 
     Opacity.prototype.change = function(e) {
       var val;
-      val = $(e.currentTarget).val();
+      val = parseFloat($(e.currentTarget).val());
       this.stage.selection.set('opacity', val);
       return this.$('input').val(val);
     };
@@ -14036,7 +14137,11 @@ this.require.define({"app/controllers/stage/dragging":function(exports, require,
       };
       this.stageArea = this.stage.area();
       this.selectionArea = this.stage.selection.area();
-      difference = this.stage.snapping.snap(this.selectionArea, difference);
+      if (e.altKey || e.metaKey) {
+        this.stage.snapping.remove();
+      } else {
+        difference = this.stage.snapping.snap(this.selectionArea, difference);
+      }
       this.moveCoordTitle(e);
       return this.stage.selection.set('moveBy', difference);
     };
@@ -14813,9 +14918,9 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
     __extends(Snapping, _super);
 
     Snapping.prototype.events = {
-      'resized': 'removeLines',
-      'selection.change': 'removeLines',
-      'dragging.end': 'removeLines'
+      'resized': 'remove',
+      'selection.change': 'remove',
+      'dragging.end': 'remove'
     };
 
     function Snapping(stage) {
@@ -14844,7 +14949,7 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
       return difference;
     };
 
-    Snapping.prototype.removeLines = function() {
+    Snapping.prototype.remove = function() {
       var snap, _i, _len, _ref, _results;
       _ref = this.snaps;
       _results = [];
@@ -15190,12 +15295,6 @@ this.require.define({"app/models/properties/border":function(exports, require, m
   })(Property);
 
   module.exports = Border;
-
-}).call(this);
-;}});
-this.require.define({"app/models/properties/border_radius":function(exports, require, module){(function() {
-
-
 
 }).call(this);
 ;}});
@@ -15735,7 +15834,58 @@ this.require.define({"app/models/undo":function(exports, require, module){(funct
     (function() {
       (function() {
       
-        __out.push('<h3>Border</h3>\n\n<article>\n  <div class="borders">\n    <div class="border" data-border="border"><span></span></div>\n    <div class="borderTop" data-border="borderTop"><span></span></div>\n    <div class="borderRight" data-border="borderRight"><span></span></div>\n    <div class="borderBottom" data-border="borderBottom"><span></span></div>\n    <div class="borderLeft" data-border="borderLeft"><span></span></div>\n  </div>\n\n  <label>\n    <span>Style</span>\n    <select name="style">\n      <option value="none">None</option>\n      <option value="hidden">Hidden</option>\n      <option value="solid">Solid</option>\n      <option value="dashed">Dashed</option>\n      <option value="hidden">Dotted</option>\n      <option value="double">Double</option>\n      <option value="groove">Groove</option>\n      <option value="ridge">Ridge</option>\n      <option value="inset">Inset</option>\n      <option value="outset">Outset</option>\n    </select>\n  </label>\n\n  <label>\n    <span>Color</span>\n    <input type="color">\n  </label>\n\n  <label>\n    <span>Thickness</span>\n    <input name="thickness" type="number" min="0" max="100">\n  </label>\n</article>\n');
+        __out.push('<h3>Border</h3>\n\n<article>\n  <div class="borders">\n    <div class="border" data-border="border" title="All borders"><span></span></div>\n    <div class="borderTop" data-border="borderTop" title="Top border"><span></span></div>\n    <div class="borderRight" data-border="borderRight" title="Right border"><span></span></div>\n    <div class="borderBottom" data-border="borderBottom" title="Bottom border"><span></span></div>\n    <div class="borderLeft" data-border="borderLeft" title="Left border"><span></span></div>\n  </div>\n\n  <label>\n    <span>Style</span>\n    <select name="style">\n      <option value="none">None</option>\n      <option value="hidden">Hidden</option>\n      <option value="solid">Solid</option>\n      <option value="dashed">Dashed</option>\n      <option value="dotted">Dotted</option>\n      <option value="double">Double</option>\n      <option value="groove">Groove</option>\n      <option value="ridge">Ridge</option>\n      <option value="inset">Inset</option>\n      <option value="outset">Outset</option>\n    </select>\n  </label>\n\n  <div class="hbox">\n    <label>\n      <span>Width</span>\n      <input name="width" type="number" min="0" max="100" placeholder="0px">\n    </label>\n\n    <label>\n      <span>Color</span>\n      <input type="color">\n    </label>\n  </div>\n</article>\n');
+      
+      }).call(this);
+      
+    }).call(__obj);
+    __obj.safe = __objSafe, __obj.escape = __escape;
+    return __out.join('');
+  };
+}).call(this);
+(function() {
+  this.JST || (this.JST = {});
+  this.JST["app/views/inspector/border_radius"] = function(__obj) {
+    if (!__obj) __obj = {};
+    var __out = [], __capture = function(callback) {
+      var out = __out, result;
+      __out = [];
+      callback.call(this);
+      result = __out.join('');
+      __out = out;
+      return __safe(result);
+    }, __sanitize = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else if (typeof value !== 'undefined' && value != null) {
+        return __escape(value);
+      } else {
+        return '';
+      }
+    }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+    __safe = __obj.safe = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else {
+        if (!(typeof value !== 'undefined' && value != null)) value = '';
+        var result = new String(value);
+        result.ecoSafe = true;
+        return result;
+      }
+    };
+    if (!__escape) {
+      __escape = __obj.escape = function(value) {
+        return ('' + value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      };
+    }
+    (function() {
+      (function() {
+      
+        __out.push('<h3>Border Radius</h3>\n\n<article>\n  <div class="borders">\n    <div class="borderRadius"            data-border-radius="borderRadius" title="All borders"><span></span></div>\n    <div class="borderRadiusTopLeft"     data-border-radius="borderTopLeftRadius" title="Top left"><span></span></div>\n    <div class="borderRadiusTopRight"    data-border-radius="borderTopRightRadius" title="Top right"><span></span></div>\n    <div class="borderRadiusBottomRight" data-border-radius="borderBottomRightRadius" title="Bottom right"><span></span></div>\n    <div class="borderRadiusBottomLeft"  data-border-radius="borderBottomLeftRadius" title="Bottom left"><span></span></div>\n  </div>\n\n  <label>\n    <input\n      type="range"\n      name="border-radius"\n      min="0" max="100" step="1">\n\n    <input\n      type="number"\n      min="0" max="100" step="1">\n  </label>\n</article>\n');
       
       }).call(this);
       

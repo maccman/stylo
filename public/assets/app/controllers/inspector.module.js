@@ -59,7 +59,7 @@
   return this.require;
 }).call(this);
 this.require.define({"app/controllers/inspector":function(exports, require, module){(function() {
-  var Background, Border, BoxShadow, Inspector, Opacity, TextShadow,
+  var Background, Border, BorderRadius, BoxShadow, Inspector, Opacity, TextShadow,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -67,6 +67,8 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
   Background = require('./inspector/background');
 
   Border = require('./inspector/border');
+
+  BorderRadius = require('./inspector/border_radius');
 
   Opacity = require('./inspector/opacity');
 
@@ -94,10 +96,13 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
       this.append(new Border({
         stage: this.stage
       }));
-      this.append(new Opacity({
+      this.append(new BorderRadius({
         stage: this.stage
       }));
-      return this.append(new BoxShadow({
+      this.append(new BoxShadow({
+        stage: this.stage
+      }));
+      return this.append(new Opacity({
         stage: this.stage
       }));
     };

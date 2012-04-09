@@ -2,11 +2,11 @@
 
 <article>
   <div class="borders">
-    <div class="border" data-border="border"><span></span></div>
-    <div class="borderTop" data-border="borderTop"><span></span></div>
-    <div class="borderRight" data-border="borderRight"><span></span></div>
-    <div class="borderBottom" data-border="borderBottom"><span></span></div>
-    <div class="borderLeft" data-border="borderLeft"><span></span></div>
+    <div class="border" data-border="border" title="All borders"><span></span></div>
+    <div class="borderTop" data-border="borderTop" title="Top border"><span></span></div>
+    <div class="borderRight" data-border="borderRight" title="Right border"><span></span></div>
+    <div class="borderBottom" data-border="borderBottom" title="Bottom border"><span></span></div>
+    <div class="borderLeft" data-border="borderLeft" title="Left border"><span></span></div>
   </div>
 
   <label>
@@ -16,7 +16,7 @@
       <option value="hidden">Hidden</option>
       <option value="solid">Solid</option>
       <option value="dashed">Dashed</option>
-      <option value="hidden">Dotted</option>
+      <option value="dotted">Dotted</option>
       <option value="double">Double</option>
       <option value="groove">Groove</option>
       <option value="ridge">Ridge</option>
@@ -25,13 +25,15 @@
     </select>
   </label>
 
-  <label>
-    <span>Color</span>
-    <input type="color">
-  </label>
+  <div class="hbox">
+    <label>
+      <span>Width</span>
+      <input name="width" type="number" min="0" max="100" placeholder="0px">
+    </label>
 
-  <label>
-    <span>Thickness</span>
-    <input name="thickness" type="number" min="0" max="100">
-  </label>
+    <label>
+      <span>Color</span>
+      <input type="color">
+    </label>
+  </div>
 </article>

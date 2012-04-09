@@ -111,6 +111,7 @@ class BackgroundInspector extends Spine.Controller
 
   render: =>
     @disabled = not @stage.selection.isAny()
+    @el.toggleClass('disabled', @disabled)
 
     # Get the background gradients
     @backgrounds = @stage.selection.get('backgroundImage')

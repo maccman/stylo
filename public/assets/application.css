@@ -150,6 +150,7 @@ body {
   display: -moz-box;
   -moz-box-orient: vertical;
   -moz-box-align: stretch;
+  -webkit-user-select: none;
 }
 #app .header h1 {
   display: block;
@@ -445,8 +446,26 @@ body {
 #app .inspector .background .gradientPicker {
   margin: 0px 5px 5px 5px;
 }
+#app .inspector .background.disabled .list {
+  opacity: 0.6;
+}
+#app .inspector > .border label {
+  margin-bottom: 3px;
+}
 #app .inspector > .border label span {
-  width: 60px;
+  width: 35px;
+}
+#app .inspector > .border label select {
+  width: 130px;
+}
+#app .inspector > .border label input {
+  margin-right: 10px;
+}
+#app .inspector > .border label .colorPreview {
+  margin: 3px 0 -5px 0;
+}
+#app .inspector > .border .hbox label {
+  margin-bottom: 0px;
 }
 #app .inspector > .border .borders {
   display: -webkit-box;
@@ -457,7 +476,7 @@ body {
   -moz-box-orient: horizontal;
   -moz-box-align: stretch;
   -moz-box-pack: start;
-  margin: 0 auto 10px auto;
+  margin: 2px auto 10px auto;
   background: #fcfcfc;
   background: -webkit-gradient(linear, left top, left bottom, from(#fcfcfc), to(rgba(238,238,238,0.90)));
   background: -webkit-linear-gradient(top, #fcfcfc, rgba(238,238,238,0.90));
@@ -509,6 +528,90 @@ body {
 #app .inspector > .border .borders .borderLeft span {
   border-left-width: 3px;
 }
+#app .inspector > .border.disabled .borders,
+#app .inspector > .border.disabled input,
+#app .inspector > .border.disabled select {
+  opacity: 0.6;
+}
+#app .inspector > .borderRadius .borders {
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-align: stretch;
+  -webkit-box-pack: start;
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  -moz-box-align: stretch;
+  -moz-box-pack: start;
+  margin: 3px auto 3px auto;
+  background: #fcfcfc;
+  background: -webkit-gradient(linear, left top, left bottom, from(#fcfcfc), to(rgba(238,238,238,0.90)));
+  background: -webkit-linear-gradient(top, #fcfcfc, rgba(238,238,238,0.90));
+  background: -moz-linear-gradient(top, #fcfcfc, rgba(238,238,238,0.90));
+  background: linear-gradient(top, #fcfcfc, rgba(238,238,238,0.90));
+  border: 1px solid #ccc;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  -moz-box-shadow: 0 1px 0 #fff;
+  -webkit-box-shadow: 0 1px 0 #fff;
+  box-shadow: 0 1px 0 #fff;
+  -webkit-box-pack: center;
+  width: 185px;
+}
+#app .inspector > .borderRadius .borders div {
+  overflow: hidden;
+  border-right: 1px solid #ccc;
+}
+#app .inspector > .borderRadius .borders div:last-child {
+  border-right: none;
+}
+#app .inspector > .borderRadius .borders div:active,
+#app .inspector > .borderRadius .borders div.active {
+  -moz-box-shadow: inset 0 0 10px rgba(0,0,0,0.20);
+  -webkit-box-shadow: inset 0 0 10px rgba(0,0,0,0.20);
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.20);
+}
+#app .inspector > .borderRadius .borders span {
+  display: block;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  width: 12px;
+  height: 12px;
+  margin: 5px 12px;
+  border: 1px solid #777;
+  cursor: pointer;
+}
+#app .inspector > .borderRadius .borders .borderRadius span {
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+}
+#app .inspector > .borderRadius .borders .borderRadiusTopLeft span {
+  border-top-left-radius: 4px;
+}
+#app .inspector > .borderRadius .borders .borderRadiusTopRight span {
+  border-top-right-radius: 4px;
+}
+#app .inspector > .borderRadius .borders .borderRadiusBottomRight span {
+  border-bottom-right-radius: 4px;
+}
+#app .inspector > .borderRadius .borders .borderRadiusBottomLeft span {
+  border-bottom-left-radius: 4px;
+}
+#app .inspector > .borderRadius label input[type=range] {
+  width: 135px;
+  margin: 5px;
+  position: relative;
+  bottom: -4px;
+}
+#app .inspector > .borderRadius label input[type=number] {
+  width: 40px;
+}
+#app .inspector > .borderRadius.disabled .borders,
+#app .inspector > .borderRadius.disabled input {
+  opacity: 0.6;
+}
 #app .inspector .boxShadow .positionPicker {
   margin: 3px 5px 3px 0;
 }
@@ -523,6 +626,9 @@ body {
 #app .inspector .boxShadow .color span {
   position: relative;
   top: -6px;
+}
+#app .inspector .boxShadow.disabled .list {
+  opacity: 0.6;
 }
 #app .inspector .opacity label input[type=range] {
   width: 135px;

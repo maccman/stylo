@@ -39,8 +39,11 @@ class Dragging extends Spine.Controller
     @stageArea     = @stage.area()
     @selectionArea = @stage.selection.area()
 
-    # Check vertical/center stage snapping
-    difference = @stage.snapping.snap(@selectionArea, difference)
+    if e.altKey or e.metaKey
+      @stage.snapping.remove()
+    else
+      # Check vertical/center stage snapping
+      difference = @stage.snapping.snap(@selectionArea, difference)
 
     # Setup CoordTitle
     @moveCoordTitle(e)

@@ -13573,6 +13573,10 @@ this.require.define({"app/controllers/inspector/opacity":function(exports, requi
       'change input': 'change'
     };
 
+    Opacity.prototype.elements = {
+      'input': '$inputs'
+    };
+
     function Opacity() {
       this.render = __bind(this.render, this);      Opacity.__super__.constructor.apply(this, arguments);
       if (!this.stage) throw 'stage required';
@@ -13591,7 +13595,7 @@ this.require.define({"app/controllers/inspector/opacity":function(exports, requi
       val = parseFloat($(e.currentTarget).val());
       val = Math.round(val * 100) / 100;
       this.stage.selection.set('opacity', val);
-      return this.$('input').val(val);
+      return this.$inputs.val(val);
     };
 
     return Opacity;

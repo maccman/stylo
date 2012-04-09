@@ -4,6 +4,9 @@ class Opacity extends Spine.Controller
   events:
     'change input': 'change'
 
+  elements:
+    'input': '$inputs'
+
   constructor: ->
     super
     throw 'stage required' unless @stage
@@ -18,7 +21,8 @@ class Opacity extends Spine.Controller
   change: (e) ->
     val = parseFloat($(e.currentTarget).val())
     val = Math.round(val * 100) / 100
+
     @stage.selection.set('opacity', val)
-    @$('input').val(val)
+    @$inputs.val(val)
 
 module.exports = Opacity

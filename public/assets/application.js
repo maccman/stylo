@@ -13388,7 +13388,8 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
     BoxShadowEdit.prototype.elements = {
       'input[name=x]': '$x',
       'input[name=y]': '$y',
-      'input[name=blur]': '$blur'
+      'input[name=blur]': '$blur',
+      'input': '$inputs'
     };
 
     function BoxShadowEdit() {
@@ -13426,7 +13427,7 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
     };
 
     BoxShadowEdit.prototype.update = function() {
-      this.$('input').attr('disabled', this.disabled);
+      this.$inputs.attr('disabled', this.disabled);
       this.positionPicker.disabled = this.disabled;
       this.positionPicker.change({
         left: this.shadow.x,
@@ -13525,7 +13526,8 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
       this.el.append($('<h3/>').text('Shadow'));
       this.list = new BoxShadowList({
         current: this.current,
-        shadows: this.shadows
+        shadows: this.shadows,
+        disabled: this.disabled
       });
       this.list.bind('change', function(current) {
         _this.current = current;
@@ -13533,7 +13535,8 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
       });
       this.append(this.list);
       this.edit = new BoxShadowEdit({
-        shadow: this.current
+        shadow: this.current,
+        disabled: this.disabled
       });
       this.edit.bind('change', function() {
         var _ref;
@@ -15943,7 +15946,7 @@ this.require.define({"app/models/undo":function(exports, require, module){(funct
     (function() {
       (function() {
       
-        __out.push('<h3>Border Radius</h3>\n\n<article>\n  <div class="borders">\n    <div class="borderRadius"            data-border-radius="borderRadius" title="All borders"><span></span></div>\n    <div class="borderRadiusTopLeft"     data-border-radius="borderTopLeftRadius" title="Top left"><span></span></div>\n    <div class="borderRadiusTopRight"    data-border-radius="borderTopRightRadius" title="Top right"><span></span></div>\n    <div class="borderRadiusBottomRight" data-border-radius="borderBottomRightRadius" title="Bottom right"><span></span></div>\n    <div class="borderRadiusBottomLeft"  data-border-radius="borderBottomLeftRadius" title="Bottom left"><span></span></div>\n  </div>\n\n  <label>\n    <input\n      type="range"\n      name="border-radius"\n      min="0" max="100" step="1">\n\n    <input\n      type="number"\n      min="0" max="100" step="1">\n  </label>\n</article>\n');
+        __out.push('<h3>Border Radius</h3>\n\n<article>\n  <div class="borders">\n    <div class="borderRadius"            data-border-radius="borderRadius" title="All borders"><span></span></div>\n    <div class="borderRadiusTopLeft"     data-border-radius="borderTopLeftRadius" title="Top left"><span></span></div>\n    <div class="borderRadiusTopRight"    data-border-radius="borderTopRightRadius" title="Top right"><span></span></div>\n    <div class="borderRadiusBottomRight" data-border-radius="borderBottomRightRadius" title="Bottom right"><span></span></div>\n    <div class="borderRadiusBottomLeft"  data-border-radius="borderBottomLeftRadius" title="Bottom left"><span></span></div>\n  </div>\n\n  <label>\n    <input\n      type="range"\n      name="border-radius"\n      min="0" max="100" step="1">\n\n    <input\n      type="number"\n      min="0" step="1">\n  </label>\n</article>\n');
       
       }).call(this);
       

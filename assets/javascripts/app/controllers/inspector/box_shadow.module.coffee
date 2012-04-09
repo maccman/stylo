@@ -14,6 +14,7 @@ class BoxShadowEdit extends Spine.Controller
     'input[name=x]': '$x'
     'input[name=y]': '$y'
     'input[name=blur]': '$blur'
+    'input': '$inputs'
 
   constructor: ->
     super
@@ -48,8 +49,7 @@ class BoxShadowEdit extends Spine.Controller
     @update()
 
   update: ->
-    @$('input').attr('disabled', @disabled)
-
+    @$inputs.attr('disabled', @disabled)
     @positionPicker.disabled = @disabled
 
     @positionPicker.change(
@@ -129,8 +129,9 @@ class BoxShadow extends Spine.Controller
     @el.append($('<h3/>').text('Shadow'))
 
     @list = new BoxShadowList
-      current: @current
-      shadows: @shadows
+      current:  @current
+      shadows:  @shadows
+      disabled: @disabled
 
     @list.bind 'change', (@current) =>
       @edit.change @current
@@ -139,7 +140,10 @@ class BoxShadow extends Spine.Controller
 
     # BoxShadow Edit
 
-    @edit = new BoxShadowEdit(shadow: @current)
+    @edit = new BoxShadowEdit
+      shadow:   @current
+      disabled: @disabled
+
     @edit.bind 'change', => @shadows.change(arguments...)
     @append @edit
 

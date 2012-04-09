@@ -87,7 +87,8 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
     BoxShadowEdit.prototype.elements = {
       'input[name=x]': '$x',
       'input[name=y]': '$y',
-      'input[name=blur]': '$blur'
+      'input[name=blur]': '$blur',
+      'input': '$inputs'
     };
 
     function BoxShadowEdit() {
@@ -125,7 +126,7 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
     };
 
     BoxShadowEdit.prototype.update = function() {
-      this.$('input').attr('disabled', this.disabled);
+      this.$inputs.attr('disabled', this.disabled);
       this.positionPicker.disabled = this.disabled;
       this.positionPicker.change({
         left: this.shadow.x,
@@ -224,7 +225,8 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
       this.el.append($('<h3/>').text('Shadow'));
       this.list = new BoxShadowList({
         current: this.current,
-        shadows: this.shadows
+        shadows: this.shadows,
+        disabled: this.disabled
       });
       this.list.bind('change', function(current) {
         _this.current = current;
@@ -232,7 +234,8 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
       });
       this.append(this.list);
       this.edit = new BoxShadowEdit({
-        shadow: this.current
+        shadow: this.current,
+        disabled: this.disabled
       });
       this.edit.bind('change', function() {
         var _ref;

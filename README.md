@@ -14,9 +14,9 @@ Phase 1:
 * ✓ Select multiple items
 * ✓ Toolbar menu
 * Inspector panel (Element/Text/Ruler)
-  * ½ Background
+  * ½ Background (type/direction)
   * ✓ Border
-  * ✓ Shadow
+  * ½ Shadow (inset)
   * Font alignment
   * Font family/size/style/color
   * ✓ Text-shadow

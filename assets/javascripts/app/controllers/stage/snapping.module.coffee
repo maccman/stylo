@@ -52,9 +52,15 @@ class Snap extends Spine.Controller
 
   snap: (area, difference) ->
     if @active
-      @snapOut(area, difference)
+      difference = @snapOut(area, difference)
     else
-      @snapIn(area, difference)
+      # Record initial difference, as we will
+      # need this on snapOut to sync up coords
+      @initial   = difference[@direction]
+      difference = @snapIn(area, difference)
+      @initial  -= difference[@direction]
+
+    difference
 
   # Private
 
@@ -64,7 +70,8 @@ class Snap extends Spine.Controller
     if @withinThreshold(@value, @escapeThreshold)
       difference[@direction] = 0
     else
-      difference[@direction] = @value
+      # Element has escaped snapping
+      difference[@direction] = @value + (@initial or 0)
       @remove()
 
     difference
@@ -83,6 +90,7 @@ class VerticalCenterSnap extends Snap
     left   = area.left + (area.width / 2)
     middle = @stage.area().width / 2
 
+    # Vertical center of stage
     if @withinThreshold(left - middle)
       @activate(middle)
       difference[@direction] = middle - left
@@ -96,6 +104,7 @@ class HorizontalCenterSnap extends Snap
     top    = area.top + (area.height / 2)
     middle = @stage.area().height / 2
 
+    # Horizontal center of stage
     if @withinThreshold(top - middle)
       @activate(middle)
       difference[@direction] = middle - top
@@ -158,9 +167,10 @@ class HorizontalElementSnap extends Snap
 
     current = areas.shift()
 
-    # Compare topA against topB, middleB, bottomB
-    # Compare middleA against topB, middleB, bottomB
-    # Compare bottomA against topB, middleB, bottomB
+    # The snapping runs through the following:
+    # - Compare topA against topB, middleB, bottomB
+    # - Compare middleA against topB, middleB, bottomB
+    # - Compare bottomA against topB, middleB, bottomB
 
     for area in areas
       for typeA, valueA of current
@@ -190,6 +200,11 @@ class VerticalElementSnap extends Snap
         right:  area.left + area.width
 
     current = areas.shift()
+
+    # The snapping runs through the following:
+    # - Compare leftA against leftA, middleB, rightB
+    # - Compare middleA against leftA, middleB, rightB
+    # - Compare rightA against leftA, middleB, rightB
 
     for area in areas
       for typeA, valueA of current

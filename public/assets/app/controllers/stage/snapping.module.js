@@ -152,10 +152,13 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
 
     Snap.prototype.snap = function(area, difference) {
       if (this.active) {
-        return this.snapOut(area, difference);
+        difference = this.snapOut(area, difference);
       } else {
-        return this.snapIn(area, difference);
+        this.initial = difference[this.direction];
+        difference = this.snapIn(area, difference);
+        this.initial -= difference[this.direction];
       }
+      return difference;
     };
 
     Snap.prototype.snapOut = function(area, difference) {
@@ -163,7 +166,7 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
       if (this.withinThreshold(this.value, this.escapeThreshold)) {
         difference[this.direction] = 0;
       } else {
-        difference[this.direction] = this.value;
+        difference[this.direction] = this.value + (this.initial || 0);
         this.remove();
       }
       return difference;

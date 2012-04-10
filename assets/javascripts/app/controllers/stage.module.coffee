@@ -7,6 +7,7 @@ Snapping    = require('./stage/snapping')
 KeyBindings = require('./stage/key_bindings')
 ZIndex      = require('./stage/zindex')
 Clipboard   = require('./stage/clipboard')
+Context     = require('./stage/context')
 
 Rectangle  = require('./elements/rectangle')
 Ellipsis   = require('./elements/ellipsis')
@@ -37,6 +38,7 @@ class Stage extends Spine.Controller
     @keybindings = new KeyBindings(this)
     @zindex      = new ZIndex(this)
     @clipboard   = new Clipboard(this)
+    @context     = new Context(this)
 
     @selection.bind 'change', =>
       @el.trigger('selection.change', [this])

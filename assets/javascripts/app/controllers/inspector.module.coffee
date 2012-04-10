@@ -4,6 +4,7 @@ BorderRadius  = require('./inspector/border_radius')
 Opacity       = require('./inspector/opacity')
 BoxShadow     = require('./inspector/box_shadow')
 TextShadow    = require('./inspector/text_shadow')
+Dimensions    = require('./inspector/dimensions')
 
 class Inspector extends Spine.Controller
   className: 'inspector'
@@ -15,6 +16,7 @@ class Inspector extends Spine.Controller
 
   render: =>
     @el.empty()
+    @append(new Dimensions(stage: @stage))
     @append(new Background(stage: @stage))
     @append(new Border(stage: @stage))
     @append(new BorderRadius(stage: @stage))

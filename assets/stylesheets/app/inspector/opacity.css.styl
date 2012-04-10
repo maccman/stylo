@@ -1,10 +1,17 @@
+@import 'mixins'
+
 #app .inspector .opacity {
   label {
+    hbox()
+
+    input {
+      display: block
+    }
+
     input[type=range] {
       width: 135px
       margin: 5px
-      position: relative
-      bottom: -4px
+      box-flex(1)
     }
 
     input[type=number] {

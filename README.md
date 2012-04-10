@@ -5,6 +5,7 @@ A Photoshop replacement. Inspired by Keynote. Democratizing design.
 Background image
 Background gradient rotation
 Color inspector movable window
+Selection not working with scroll
 
 Phase 1:
 

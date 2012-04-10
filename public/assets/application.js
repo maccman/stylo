@@ -12914,7 +12914,7 @@ this.require.define({"app/controllers/header":function(exports, require, module)
 }).call(this);
 ;}});
 this.require.define({"app/controllers/inspector":function(exports, require, module){(function() {
-  var Background, Border, BorderRadius, BoxShadow, Inspector, Opacity, TextShadow,
+  var Background, Border, BorderRadius, BoxShadow, Dimensions, Inspector, Opacity, TextShadow,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -12931,6 +12931,8 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
 
   TextShadow = require('./inspector/text_shadow');
 
+  Dimensions = require('./inspector/dimensions');
+
   Inspector = (function(_super) {
 
     __extends(Inspector, _super);
@@ -12945,6 +12947,9 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
 
     Inspector.prototype.render = function() {
       this.el.empty();
+      this.append(new Dimensions({
+        stage: this.stage
+      }));
       this.append(new Background({
         stage: this.stage
       }));
@@ -13557,6 +13562,60 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
 
 }).call(this);
 ;}});
+this.require.define({"app/controllers/inspector/dimensions":function(exports, require, module){(function() {
+  var Dimensions,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  Dimensions = (function(_super) {
+
+    __extends(Dimensions, _super);
+
+    Dimensions.prototype.className = 'dimensions';
+
+    Dimensions.prototype.events = {
+      'change input': 'change'
+    };
+
+    Dimensions.prototype.elements = {
+      'input': '$inputs',
+      'input[name=width]': '$width',
+      'input[name=height]': '$height'
+    };
+
+    function Dimensions() {
+      this.render = __bind(this.render, this);      Dimensions.__super__.constructor.apply(this, arguments);
+      if (!this.stage) throw 'stage required';
+      this.render();
+    }
+
+    Dimensions.prototype.render = function() {
+      this.disabled = !this.stage.selection.isAny();
+      this.html(JST['app/views/inspector/dimensions'](this));
+      this.update();
+      this.el.toggleClass('disabled', this.disabled);
+      return this.$inputs.attr('disabled', this.disabled);
+    };
+
+    Dimensions.prototype.update = function() {
+      this.$width.val(this.stage.selection.get('width'));
+      return this.$height.val(this.stage.selection.get('width'));
+    };
+
+    Dimensions.prototype.change = function(e) {
+      this.stage.selection.set('width', parseInt(this.$width.val(), 10));
+      return this.stage.selection.set('height', parseInt(this.$height.val(), 10));
+    };
+
+    return Dimensions;
+
+  })(Spine.Controller);
+
+  module.exports = Dimensions;
+
+}).call(this);
+;}});
 this.require.define({"app/controllers/inspector/opacity":function(exports, require, module){(function() {
   var Opacity,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
@@ -13710,7 +13769,7 @@ this.require.define({"app/controllers/inspector/text_shadow":function(exports, r
 }).call(this);
 ;}});
 this.require.define({"app/controllers/stage":function(exports, require, module){(function() {
-  var Clipboard, Dragging, Ellipsis, KeyBindings, Properties, Rectangle, Resizing, SelectArea, Selection, Serialize, Snapping, Stage, ZIndex,
+  var Clipboard, Context, Dragging, Ellipsis, KeyBindings, Properties, Rectangle, Resizing, SelectArea, Selection, Serialize, Snapping, Stage, ZIndex,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -13732,6 +13791,8 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
   ZIndex = require('./stage/zindex');
 
   Clipboard = require('./stage/clipboard');
+
+  Context = require('./stage/context');
 
   Rectangle = require('./elements/rectangle');
 
@@ -13772,6 +13833,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       this.keybindings = new KeyBindings(this);
       this.zindex = new ZIndex(this);
       this.clipboard = new Clipboard(this);
+      this.context = new Context(this);
       this.selection.bind('change', function() {
         return _this.el.trigger('selection.change', [_this]);
       });
@@ -14062,6 +14124,31 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
   })();
 
   module.exports = Clipboard;
+
+}).call(this);
+;}});
+this.require.define({"app/controllers/stage/context":function(exports, require, module){(function() {
+  var Context,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
+  Context = (function() {
+
+    function Context(stage) {
+      this.stage = stage;
+      this.contextmenu = __bind(this.contextmenu, this);
+      this.stage.el.bind('contextmenu', this.contextmenu);
+    }
+
+    Context.prototype.contextmenu = function(e) {
+      e.preventDefault();
+      return console.log(e);
+    };
+
+    return Context;
+
+  })();
+
+  module.exports = Context;
 
 }).call(this);
 ;}});
@@ -16070,6 +16157,57 @@ this.require.define({"app/models/undo":function(exports, require, module){(funct
         }
       
         __out.push('\n</div>\n\n<footer>\n  <button class="plus">+</button>\n  <button class="minus">-</button>\n</footer>\n');
+      
+      }).call(this);
+      
+    }).call(__obj);
+    __obj.safe = __objSafe, __obj.escape = __escape;
+    return __out.join('');
+  };
+}).call(this);
+(function() {
+  this.JST || (this.JST = {});
+  this.JST["app/views/inspector/dimensions"] = function(__obj) {
+    if (!__obj) __obj = {};
+    var __out = [], __capture = function(callback) {
+      var out = __out, result;
+      __out = [];
+      callback.call(this);
+      result = __out.join('');
+      __out = out;
+      return __safe(result);
+    }, __sanitize = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else if (typeof value !== 'undefined' && value != null) {
+        return __escape(value);
+      } else {
+        return '';
+      }
+    }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+    __safe = __obj.safe = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else {
+        if (!(typeof value !== 'undefined' && value != null)) value = '';
+        var result = new String(value);
+        result.ecoSafe = true;
+        return result;
+      }
+    };
+    if (!__escape) {
+      __escape = __obj.escape = function(value) {
+        return ('' + value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      };
+    }
+    (function() {
+      (function() {
+      
+        __out.push('<h3>Dimensions</h3>\n\n<article>\n  <div class="hbox">\n    <label>\n      <span>Width</span>\n      <input type="number" name="width" placeholder="0px">\n    </label>\n\n    <label>\n      <span>Height</span>\n      <input type="number" name="height" placeholder="0px">\n    </label>\n  </div>\n</article>\n');
       
       }).call(this);
       

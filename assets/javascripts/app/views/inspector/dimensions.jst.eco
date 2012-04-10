@@ -1,0 +1,15 @@
+<h3>Dimensions</h3>
+
+<article>
+  <div class="hbox">
+    <label>
+      <span>Width</span>
+      <input type="number" name="width" placeholder="0px">
+    </label>
+
+    <label>
+      <span>Height</span>
+      <input type="number" name="height" placeholder="0px">
+    </label>
+  </div>
+</article>

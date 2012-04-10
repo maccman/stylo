@@ -455,14 +455,14 @@ body {
 #app .inspector > .border label span {
   width: 35px;
 }
-#app .inspector > .border label select {
-  width: 130px;
-}
 #app .inspector > .border label input {
   margin-right: 10px;
 }
 #app .inspector > .border label .colorPreview {
   margin: 3px 0 -5px 0;
+}
+#app .inspector > .border label select {
+  width: 130px;
 }
 #app .inspector > .border .hbox label {
   margin-bottom: 0px;
@@ -542,7 +542,7 @@ body {
   -moz-box-orient: horizontal;
   -moz-box-align: stretch;
   -moz-box-pack: start;
-  margin: 3px auto 3px auto;
+  margin: 3px auto 10px auto;
   background: #fcfcfc;
   background: -webkit-gradient(linear, left top, left bottom, from(#fcfcfc), to(rgba(238,238,238,0.90)));
   background: -webkit-linear-gradient(top, #fcfcfc, rgba(238,238,238,0.90));
@@ -599,11 +599,24 @@ body {
 #app .inspector > .borderRadius .borders .borderRadiusBottomLeft span {
   border-bottom-left-radius: 4px;
 }
+#app .inspector > .borderRadius label {
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-align: stretch;
+  -webkit-box-pack: start;
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  -moz-box-align: stretch;
+  -moz-box-pack: start;
+}
+#app .inspector > .borderRadius label input {
+  display: block;
+}
 #app .inspector > .borderRadius label input[type=range] {
-  width: 135px;
   margin: 5px;
-  position: relative;
-  bottom: -4px;
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  box-flex: 1;
 }
 #app .inspector > .borderRadius label input[type=number] {
   width: 40px;
@@ -630,11 +643,34 @@ body {
 #app .inspector .boxShadow.disabled .list {
   opacity: 0.6;
 }
+#app .inspector .dimensions label {
+  margin-right: 3px;
+}
+#app .inspector .dimensions label span {
+  width: 38px;
+}
+#app .inspector .dimensions label input {
+  width: 45px;
+}
+#app .inspector .opacity label {
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-align: stretch;
+  -webkit-box-pack: start;
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  -moz-box-align: stretch;
+  -moz-box-pack: start;
+}
+#app .inspector .opacity label input {
+  display: block;
+}
 #app .inspector .opacity label input[type=range] {
   width: 135px;
   margin: 5px;
-  position: relative;
-  bottom: -4px;
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  box-flex: 1;
 }
 #app .inspector .opacity label input[type=number] {
   width: 40px;

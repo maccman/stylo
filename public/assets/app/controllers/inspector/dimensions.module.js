@@ -58,65 +58,57 @@
 
   return this.require;
 }).call(this);
-this.require.define({"app/controllers/inspector":function(exports, require, module){(function() {
-  var Background, Border, BorderRadius, BoxShadow, Dimensions, Inspector, Opacity, TextShadow,
+this.require.define({"app/controllers/inspector/dimensions":function(exports, require, module){(function() {
+  var Dimensions,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  Background = require('./inspector/background');
+  Dimensions = (function(_super) {
 
-  Border = require('./inspector/border');
+    __extends(Dimensions, _super);
 
-  BorderRadius = require('./inspector/border_radius');
+    Dimensions.prototype.className = 'dimensions';
 
-  Opacity = require('./inspector/opacity');
+    Dimensions.prototype.events = {
+      'change input': 'change'
+    };
 
-  BoxShadow = require('./inspector/box_shadow');
+    Dimensions.prototype.elements = {
+      'input': '$inputs',
+      'input[name=width]': '$width',
+      'input[name=height]': '$height'
+    };
 
-  TextShadow = require('./inspector/text_shadow');
-
-  Dimensions = require('./inspector/dimensions');
-
-  Inspector = (function(_super) {
-
-    __extends(Inspector, _super);
-
-    Inspector.prototype.className = 'inspector';
-
-    function Inspector() {
-      this.render = __bind(this.render, this);      Inspector.__super__.constructor.apply(this, arguments);
-      this.stage.selection.bind('change', this.render);
+    function Dimensions() {
+      this.render = __bind(this.render, this);      Dimensions.__super__.constructor.apply(this, arguments);
+      if (!this.stage) throw 'stage required';
       this.render();
     }
 
-    Inspector.prototype.render = function() {
-      this.el.empty();
-      this.append(new Dimensions({
-        stage: this.stage
-      }));
-      this.append(new Background({
-        stage: this.stage
-      }));
-      this.append(new Border({
-        stage: this.stage
-      }));
-      this.append(new BorderRadius({
-        stage: this.stage
-      }));
-      this.append(new BoxShadow({
-        stage: this.stage
-      }));
-      return this.append(new Opacity({
-        stage: this.stage
-      }));
+    Dimensions.prototype.render = function() {
+      this.disabled = !this.stage.selection.isAny();
+      this.html(JST['app/views/inspector/dimensions'](this));
+      this.update();
+      this.el.toggleClass('disabled', this.disabled);
+      return this.$inputs.attr('disabled', this.disabled);
     };
 
-    return Inspector;
+    Dimensions.prototype.update = function() {
+      this.$width.val(this.stage.selection.get('width'));
+      return this.$height.val(this.stage.selection.get('width'));
+    };
+
+    Dimensions.prototype.change = function(e) {
+      this.stage.selection.set('width', parseInt(this.$width.val(), 10));
+      return this.stage.selection.set('height', parseInt(this.$height.val(), 10));
+    };
+
+    return Dimensions;
 
   })(Spine.Controller);
 
-  module.exports = Inspector;
+  module.exports = Dimensions;
 
 }).call(this);
 ;}});

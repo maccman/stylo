@@ -14140,8 +14140,7 @@ this.require.define({"app/controllers/stage/context":function(exports, require, 
     }
 
     Context.prototype.contextmenu = function(e) {
-      e.preventDefault();
-      return console.log(e);
+      return e.preventDefault();
     };
 
     return Context;

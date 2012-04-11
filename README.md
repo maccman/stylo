@@ -7,6 +7,7 @@ Background gradient rotation
 Color inspector movable window
 Dragging right and up doesn't select elements - offset by the header
 We want the resize to be around the selection
+We want the inspector not to completely re-render on selection
 
 Phase 1:
 
@@ -26,7 +27,7 @@ Phase 1:
   * Rotation
   * ✓ Opacity
   * content editable
-  * context menu
+  * ✓ context menu
 
 Phase 2:
 

@@ -34,7 +34,7 @@ class Element extends Spine.Controller
     @resizing = new Resizing(this)
 
   get: (key) ->
-    @[key]?() ? @properties[key]
+    @properties[key]
 
   set: (key, value) ->
     if typeof key is 'object'
@@ -142,13 +142,5 @@ class Element extends Spine.Controller
 
   toValue: ->
     @properties
-
-  # Events
-
-  change: (func) ->
-    if typeof func is 'function'
-      @el.bind('change.element', func)
-    else
-      @el.trigger('change.element', arguments...)
 
 module.exports = Element

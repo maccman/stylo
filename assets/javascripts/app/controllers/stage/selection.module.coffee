@@ -14,11 +14,13 @@ class Selection extends Spine.Module
   # Returns a property for an element selection.
   # Returns null unless all of the elements have the same value.
   get: (key) ->
-    result = (el.get(key) for el in @elements)
-    first  = result.shift()
-    for value in result when value isnt first
-      return null
-    return first
+    return null unless @isAny()
+
+    first = @elements[0]?.get(key)
+    for el in @elements
+      if el.get(key) isnt first
+        return null
+    first
 
   # Sets a property on all elements
   set: (key, value) ->
@@ -26,6 +28,9 @@ class Selection extends Spine.Module
 
   isMultiple: ->
     @elements.length > 1
+
+  isSingle: ->
+    @elements.length is 1
 
   isAny: ->
     @elements.length > 0
@@ -83,5 +88,10 @@ class Selection extends Spine.Module
     delete area.bottom
 
     area
+
+  moveBy: (toPosition) ->
+    # Shortcut to reduce calls on set() and paint()
+    el.moveBy(toPosition) for el in @elements
+
 
 module.exports = Selection

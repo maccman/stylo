@@ -219,9 +219,9 @@ class VerticalElementSnap extends Snap
 
 class Snapping extends Spine.Controller
   events:
-    'resized':          'remove'
+    'resize.element':   'remove'
     'selection.change': 'remove'
-    'dragging.end':     'remove'
+    'end.dragging':     'remove'
 
   constructor: (@stage) ->
     super(el: @stage.el)

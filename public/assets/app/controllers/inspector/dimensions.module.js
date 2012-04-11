@@ -77,17 +77,21 @@ this.require.define({"app/controllers/inspector/dimensions":function(exports, re
     Dimensions.prototype.elements = {
       'input': '$inputs',
       'input[name=width]': '$width',
-      'input[name=height]': '$height'
+      'input[name=height]': '$height',
+      'input[name=x]': '$x',
+      'input[name=y]': '$y'
     };
 
     function Dimensions() {
+      this.update = __bind(this.update, this);
       this.render = __bind(this.render, this);      Dimensions.__super__.constructor.apply(this, arguments);
       if (!this.stage) throw 'stage required';
+      $(document).bind('resize.element move.element', this.update);
       this.render();
     }
 
     Dimensions.prototype.render = function() {
-      this.disabled = !this.stage.selection.isAny();
+      this.disabled = !this.stage.selection.isSingle();
       this.html(JST['app/views/inspector/dimensions'](this));
       this.update();
       this.el.toggleClass('disabled', this.disabled);
@@ -95,13 +99,19 @@ this.require.define({"app/controllers/inspector/dimensions":function(exports, re
     };
 
     Dimensions.prototype.update = function() {
+      this.disabled = !this.stage.selection.isSingle();
+      if (this.disabled) return;
       this.$width.val(this.stage.selection.get('width'));
-      return this.$height.val(this.stage.selection.get('width'));
+      this.$height.val(this.stage.selection.get('height'));
+      this.$x.val(this.stage.selection.get('left'));
+      return this.$y.val(this.stage.selection.get('top'));
     };
 
     Dimensions.prototype.change = function(e) {
       this.stage.selection.set('width', parseInt(this.$width.val(), 10));
-      return this.stage.selection.set('height', parseInt(this.$height.val(), 10));
+      this.stage.selection.set('height', parseInt(this.$height.val(), 10));
+      this.stage.selection.set('left', parseInt(this.$x.val(), 10));
+      return this.stage.selection.set('top', parseInt(this.$y.val(), 10));
     };
 
     return Dimensions;

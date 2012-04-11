@@ -48,12 +48,13 @@ class Dragging extends Spine.Controller
     # Setup CoordTitle
     @moveCoordTitle(e)
 
-    @stage.selection.set('moveBy', difference)
+    @stage.selection.moveBy(difference)
+    @el.trigger('move.dragging')
 
   drop: (e) =>
     $(document).unbind('mousemove', @drag)
     $(document).unbind('mouseup', @drop)
-    @el.trigger('dragging.end')
+    @el.trigger('end.dragging')
 
     # Reset coordTitle
     @coordTitle?.remove()

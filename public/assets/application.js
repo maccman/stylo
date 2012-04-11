@@ -12218,7 +12218,8 @@ this.require.define({"app/controllers/element":function(exports, require, module
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
-    __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+    __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
+    __slice = Array.prototype.slice;
 
   Resizing = require('./element/resizing');
 
@@ -12279,7 +12280,7 @@ this.require.define({"app/controllers/element":function(exports, require, module
       if (typeof key === 'object') {
         for (k in key) {
           v = key[k];
-          this.set(k, v);
+          (typeof this[k] === "function" ? this[k](v) : void 0) || (this.properties[k] = v);
         }
       } else {
         (typeof this[key] === "function" ? this[key](value) : void 0) || (this.properties[key] = value);
@@ -12291,13 +12292,9 @@ this.require.define({"app/controllers/element":function(exports, require, module
       return this.el.css(this.properties);
     };
 
-    Element.prototype.toValue = function() {
-      return this.properties;
-    };
-
     Element.prototype.resize = function(area) {
       this.set(area);
-      return this.el.trigger('resized', [this]);
+      return this.el.trigger('element:resize', [this]);
     };
 
     Element.prototype.moveBy = function(toPosition) {
@@ -12306,7 +12303,7 @@ this.require.define({"app/controllers/element":function(exports, require, module
       area.left += toPosition.left;
       area.top += toPosition.top;
       this.set(area);
-      return this.el.trigger('moved', [this]);
+      return this.el.trigger('move.element', [this]);
     };
 
     Element.prototype.order = function(i) {
@@ -12319,9 +12316,9 @@ this.require.define({"app/controllers/element":function(exports, require, module
 
     Element.prototype.select = function(e) {
       if (this.selected()) {
-        return this.el.trigger('deselect', [this, e != null ? e.shiftKey : void 0]);
+        return this.el.trigger('deselect.element', [this, e != null ? e.shiftKey : void 0]);
       } else {
-        return this.el.trigger('select', [this, e != null ? e.shiftKey : void 0]);
+        return this.el.trigger('select.element', [this, e != null ? e.shiftKey : void 0]);
       }
     };
 
@@ -12385,6 +12382,19 @@ this.require.define({"app/controllers/element":function(exports, require, module
       return "." + this.className + " {\n" + styles + "\n}";
     };
 
+    Element.prototype.toValue = function() {
+      return this.properties;
+    };
+
+    Element.prototype.change = function(func) {
+      var _ref;
+      if (typeof func === 'function') {
+        return this.el.bind('change.element', func);
+      } else {
+        return (_ref = this.el).trigger.apply(_ref, ['change.element'].concat(__slice.call(arguments)));
+      }
+    };
+
     return Element;
 
   })(Spine.Controller);
@@ -12439,11 +12449,11 @@ this.require.define({"app/controllers/element/resizing":function(exports, requir
         left: e.pageX,
         top: e.pageY
       };
-      return this.el.trigger('resize.start', [this.type, difference, e.shiftKey]);
+      return this.el.trigger('start.resize', [this.type, difference, e.shiftKey]);
     };
 
     Thumb.prototype.drop = function(e) {
-      this.el.trigger('resize.end');
+      this.el.trigger('end.resize');
       $(document).unbind('mousemove', this.drag);
       return $(document).unbind('mouseup', this.drop);
     };
@@ -12459,7 +12469,7 @@ this.require.define({"app/controllers/element/resizing":function(exports, requir
     Resizing.prototype.className = 'resizing';
 
     Resizing.prototype.events = {
-      'resize.start': 'resize'
+      'start.resize': 'resize'
     };
 
     function Resizing(element) {
@@ -13581,17 +13591,21 @@ this.require.define({"app/controllers/inspector/dimensions":function(exports, re
     Dimensions.prototype.elements = {
       'input': '$inputs',
       'input[name=width]': '$width',
-      'input[name=height]': '$height'
+      'input[name=height]': '$height',
+      'input[name=x]': '$x',
+      'input[name=y]': '$y'
     };
 
     function Dimensions() {
+      this.update = __bind(this.update, this);
       this.render = __bind(this.render, this);      Dimensions.__super__.constructor.apply(this, arguments);
       if (!this.stage) throw 'stage required';
+      $(document).bind('resize.element move.element', this.update);
       this.render();
     }
 
     Dimensions.prototype.render = function() {
-      this.disabled = !this.stage.selection.isAny();
+      this.disabled = !this.stage.selection.isSingle();
       this.html(JST['app/views/inspector/dimensions'](this));
       this.update();
       this.el.toggleClass('disabled', this.disabled);
@@ -13599,13 +13613,19 @@ this.require.define({"app/controllers/inspector/dimensions":function(exports, re
     };
 
     Dimensions.prototype.update = function() {
+      this.disabled = !this.stage.selection.isSingle();
+      if (this.disabled) return;
       this.$width.val(this.stage.selection.get('width'));
-      return this.$height.val(this.stage.selection.get('width'));
+      this.$height.val(this.stage.selection.get('height'));
+      this.$x.val(this.stage.selection.get('left'));
+      return this.$y.val(this.stage.selection.get('top'));
     };
 
     Dimensions.prototype.change = function(e) {
       this.stage.selection.set('width', parseInt(this.$width.val(), 10));
-      return this.stage.selection.set('height', parseInt(this.$height.val(), 10));
+      this.stage.selection.set('height', parseInt(this.$height.val(), 10));
+      this.stage.selection.set('left', parseInt(this.$x.val(), 10));
+      return this.stage.selection.set('top', parseInt(this.$y.val(), 10));
     };
 
     return Dimensions;
@@ -13807,11 +13827,11 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
     Stage.prototype.className = 'stage';
 
     Stage.prototype.events = {
-      'select': 'select',
-      'deselect': 'deselect',
+      'select.element': 'select',
+      'deselect.element': 'deselect',
       'mousedown': 'deselectAll',
-      'resize.start': 'resizeStart',
-      'resize.end': 'resizeEnd'
+      'start.resize': 'resizeStart',
+      'end.resize': 'resizeEnd'
     };
 
     function Stage() {
@@ -14078,7 +14098,7 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
         this.stage.add(el);
       }
       this.stage.selection.refresh(elements);
-      return this.stage.selection.set('moveBy', {
+      return this.stage.selection.moveBy({
         left: 10,
         top: 10
       });
@@ -14111,7 +14131,7 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
         this.stage.add(el);
       }
       this.stage.selection.refresh(this.data);
-      this.stage.selection.set('moveBy', {
+      this.stage.selection.moveBy({
         left: 10,
         top: 10
       });
@@ -14237,14 +14257,15 @@ this.require.define({"app/controllers/stage/dragging":function(exports, require,
         difference = this.stage.snapping.snap(this.selectionArea, difference);
       }
       this.moveCoordTitle(e);
-      return this.stage.selection.set('moveBy', difference);
+      this.stage.selection.moveBy(difference);
+      return this.el.trigger('move.dragging');
     };
 
     Dragging.prototype.drop = function(e) {
       var _ref;
       $(document).unbind('mousemove', this.drag);
       $(document).unbind('mouseup', this.drop);
-      this.el.trigger('dragging.end');
+      this.el.trigger('end.dragging');
       if ((_ref = this.coordTitle) != null) _ref.remove();
       return this.coordTitle = null;
     };
@@ -14316,7 +14337,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       e.preventDefault();
       amount = -1;
       if (e.shiftKey) amount *= 5;
-      return this.stage.selection.set('moveBy', {
+      return this.stage.selection.moveBy({
         left: amount,
         top: 0
       });
@@ -14327,7 +14348,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       e.preventDefault();
       amount = -1;
       if (e.shiftKey) amount *= 5;
-      return this.stage.selection.set('moveBy', {
+      return this.stage.selection.moveBy({
         left: 0,
         top: amount
       });
@@ -14338,7 +14359,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       e.preventDefault();
       amount = 1;
       if (e.shiftKey) amount *= 5;
-      return this.stage.selection.set('moveBy', {
+      return this.stage.selection.moveBy({
         left: amount,
         top: 0
       });
@@ -14349,7 +14370,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       e.preventDefault();
       amount = 1;
       if (e.shiftKey) amount *= 5;
-      return this.stage.selection.set('moveBy', {
+      return this.stage.selection.moveBy({
         left: 0,
         top: amount
       });
@@ -14442,8 +14463,8 @@ this.require.define({"app/controllers/stage/resizing":function(exports, require,
     __extends(Resizing, _super);
 
     Resizing.prototype.events = {
-      'resized': 'resized',
-      'resize.end': 'resizeEnd'
+      'resize.element': 'resized',
+      'end.resize': 'resizeEnd'
     };
 
     function Resizing(stage) {
@@ -14555,8 +14576,10 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
       var _ref;
       if (e.target !== e.currentTarget) return;
       e.preventDefault();
-      if ((_ref = this.selectArea) != null) _ref.remove();
       this.offset = this.el.offset();
+      this.offset.left -= this.el.scrollLeft();
+      this.offset.top -= this.el.scrollTop();
+      if ((_ref = this.selectArea) != null) _ref.remove();
       $(document).mousemove(this.drag);
       return $(document).mouseup(this.drop);
     };
@@ -14564,10 +14587,10 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
     SelectArea.prototype.drag = function(e) {
       var area, element, _i, _len, _ref, _results;
       if (!this.selectArea) {
-        this.selectArea = new Area(e.clientX - this.offset.left + 1, e.clientY - this.offset.top + 1);
+        this.selectArea = new Area(e.pageX - this.offset.left + 1, e.pageY - this.offset.top + 1);
         this.append(this.selectArea);
       }
-      this.selectArea.resize(e.clientX - this.offset.left, e.clientY - this.offset.top);
+      this.selectArea.resize(e.pageX - this.offset.left, e.pageY - this.offset.top);
       area = this.selectArea.area();
       _ref = this.stage.elements;
       _results = [];
@@ -14629,21 +14652,13 @@ this.require.define({"app/controllers/stage/selection":function(exports, require
     }
 
     Selection.prototype.get = function(key) {
-      var el, first, result, value, _i, _len;
-      result = (function() {
-        var _i, _len, _ref, _results;
-        _ref = this.elements;
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          el = _ref[_i];
-          _results.push(el.get(key));
-        }
-        return _results;
-      }).call(this);
-      first = result.shift();
-      for (_i = 0, _len = result.length; _i < _len; _i++) {
-        value = result[_i];
-        if (value !== first) return null;
+      var el, first, _i, _len, _ref, _ref2;
+      if (!this.isAny()) return null;
+      first = (_ref = this.elements[0]) != null ? _ref.get(key) : void 0;
+      _ref2 = this.elements;
+      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+        el = _ref2[_i];
+        if (el.get(key) !== first) return null;
       }
       return first;
     };
@@ -14661,6 +14676,10 @@ this.require.define({"app/controllers/stage/selection":function(exports, require
 
     Selection.prototype.isMultiple = function() {
       return this.elements.length > 1;
+    };
+
+    Selection.prototype.isSingle = function() {
+      return this.elements.length === 1;
     };
 
     Selection.prototype.isAny = function() {
@@ -14725,6 +14744,17 @@ this.require.define({"app/controllers/stage/selection":function(exports, require
       delete area.right;
       delete area.bottom;
       return area;
+    };
+
+    Selection.prototype.moveBy = function(toPosition) {
+      var el, _i, _len, _ref, _results;
+      _ref = this.elements;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        el = _ref[_i];
+        _results.push(el.moveBy(toPosition));
+      }
+      return _results;
     };
 
     return Selection;
@@ -15071,9 +15101,9 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
     __extends(Snapping, _super);
 
     Snapping.prototype.events = {
-      'resized': 'remove',
+      'resize.element': 'remove',
       'selection.change': 'remove',
-      'dragging.end': 'remove'
+      'end.dragging': 'remove'
     };
 
     function Snapping(stage) {
@@ -16206,7 +16236,7 @@ this.require.define({"app/models/undo":function(exports, require, module){(funct
     (function() {
       (function() {
       
-        __out.push('<h3>Dimensions</h3>\n\n<article>\n  <div class="hbox">\n    <label>\n      <span>Width</span>\n      <input type="number" name="width" placeholder="0px">\n    </label>\n\n    <label>\n      <span>Height</span>\n      <input type="number" name="height" placeholder="0px">\n    </label>\n  </div>\n</article>\n');
+        __out.push('<h3>Dimensions</h3>\n\n<article>\n  <div class="hbox">\n    <label>\n      <span>Width</span>\n      <input type="number" name="width" placeholder="0px">\n    </label>\n\n    <label>\n      <span>X</span>\n      <input type="number" name="x" placeholder="0px">\n    </label>\n  </div>\n\n  <div class="hbox">\n    <label>\n      <span>Height</span>\n      <input type="number" name="height" placeholder="0px">\n    </label>\n\n    <label>\n      <span>Y</span>\n      <input type="number" name="y" placeholder="0px">\n    </label>\n  </div>\n</article>\n');
       
       }).call(this);
       

@@ -43,7 +43,7 @@ class Clipboard
 
     @stage.add(el) for el in elements
     @stage.selection.refresh(elements)
-    @stage.selection.set('moveBy', left: 10, top: 10)
+    @stage.selection.moveBy(left: 10, top: 10)
 
   data: null
 
@@ -59,7 +59,7 @@ class Clipboard
 
     @stage.add(el) for el in @data
     @stage.selection.refresh(@data)
-    @stage.selection.set('moveBy', left: 10, top: 10)
+    @stage.selection.moveBy(left: 10, top: 10)
 
     # Re-clone the elements
     @copyInternal()

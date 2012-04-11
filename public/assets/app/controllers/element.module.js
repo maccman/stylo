@@ -63,7 +63,8 @@ this.require.define({"app/controllers/element":function(exports, require, module
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
-    __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+    __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
+    __slice = Array.prototype.slice;
 
   Resizing = require('./element/resizing');
 
@@ -124,7 +125,7 @@ this.require.define({"app/controllers/element":function(exports, require, module
       if (typeof key === 'object') {
         for (k in key) {
           v = key[k];
-          this.set(k, v);
+          (typeof this[k] === "function" ? this[k](v) : void 0) || (this.properties[k] = v);
         }
       } else {
         (typeof this[key] === "function" ? this[key](value) : void 0) || (this.properties[key] = value);
@@ -136,13 +137,9 @@ this.require.define({"app/controllers/element":function(exports, require, module
       return this.el.css(this.properties);
     };
 
-    Element.prototype.toValue = function() {
-      return this.properties;
-    };
-
     Element.prototype.resize = function(area) {
       this.set(area);
-      return this.el.trigger('resized', [this]);
+      return this.el.trigger('element:resize', [this]);
     };
 
     Element.prototype.moveBy = function(toPosition) {
@@ -151,7 +148,7 @@ this.require.define({"app/controllers/element":function(exports, require, module
       area.left += toPosition.left;
       area.top += toPosition.top;
       this.set(area);
-      return this.el.trigger('moved', [this]);
+      return this.el.trigger('move.element', [this]);
     };
 
     Element.prototype.order = function(i) {
@@ -164,9 +161,9 @@ this.require.define({"app/controllers/element":function(exports, require, module
 
     Element.prototype.select = function(e) {
       if (this.selected()) {
-        return this.el.trigger('deselect', [this, e != null ? e.shiftKey : void 0]);
+        return this.el.trigger('deselect.element', [this, e != null ? e.shiftKey : void 0]);
       } else {
-        return this.el.trigger('select', [this, e != null ? e.shiftKey : void 0]);
+        return this.el.trigger('select.element', [this, e != null ? e.shiftKey : void 0]);
       }
     };
 
@@ -228,6 +225,19 @@ this.require.define({"app/controllers/element":function(exports, require, module
         return _results;
       })()).join("\n");
       return "." + this.className + " {\n" + styles + "\n}";
+    };
+
+    Element.prototype.toValue = function() {
+      return this.properties;
+    };
+
+    Element.prototype.change = function(func) {
+      var _ref;
+      if (typeof func === 'function') {
+        return this.el.bind('change.element', func);
+      } else {
+        return (_ref = this.el).trigger.apply(_ref, ['change.element'].concat(__slice.call(arguments)));
+      }
     };
 
     return Element;

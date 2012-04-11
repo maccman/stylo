@@ -144,14 +144,15 @@ this.require.define({"app/controllers/stage/dragging":function(exports, require,
         difference = this.stage.snapping.snap(this.selectionArea, difference);
       }
       this.moveCoordTitle(e);
-      return this.stage.selection.set('moveBy', difference);
+      this.stage.selection.moveBy(difference);
+      return this.el.trigger('move.dragging');
     };
 
     Dragging.prototype.drop = function(e) {
       var _ref;
       $(document).unbind('mousemove', this.drag);
       $(document).unbind('mouseup', this.drop);
-      this.el.trigger('dragging.end');
+      this.el.trigger('end.dragging');
       if ((_ref = this.coordTitle) != null) _ref.remove();
       return this.coordTitle = null;
     };

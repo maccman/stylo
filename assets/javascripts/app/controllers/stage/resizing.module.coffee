@@ -12,8 +12,8 @@ class AreaTitle extends Spine.Controller
 
 class Resizing extends Spine.Controller
   events:
-    'resized': 'resized'
-    'resize.end': 'resizeEnd'
+    'resize.element': 'resized'
+    'end.resize': 'resizeEnd'
 
   constructor: (@stage) ->
     super(el: @stage.el)

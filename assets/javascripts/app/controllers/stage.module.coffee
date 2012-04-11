@@ -18,11 +18,11 @@ class Stage extends Spine.Controller
   className: 'stage'
 
   events:
-    'select': 'select'
-    'deselect': 'deselect'
+    'select.element': 'select'
+    'deselect.element': 'deselect'
     'mousedown': 'deselectAll'
-    'resize.start': 'resizeStart'
-    'resize.end': 'resizeEnd'
+    'start.resize': 'resizeStart'
+    'end.resize': 'resizeEnd'
 
   constructor: ->
     super

@@ -38,7 +38,8 @@ class Element extends Spine.Controller
 
   set: (key, value) ->
     if typeof key is 'object'
-      @set(k, v) for k, v of key
+      for k, v of key
+        @[k]?(v) or @properties[k] = v
     else
       @[key]?(value) or @properties[key] = value
 
@@ -47,14 +48,11 @@ class Element extends Spine.Controller
   paint: ->
     @el.css(@properties)
 
-  toValue: ->
-    @properties
-
   # Manipulating elements
 
   resize: (area) ->
     @set(area)
-    @el.trigger('resized', [this])
+    @el.trigger('element:resize', [this])
 
   moveBy: (toPosition) ->
     area       = @area()
@@ -62,7 +60,7 @@ class Element extends Spine.Controller
     area.top  += toPosition.top
 
     @set(area)
-    @el.trigger('moved', [this])
+    @el.trigger('move.element', [this])
 
   order: (i) ->
     @set('zIndex', i + 100)
@@ -74,9 +72,9 @@ class Element extends Spine.Controller
 
   select: (e) ->
     if @selected()
-      @el.trigger('deselect', [this, e?.shiftKey])
+      @el.trigger('deselect.element', [this, e?.shiftKey])
     else
-      @el.trigger('select', [this, e?.shiftKey])
+      @el.trigger('select.element', [this, e?.shiftKey])
 
   selected: (bool) =>
     if bool?
@@ -141,5 +139,16 @@ class Element extends Spine.Controller
     # Format as CSS properties
     styles = ("\t#{k}: #{v};" for k, v of styles).join("\n")
     ".#{@className} {\n#{styles}\n}"
+
+  toValue: ->
+    @properties
+
+  # Events
+
+  change: (func) ->
+    if typeof func is 'function'
+      @el.bind('change.element', func)
+    else
+      @el.trigger('change.element', arguments...)
 
 module.exports = Element

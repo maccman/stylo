@@ -108,7 +108,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       e.preventDefault();
       amount = -1;
       if (e.shiftKey) amount *= 5;
-      return this.stage.selection.set('moveBy', {
+      return this.stage.selection.moveBy({
         left: amount,
         top: 0
       });
@@ -119,7 +119,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       e.preventDefault();
       amount = -1;
       if (e.shiftKey) amount *= 5;
-      return this.stage.selection.set('moveBy', {
+      return this.stage.selection.moveBy({
         left: 0,
         top: amount
       });
@@ -130,7 +130,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       e.preventDefault();
       amount = 1;
       if (e.shiftKey) amount *= 5;
-      return this.stage.selection.set('moveBy', {
+      return this.stage.selection.moveBy({
         left: amount,
         top: 0
       });
@@ -141,7 +141,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       e.preventDefault();
       amount = 1;
       if (e.shiftKey) amount *= 5;
-      return this.stage.selection.set('moveBy', {
+      return this.stage.selection.moveBy({
         left: 0,
         top: amount
       });

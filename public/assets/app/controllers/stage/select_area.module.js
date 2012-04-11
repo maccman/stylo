@@ -135,8 +135,10 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
       var _ref;
       if (e.target !== e.currentTarget) return;
       e.preventDefault();
-      if ((_ref = this.selectArea) != null) _ref.remove();
       this.offset = this.el.offset();
+      this.offset.left -= this.el.scrollLeft();
+      this.offset.top -= this.el.scrollTop();
+      if ((_ref = this.selectArea) != null) _ref.remove();
       $(document).mousemove(this.drag);
       return $(document).mouseup(this.drop);
     };
@@ -144,10 +146,10 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
     SelectArea.prototype.drag = function(e) {
       var area, element, _i, _len, _ref, _results;
       if (!this.selectArea) {
-        this.selectArea = new Area(e.clientX - this.offset.left + 1, e.clientY - this.offset.top + 1);
+        this.selectArea = new Area(e.pageX - this.offset.left + 1, e.pageY - this.offset.top + 1);
         this.append(this.selectArea);
       }
-      this.selectArea.resize(e.clientX - this.offset.left, e.clientY - this.offset.top);
+      this.selectArea.resize(e.pageX - this.offset.left, e.pageY - this.offset.top);
       area = this.selectArea.area();
       _ref = this.stage.elements;
       _results = [];

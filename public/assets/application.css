@@ -644,13 +644,16 @@ body {
   opacity: 0.6;
 }
 #app .inspector .dimensions label {
-  margin-right: 3px;
+  margin-right: 10px;
 }
 #app .inspector .dimensions label span {
   width: 38px;
 }
 #app .inspector .dimensions label input {
   width: 45px;
+}
+#app .inspector .dimensions label:last-child span {
+  width: 15px;
 }
 #app .inspector .opacity label {
   display: -webkit-box;

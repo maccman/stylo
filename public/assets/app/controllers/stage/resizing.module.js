@@ -97,8 +97,8 @@ this.require.define({"app/controllers/stage/resizing":function(exports, require,
     __extends(Resizing, _super);
 
     Resizing.prototype.events = {
-      'resized': 'resized',
-      'resize.end': 'resizeEnd'
+      'resize.element': 'resized',
+      'end.resize': 'resizeEnd'
     };
 
     function Resizing(stage) {

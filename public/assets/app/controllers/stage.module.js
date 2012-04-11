@@ -97,11 +97,11 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
     Stage.prototype.className = 'stage';
 
     Stage.prototype.events = {
-      'select': 'select',
-      'deselect': 'deselect',
+      'select.element': 'select',
+      'deselect.element': 'deselect',
       'mousedown': 'deselectAll',
-      'resize.start': 'resizeStart',
-      'resize.end': 'resizeEnd'
+      'start.resize': 'resizeStart',
+      'end.resize': 'resizeEnd'
     };
 
     function Stage() {

@@ -5,7 +5,8 @@ A Photoshop replacement. Inspired by Keynote. Democratizing design.
 Background image
 Background gradient rotation
 Color inspector movable window
-Selection not working with scroll
+Dragging right and up doesn't select elements - offset by the header
+We want the resize to be around the selection
 
 Phase 1:
 
@@ -25,6 +26,7 @@ Phase 1:
   * Rotation
   * ✓ Opacity
   * content editable
+  * context menu
 
 Phase 2:
 

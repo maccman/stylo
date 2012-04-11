@@ -89,21 +89,13 @@ this.require.define({"app/controllers/stage/selection":function(exports, require
     }
 
     Selection.prototype.get = function(key) {
-      var el, first, result, value, _i, _len;
-      result = (function() {
-        var _i, _len, _ref, _results;
-        _ref = this.elements;
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          el = _ref[_i];
-          _results.push(el.get(key));
-        }
-        return _results;
-      }).call(this);
-      first = result.shift();
-      for (_i = 0, _len = result.length; _i < _len; _i++) {
-        value = result[_i];
-        if (value !== first) return null;
+      var el, first, _i, _len, _ref, _ref2;
+      if (!this.isAny()) return null;
+      first = (_ref = this.elements[0]) != null ? _ref.get(key) : void 0;
+      _ref2 = this.elements;
+      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+        el = _ref2[_i];
+        if (el.get(key) !== first) return null;
       }
       return first;
     };
@@ -121,6 +113,10 @@ this.require.define({"app/controllers/stage/selection":function(exports, require
 
     Selection.prototype.isMultiple = function() {
       return this.elements.length > 1;
+    };
+
+    Selection.prototype.isSingle = function() {
+      return this.elements.length === 1;
     };
 
     Selection.prototype.isAny = function() {
@@ -185,6 +181,17 @@ this.require.define({"app/controllers/stage/selection":function(exports, require
       delete area.right;
       delete area.bottom;
       return area;
+    };
+
+    Selection.prototype.moveBy = function(toPosition) {
+      var el, _i, _len, _ref, _results;
+      _ref = this.elements;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        el = _ref[_i];
+        _results.push(el.moveBy(toPosition));
+      }
+      return _results;
     };
 
     return Selection;

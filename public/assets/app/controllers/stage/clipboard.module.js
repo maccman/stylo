@@ -118,7 +118,7 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
         this.stage.add(el);
       }
       this.stage.selection.refresh(elements);
-      return this.stage.selection.set('moveBy', {
+      return this.stage.selection.moveBy({
         left: 10,
         top: 10
       });
@@ -151,7 +151,7 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
         this.stage.add(el);
       }
       this.stage.selection.refresh(this.data);
-      this.stage.selection.set('moveBy', {
+      this.stage.selection.moveBy({
         left: 10,
         top: 10
       });

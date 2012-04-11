@@ -43,8 +43,11 @@ class SelectArea extends Spine.Controller
 
     e.preventDefault()
 
-    @selectArea?.remove()
     @offset = @el.offset()
+    @offset.left -= @el.scrollLeft()
+    @offset.top  -= @el.scrollTop()
+
+    @selectArea?.remove()
 
     $(document).mousemove(@drag)
     $(document).mouseup(@drop)
@@ -54,15 +57,15 @@ class SelectArea extends Spine.Controller
     # mess up click events
     unless @selectArea
       @selectArea = new Area(
-        e.clientX - @offset.left + 1,
-        e.clientY - @offset.top  + 1
+        e.pageX - @offset.left + 1,
+        e.pageY - @offset.top  + 1
       )
 
       @append(@selectArea)
 
     @selectArea.resize(
-      e.clientX - @offset.left,
-      e.clientY - @offset.top
+      e.pageX - @offset.left,
+      e.pageY - @offset.top
     )
 
     area = @selectArea.area()

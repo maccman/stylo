@@ -8,8 +8,20 @@
     </label>
 
     <label>
+      <span>X</span>
+      <input type="number" name="x" placeholder="0px">
+    </label>
+  </div>
+
+  <div class="hbox">
+    <label>
       <span>Height</span>
       <input type="number" name="height" placeholder="0px">
+    </label>
+
+    <label>
+      <span>Y</span>
+      <input type="number" name="y" placeholder="0px">
     </label>
   </div>
 </article>

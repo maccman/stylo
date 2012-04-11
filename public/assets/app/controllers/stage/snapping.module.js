@@ -394,9 +394,9 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
     __extends(Snapping, _super);
 
     Snapping.prototype.events = {
-      'resized': 'remove',
+      'resize.element': 'remove',
       'selection.change': 'remove',
-      'dragging.end': 'remove'
+      'end.dragging': 'remove'
     };
 
     function Snapping(stage) {

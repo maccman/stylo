@@ -218,6 +218,10 @@ this.require.define({"app/controllers/stage/selection":function(exports, require
       return _results;
     };
 
+    Selection.prototype.release = function() {
+      return this.elements = [];
+    };
+
     return Selection;
 
   })(Spine.Module);

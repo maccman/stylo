@@ -146,4 +146,9 @@ class BackgroundInspector extends Spine.Controller
     @stage.selection.set('backgroundColor', @backgrounds.getColor())
     @stage.selection.set('backgroundImage', @backgrounds.getImages())
 
+  release: ->
+    @edit?.release()
+    @list?.release()
+    super
+
 module.exports = BackgroundInspector

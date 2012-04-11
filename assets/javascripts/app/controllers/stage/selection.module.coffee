@@ -93,5 +93,7 @@ class Selection extends Spine.Module
     # Shortcut to reduce calls on set() and paint()
     el.moveBy(toPosition) for el in @elements
 
+  release: ->
+    @elements = []
 
 module.exports = Selection

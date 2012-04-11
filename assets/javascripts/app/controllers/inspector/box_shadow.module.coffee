@@ -68,6 +68,11 @@ class BoxShadowEdit extends Spine.Controller
     @trigger 'change', @shadow
     @update()
 
+  release: ->
+    @colorInput?.release()
+    @positionPicker?.release()
+    super
+
 class BoxShadowList extends Spine.Controller
   className: 'list'
 
@@ -152,5 +157,11 @@ class BoxShadow extends Spine.Controller
       @shadows.push(shadow) unless @shadows.include(shadow)
 
     @stage.selection.set('boxShadow', @shadows.valueOf())
+
+  release: ->
+    @list?.release()
+    @edit?.release()
+    @shadows?.unbind()
+    super
 
 module.exports = BoxShadow

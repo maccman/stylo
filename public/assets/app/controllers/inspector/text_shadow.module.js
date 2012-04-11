@@ -157,6 +157,14 @@ this.require.define({"app/controllers/inspector/text_shadow":function(exports, r
       return this.stage.selection.set('textShadow', this.shadow);
     };
 
+    TextShadow.prototype.release = function() {
+      var _ref;
+      if ((_ref = this.positionPicker) != null) {
+        _ref.release();
+      }
+      return TextShadow.__super__.release.apply(this, arguments);
+    };
+
     return TextShadow;
 
   })(Spine.Controller);

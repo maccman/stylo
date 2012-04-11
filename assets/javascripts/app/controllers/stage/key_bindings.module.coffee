@@ -85,4 +85,7 @@ class KeyBindings extends Spine.Module
     return unless e.metaKey
     @stage.clipboard.pasteInternal()
 
+  release: ->
+    $(document).unbind('keydown', @keypress)
+
 module.exports = KeyBindings

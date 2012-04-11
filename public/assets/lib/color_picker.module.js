@@ -675,6 +675,10 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
     Preview.prototype.open = function() {
       var _this = this;
+      if (this.picker && this.picker.isOpen()) {
+        this.picker.remove();
+        return;
+      }
       this.picker = new ColorPicker({
         color: this.color
       });

@@ -216,6 +216,10 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       return this.stage.clipboard.pasteInternal();
     };
 
+    KeyBindings.prototype.release = function() {
+      return $(document).unbind('keydown', this.keypress);
+    };
+
     return KeyBindings;
 
   })(Spine.Module);

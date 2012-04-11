@@ -144,7 +144,7 @@ this.require.define({"app/controllers/element":function(exports, require, module
 
     Element.prototype.resize = function(area) {
       this.set(area);
-      return this.el.trigger('element:resize', [this]);
+      return this.el.trigger('resize.element', [this]);
     };
 
     Element.prototype.moveBy = function(toPosition) {

@@ -1,0 +1,6 @@
+<div data-type="copy" data-require="select">Copy</div>
+<div data-type="paste">Paste</div>
+<div data-type="bringForward" data-require="select">Bring Forwards</div>
+<div data-type="bringToFront" data-require="select">Bring to Front</div>
+<div data-type="bringBack" data-require="select">Send Backwards</div>
+<div data-type="bringToBack" data-require="select">Send To Back</div>

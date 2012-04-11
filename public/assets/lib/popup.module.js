@@ -130,6 +130,10 @@ this.require.define({"lib/popup":function(exports, require, module){(function() 
       }
     };
 
+    Popup.prototype.isOpen = function() {
+      return !!this.el.parent().length;
+    };
+
     return Popup;
 
   })(Spine.Controller);

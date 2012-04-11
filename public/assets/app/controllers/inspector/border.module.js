@@ -154,6 +154,14 @@ this.require.define({"app/controllers/inspector/border":function(exports, requir
       return this.stage.selection.set(this.current, this.currentBorder);
     };
 
+    BorderController.prototype.release = function() {
+      var _ref;
+      if ((_ref = this.$color) != null) {
+        _ref.release();
+      }
+      return BorderController.__super__.release.apply(this, arguments);
+    };
+
     return BorderController;
 
   })(Spine.Controller);

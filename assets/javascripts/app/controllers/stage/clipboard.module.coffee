@@ -67,4 +67,10 @@ class Clipboard
     # Cancel event propogation
     false
 
+  release: ->
+    $(window).unbind 'beforecopy', @cancel
+    $(window).unbind 'copy', @copy
+    $(window).unbind 'beforepaste', @cancel
+    $(window).unbind 'paste', @paste
+
 module.exports = Clipboard

@@ -11,6 +11,8 @@
 # function upon instantiation.
 
 fromObject = (object) ->
+  return object unless object?
+
   # If type is native, return
   unless typeof object is 'object'
     return object

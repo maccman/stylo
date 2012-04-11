@@ -98,6 +98,50 @@ body {
 .colorPicker button.save {
   float: right;
 }
+.contextMenu {
+  position: absolute;
+  width: 150px;
+  background: rgba(255,255,255,0.95);
+  -moz-box-shadow: 0 2px 5px rgba(0,0,0,0.10);
+  -webkit-box-shadow: 0 2px 5px rgba(0,0,0,0.10);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.10);
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  border: 1px solid rgba(0,0,0,0.10);
+  border-bottom-color: rgba(0,0,0,0.15);
+  color: #000;
+  font-size: 13px;
+  z-index: 10002;
+  overflow: hidden;
+}
+.contextMenu div {
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(0,0,0,0.10);
+  cursor: pointer;
+}
+.contextMenu div:last-child {
+  border-bottom: 0;
+}
+.contextMenu div.disabled {
+  color: rgba(0,0,0,0.30);
+}
+.contextMenu div:not(.disabled):hover {
+  color: #fff;
+  text-shadow: 0 -1px 1px rgba(0,0,0,0.10);
+  background: #bac4d8;
+  background: -webkit-gradient(linear, left top, left bottom, from(#bac4d8), to(#9aa8c7));
+  background: -webkit-linear-gradient(top, #bac4d8, #9aa8c7);
+  background: -moz-linear-gradient(top, #bac4d8, #9aa8c7);
+  background: linear-gradient(top, #bac4d8, #9aa8c7);
+}
+.contextMenu div:not(.disabled):hover:active {
+  background: #9aa8c7;
+  background: -webkit-gradient(linear, left top, left bottom, from(#9aa8c7), to(#bac4d8));
+  background: -webkit-linear-gradient(top, #9aa8c7, #bac4d8);
+  background: -moz-linear-gradient(top, #9aa8c7, #bac4d8);
+  background: linear-gradient(top, #9aa8c7, #bac4d8);
+}
 .gradientPicker {
   position: relative;
   height: 20px;

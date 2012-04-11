@@ -74,4 +74,8 @@ class BorderController extends Spine.Controller
 
     @stage.selection.set(@current, @currentBorder)
 
+  release: ->
+    @$color?.release()
+    super
+
 module.exports = BorderController

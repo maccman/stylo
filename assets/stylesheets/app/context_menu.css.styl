@@ -1,0 +1,40 @@
+@import 'mixins'
+
+.contextMenu {
+  position: absolute
+  width: 150px
+  background: rgba(255, 255, 255, 0.95)
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1)
+  border-radius: 3px
+  border: 1px solid rgba(0, 0, 0, 0.1)
+  border-bottom-color: rgba(0, 0, 0, 0.15)
+
+  color: #000
+  font-size: 13px
+  z-index: 10002
+  overflow: hidden
+
+  div {
+    padding: 8px 10px
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1)
+    cursor: pointer
+
+    &:last-child {
+      border-bottom: 0
+    }
+
+    &.disabled {
+      color: rgba(0, 0, 0, 0.3)
+    }
+
+    &:not(.disabled):hover {
+      color: #FFF
+      text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.1)
+      vbg-gradient(#BAC4D8, #9AA8C7)
+
+      &:active {
+        vbg-gradient(#9AA8C7, #BAC4D8)
+      }
+    }
+  }
+}

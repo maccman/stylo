@@ -127,7 +127,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       this.resizing = new Resizing(this);
       this.selectArea = new SelectArea(this);
       this.snapping = new Snapping(this);
-      this.keybindings = new KeyBindings(this);
+      this.keyBindings = new KeyBindings(this);
       this.zindex = new ZIndex(this);
       this.clipboard = new Clipboard(this);
       this.context = new Context(this);
@@ -151,8 +151,8 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
 
     Stage.prototype.remove = function(element) {
       this.selection.remove(element);
-      element.remove();
-      return this.elements.splice(this.elements.indexOf(element), 1);
+      this.elements.splice(this.elements.indexOf(element), 1);
+      return element.release();
     };
 
     Stage.prototype.removeSelected = function() {
@@ -311,6 +311,35 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
         elements: this.elements,
         properties: this.properties
       };
+    };
+
+    Stage.prototype.release = function() {
+      var _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7;
+      if ((_ref = this.selection) != null) {
+        _ref.release();
+      }
+      if ((_ref1 = this.dragging) != null) {
+        _ref1.release();
+      }
+      if ((_ref2 = this.resizing) != null) {
+        _ref2.release();
+      }
+      if ((_ref3 = this.selectArea) != null) {
+        _ref3.release();
+      }
+      if ((_ref4 = this.snapping) != null) {
+        _ref4.release();
+      }
+      if ((_ref5 = this.keyBindings) != null) {
+        _ref5.release();
+      }
+      if ((_ref6 = this.clipboard) != null) {
+        _ref6.release();
+      }
+      if ((_ref7 = this.context) != null) {
+        _ref7.release();
+      }
+      return Stage.__super__.release.apply(this, arguments);
     };
 
     return Stage;

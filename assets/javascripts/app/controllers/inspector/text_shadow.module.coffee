@@ -78,4 +78,8 @@ class TextShadow extends Spine.Controller
 
     @stage.selection.set('textShadow', @shadow)
 
+  release: ->
+    @positionPicker?.release()
+    super
+
 module.exports =  TextShadow

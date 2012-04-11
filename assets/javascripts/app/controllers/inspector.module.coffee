@@ -15,13 +15,26 @@ class Inspector extends Spine.Controller
     @render()
 
   render: =>
+    @sweep()
+    @append(@dimensions   = new Dimensions(stage: @stage))
+    @append(@background   = new Background(stage: @stage))
+    @append(@border       = new Border(stage: @stage))
+    @append(@borderRadius = new BorderRadius(stage: @stage))
+    @append(@boxShadow    = new BoxShadow(stage: @stage))
+    @append(@opacity      = new Opacity(stage: @stage))
+    # @append(@textShadow = new TextShadow(stage: @stage))
+
+  sweep: ->
     @el.empty()
-    @append(new Dimensions(stage: @stage))
-    @append(new Background(stage: @stage))
-    @append(new Border(stage: @stage))
-    @append(new BorderRadius(stage: @stage))
-    @append(new BoxShadow(stage: @stage))
-    @append(new Opacity(stage: @stage))
-    # @append(new TextShadow(stage: @stage))
+    @dimensions?.release()
+    @background?.release()
+    @border?.release()
+    @borderRadius?.release()
+    @boxShadow?.release()
+    @opacity?.release()
+
+  release: ->
+    @stage.selection.unbind 'change', @render
+    super
 
 module.exports = Inspector

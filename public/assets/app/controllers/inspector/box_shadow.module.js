@@ -147,6 +147,17 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
       return this.update();
     };
 
+    BoxShadowEdit.prototype.release = function() {
+      var _ref, _ref1;
+      if ((_ref = this.colorInput) != null) {
+        _ref.release();
+      }
+      if ((_ref1 = this.positionPicker) != null) {
+        _ref1.release();
+      }
+      return BoxShadowEdit.__super__.release.apply(this, arguments);
+    };
+
     return BoxShadowEdit;
 
   })(Spine.Controller);
@@ -261,6 +272,20 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
         }
       }
       return this.stage.selection.set('boxShadow', this.shadows.valueOf());
+    };
+
+    BoxShadow.prototype.release = function() {
+      var _ref, _ref1, _ref2;
+      if ((_ref = this.list) != null) {
+        _ref.release();
+      }
+      if ((_ref1 = this.edit) != null) {
+        _ref1.release();
+      }
+      if ((_ref2 = this.shadows) != null) {
+        _ref2.unbind();
+      }
+      return BoxShadow.__super__.release.apply(this, arguments);
     };
 
     return BoxShadow;

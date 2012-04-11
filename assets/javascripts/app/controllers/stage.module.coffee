@@ -35,7 +35,7 @@ class Stage extends Spine.Controller
     @resizing    = new Resizing(this)
     @selectArea  = new SelectArea(this)
     @snapping    = new Snapping(this)
-    @keybindings = new KeyBindings(this)
+    @keyBindings = new KeyBindings(this)
     @zindex      = new ZIndex(this)
     @clipboard   = new Clipboard(this)
     @context     = new Context(this)
@@ -59,8 +59,8 @@ class Stage extends Spine.Controller
 
   remove: (element) =>
     @selection.remove(element)
-    element.remove()
     @elements.splice(@elements.indexOf(element), 1)
+    element.release()
 
   # Batch manipulate selected
 
@@ -163,5 +163,18 @@ class Stage extends Spine.Controller
     result =
       elements:   @elements
       properties: @properties
+
+  # Release
+
+  release: ->
+    @selection?.release()
+    @dragging?.release()
+    @resizing?.release()
+    @selectArea?.release()
+    @snapping?.release()
+    @keyBindings?.release()
+    @clipboard?.release()
+    @context?.release()
+    super
 
 module.exports = Stage

@@ -122,6 +122,12 @@ this.require.define({"app/controllers/inspector/dimensions":function(exports, re
       return this.stage.selection.set('top', parseInt(this.$y.val(), 10));
     };
 
+    Dimensions.prototype.release = function() {
+      $(document).unbind('resize.element', this.update);
+      $(document).unbind('move.element', this.update);
+      return Dimensions.__super__.release.apply(this, arguments);
+    };
+
     return Dimensions;
 
   })(Spine.Controller);

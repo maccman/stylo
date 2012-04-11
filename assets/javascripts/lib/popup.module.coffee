@@ -36,4 +36,7 @@ class Popup extends Spine.Controller
     unless $(e.target).closest(@el).length
       @close()
 
+  isOpen: ->
+    !!@el.parent().length
+
 module.exports = Popup

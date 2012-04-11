@@ -275,6 +275,17 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
       return this.stage.selection.set('backgroundImage', this.backgrounds.getImages());
     };
 
+    BackgroundInspector.prototype.release = function() {
+      var _ref, _ref1;
+      if ((_ref = this.edit) != null) {
+        _ref.release();
+      }
+      if ((_ref1 = this.list) != null) {
+        _ref1.release();
+      }
+      return BackgroundInspector.__super__.release.apply(this, arguments);
+    };
+
     return BackgroundInspector;
 
   })(Spine.Controller);

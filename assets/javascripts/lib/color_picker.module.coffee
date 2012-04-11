@@ -419,6 +419,11 @@ class Preview extends Spine.Controller
     @inner.css(background: @color)
 
   open: =>
+    # Picker already open
+    if @picker and @picker.isOpen()
+      @picker.remove()
+      return
+
     @picker = new ColorPicker(color: @color)
 
     @picker.bind 'change', (color) =>

@@ -59,27 +59,128 @@
   return this.require;
 }).call(this);
 this.require.define({"app/controllers/stage/context":function(exports, require, module){(function() {
-  var Context,
+  var Context, ContextMenu,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-  Context = (function() {
+  ContextMenu = (function(_super) {
+
+    __extends(ContextMenu, _super);
+
+    ContextMenu.name = 'ContextMenu';
+
+    ContextMenu.prototype.className = 'contextMenu';
+
+    ContextMenu.prototype.events = {
+      'mousedown': 'cancel',
+      'click [data-type]': 'click'
+    };
+
+    function ContextMenu(stage, position) {
+      this.stage = stage;
+      ContextMenu.__super__.constructor.call(this);
+      this.el.css(position);
+      this.html(JST['app/views/context_menu'](this));
+      this.selectDisabled = !this.stage.selection.isAny();
+      this.$('[data-require=select]').toggleClass('disabled', this.selectDisabled);
+    }
+
+    ContextMenu.prototype.click = function(e) {
+      var item, type;
+      e.preventDefault();
+      this.remove();
+      item = $(e.currentTarget);
+      type = item.data('type');
+      if (!item.hasClass('disabled')) {
+        return this[type]();
+      }
+    };
+
+    ContextMenu.prototype.remove = function(e) {
+      return this.el.remove();
+    };
+
+    ContextMenu.prototype.cancel = function() {
+      return false;
+    };
+
+    ContextMenu.prototype.copy = function() {
+      return this.stage.clipboard.copyInternal();
+    };
+
+    ContextMenu.prototype.paste = function() {
+      return this.stage.clipboard.pasteInternal();
+    };
+
+    ContextMenu.prototype.bringForward = function() {
+      return this.stage.bringForward();
+    };
+
+    ContextMenu.prototype.bringBack = function() {
+      return this.stage.bringBack();
+    };
+
+    ContextMenu.prototype.bringToFront = function() {
+      return this.stage.bringToFront();
+    };
+
+    ContextMenu.prototype.bringToBack = function() {
+      return this.stage.bringToBack();
+    };
+
+    return ContextMenu;
+
+  })(Spine.Controller);
+
+  Context = (function(_super) {
+
+    __extends(Context, _super);
 
     Context.name = 'Context';
 
+    Context.prototype.events = {
+      'contextmenu': 'show'
+    };
+
     function Context(stage) {
       this.stage = stage;
-      this.contextmenu = __bind(this.contextmenu, this);
+      this.remove = __bind(this.remove, this);
 
-      this.stage.el.bind('contextmenu', this.contextmenu);
+      Context.__super__.constructor.call(this, {
+        el: this.stage.el
+      });
+      $('body').bind('mousedown', this.remove);
     }
 
-    Context.prototype.contextmenu = function(e) {
-      return e.preventDefault();
+    Context.prototype.show = function(e) {
+      var position;
+      e.preventDefault();
+      this.remove();
+      position = {
+        left: e.pageX + 1,
+        top: e.pageY + 1
+      };
+      this.menu = new ContextMenu(this.stage, position);
+      return $('body').append(this.menu.el);
+    };
+
+    Context.prototype.remove = function() {
+      var _ref;
+      if ((_ref = this.menu) != null) {
+        _ref.remove();
+      }
+      return this.menu = null;
+    };
+
+    Context.prototype.release = function() {
+      $('body').unbind('mousedown', this.remove);
+      return Context.__super__.release.apply(this, arguments);
     };
 
     return Context;
 
-  })();
+  })(Spine.Controller);
 
   module.exports = Context;
 

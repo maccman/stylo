@@ -41,4 +41,9 @@ class Dimensions extends Spine.Controller
     @stage.selection.set('left',   parseInt(@$x.val(), 10))
     @stage.selection.set('top',    parseInt(@$y.val(), 10))
 
+  release: ->
+    $(document).unbind 'resize.element', @update
+    $(document).unbind 'move.element', @update
+    super
+
 module.exports = Dimensions

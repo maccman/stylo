@@ -63,6 +63,9 @@ this.require.define({"app/models/serialize":function(exports, require, module){(
 
   fromObject = function(object) {
     var args, constructor, k, name, o, path, result, v, _ref;
+    if (object == null) {
+      return object;
+    }
     if (typeof object !== 'object') {
       return object;
     }

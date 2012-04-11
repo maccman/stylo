@@ -176,6 +176,13 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
       return false;
     };
 
+    Clipboard.prototype.release = function() {
+      $(window).unbind('beforecopy', this.cancel);
+      $(window).unbind('copy', this.copy);
+      $(window).unbind('beforepaste', this.cancel);
+      return $(window).unbind('paste', this.paste);
+    };
+
     return Clipboard;
 
   })();

@@ -10019,9 +10019,6 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
       if (this.attributes) {
         this.el.attr(this.attributes);
       }
-      this.release(function() {
-        return this.el.remove();
-      });
       if (!this.events) {
         this.events = this.constructor.events;
       }
@@ -10037,12 +10034,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
       Controller.__super__.constructor.apply(this, arguments);
     }
 
-    Controller.prototype.release = function(callback) {
-      if (typeof callback === 'function') {
-        return this.bind('release', callback);
-      } else {
-        return this.trigger('release');
-      }
+    Controller.prototype.release = function() {
+      this.el.remove();
+      return this.unbind();
     };
 
     Controller.prototype.$ = function(selector) {
@@ -12077,6 +12071,10 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
     Preview.prototype.open = function() {
       var _this = this;
+      if (this.picker && this.picker.isOpen()) {
+        this.picker.remove();
+        return;
+      }
       this.picker = new ColorPicker({
         color: this.color
       });
@@ -12377,6 +12375,10 @@ this.require.define({"lib/popup":function(exports, require, module){(function() 
       }
     };
 
+    Popup.prototype.isOpen = function() {
+      return !!this.el.parent().length;
+    };
+
     return Popup;
 
   })(Spine.Controller);
@@ -12623,7 +12625,7 @@ this.require.define({"app/controllers/element":function(exports, require, module
 
     Element.prototype.resize = function(area) {
       this.set(area);
-      return this.el.trigger('element:resize', [this]);
+      return this.el.trigger('resize.element', [this]);
     };
 
     Element.prototype.moveBy = function(toPosition) {
@@ -13333,25 +13335,51 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
     }
 
     Inspector.prototype.render = function() {
+      this.sweep();
+      this.append(this.dimensions = new Dimensions({
+        stage: this.stage
+      }));
+      this.append(this.background = new Background({
+        stage: this.stage
+      }));
+      this.append(this.border = new Border({
+        stage: this.stage
+      }));
+      this.append(this.borderRadius = new BorderRadius({
+        stage: this.stage
+      }));
+      this.append(this.boxShadow = new BoxShadow({
+        stage: this.stage
+      }));
+      return this.append(this.opacity = new Opacity({
+        stage: this.stage
+      }));
+    };
+
+    Inspector.prototype.sweep = function() {
+      var _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
       this.el.empty();
-      this.append(new Dimensions({
-        stage: this.stage
-      }));
-      this.append(new Background({
-        stage: this.stage
-      }));
-      this.append(new Border({
-        stage: this.stage
-      }));
-      this.append(new BorderRadius({
-        stage: this.stage
-      }));
-      this.append(new BoxShadow({
-        stage: this.stage
-      }));
-      return this.append(new Opacity({
-        stage: this.stage
-      }));
+      if ((_ref = this.dimensions) != null) {
+        _ref.release();
+      }
+      if ((_ref1 = this.background) != null) {
+        _ref1.release();
+      }
+      if ((_ref2 = this.border) != null) {
+        _ref2.release();
+      }
+      if ((_ref3 = this.borderRadius) != null) {
+        _ref3.release();
+      }
+      if ((_ref4 = this.boxShadow) != null) {
+        _ref4.release();
+      }
+      return (_ref5 = this.opacity) != null ? _ref5.release() : void 0;
+    };
+
+    Inspector.prototype.release = function() {
+      this.stage.selection.unbind('change', this.render);
+      return Inspector.__super__.release.apply(this, arguments);
     };
 
     return Inspector;
@@ -13579,6 +13607,17 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
       return this.stage.selection.set('backgroundImage', this.backgrounds.getImages());
     };
 
+    BackgroundInspector.prototype.release = function() {
+      var _ref, _ref1;
+      if ((_ref = this.edit) != null) {
+        _ref.release();
+      }
+      if ((_ref1 = this.list) != null) {
+        _ref1.release();
+      }
+      return BackgroundInspector.__super__.release.apply(this, arguments);
+    };
+
     return BackgroundInspector;
 
   })(Spine.Controller);
@@ -13681,6 +13720,14 @@ this.require.define({"app/controllers/inspector/border":function(exports, requir
         });
       }
       return this.stage.selection.set(this.current, this.currentBorder);
+    };
+
+    BorderController.prototype.release = function() {
+      var _ref;
+      if ((_ref = this.$color) != null) {
+        _ref.release();
+      }
+      return BorderController.__super__.release.apply(this, arguments);
     };
 
     return BorderController;
@@ -13870,6 +13917,17 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
       return this.update();
     };
 
+    BoxShadowEdit.prototype.release = function() {
+      var _ref, _ref1;
+      if ((_ref = this.colorInput) != null) {
+        _ref.release();
+      }
+      if ((_ref1 = this.positionPicker) != null) {
+        _ref1.release();
+      }
+      return BoxShadowEdit.__super__.release.apply(this, arguments);
+    };
+
     return BoxShadowEdit;
 
   })(Spine.Controller);
@@ -13986,6 +14044,20 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
       return this.stage.selection.set('boxShadow', this.shadows.valueOf());
     };
 
+    BoxShadow.prototype.release = function() {
+      var _ref, _ref1, _ref2;
+      if ((_ref = this.list) != null) {
+        _ref.release();
+      }
+      if ((_ref1 = this.edit) != null) {
+        _ref1.release();
+      }
+      if ((_ref2 = this.shadows) != null) {
+        _ref2.unbind();
+      }
+      return BoxShadow.__super__.release.apply(this, arguments);
+    };
+
     return BoxShadow;
 
   })(Spine.Controller);
@@ -14056,6 +14128,12 @@ this.require.define({"app/controllers/inspector/dimensions":function(exports, re
       this.stage.selection.set('height', parseInt(this.$height.val(), 10));
       this.stage.selection.set('left', parseInt(this.$x.val(), 10));
       return this.stage.selection.set('top', parseInt(this.$y.val(), 10));
+    };
+
+    Dimensions.prototype.release = function() {
+      $(document).unbind('resize.element', this.update);
+      $(document).unbind('move.element', this.update);
+      return Dimensions.__super__.release.apply(this, arguments);
     };
 
     return Dimensions;
@@ -14219,6 +14297,14 @@ this.require.define({"app/controllers/inspector/text_shadow":function(exports, r
       return this.stage.selection.set('textShadow', this.shadow);
     };
 
+    TextShadow.prototype.release = function() {
+      var _ref;
+      if ((_ref = this.positionPicker) != null) {
+        _ref.release();
+      }
+      return TextShadow.__super__.release.apply(this, arguments);
+    };
+
     return TextShadow;
 
   })(Spine.Controller);
@@ -14296,7 +14382,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       this.resizing = new Resizing(this);
       this.selectArea = new SelectArea(this);
       this.snapping = new Snapping(this);
-      this.keybindings = new KeyBindings(this);
+      this.keyBindings = new KeyBindings(this);
       this.zindex = new ZIndex(this);
       this.clipboard = new Clipboard(this);
       this.context = new Context(this);
@@ -14320,8 +14406,8 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
 
     Stage.prototype.remove = function(element) {
       this.selection.remove(element);
-      element.remove();
-      return this.elements.splice(this.elements.indexOf(element), 1);
+      this.elements.splice(this.elements.indexOf(element), 1);
+      return element.release();
     };
 
     Stage.prototype.removeSelected = function() {
@@ -14482,6 +14568,35 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       };
     };
 
+    Stage.prototype.release = function() {
+      var _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7;
+      if ((_ref = this.selection) != null) {
+        _ref.release();
+      }
+      if ((_ref1 = this.dragging) != null) {
+        _ref1.release();
+      }
+      if ((_ref2 = this.resizing) != null) {
+        _ref2.release();
+      }
+      if ((_ref3 = this.selectArea) != null) {
+        _ref3.release();
+      }
+      if ((_ref4 = this.snapping) != null) {
+        _ref4.release();
+      }
+      if ((_ref5 = this.keyBindings) != null) {
+        _ref5.release();
+      }
+      if ((_ref6 = this.clipboard) != null) {
+        _ref6.release();
+      }
+      if ((_ref7 = this.context) != null) {
+        _ref7.release();
+      }
+      return Stage.__super__.release.apply(this, arguments);
+    };
+
     return Stage;
 
   })(Spine.Controller);
@@ -14608,6 +14723,13 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
       return false;
     };
 
+    Clipboard.prototype.release = function() {
+      $(window).unbind('beforecopy', this.cancel);
+      $(window).unbind('copy', this.copy);
+      $(window).unbind('beforepaste', this.cancel);
+      return $(window).unbind('paste', this.paste);
+    };
+
     return Clipboard;
 
   })();
@@ -14617,27 +14739,128 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
 }).call(this);
 ;}});
 this.require.define({"app/controllers/stage/context":function(exports, require, module){(function() {
-  var Context,
+  var Context, ContextMenu,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-  Context = (function() {
+  ContextMenu = (function(_super) {
+
+    __extends(ContextMenu, _super);
+
+    ContextMenu.name = 'ContextMenu';
+
+    ContextMenu.prototype.className = 'contextMenu';
+
+    ContextMenu.prototype.events = {
+      'mousedown': 'cancel',
+      'click [data-type]': 'click'
+    };
+
+    function ContextMenu(stage, position) {
+      this.stage = stage;
+      ContextMenu.__super__.constructor.call(this);
+      this.el.css(position);
+      this.html(JST['app/views/context_menu'](this));
+      this.selectDisabled = !this.stage.selection.isAny();
+      this.$('[data-require=select]').toggleClass('disabled', this.selectDisabled);
+    }
+
+    ContextMenu.prototype.click = function(e) {
+      var item, type;
+      e.preventDefault();
+      this.remove();
+      item = $(e.currentTarget);
+      type = item.data('type');
+      if (!item.hasClass('disabled')) {
+        return this[type]();
+      }
+    };
+
+    ContextMenu.prototype.remove = function(e) {
+      return this.el.remove();
+    };
+
+    ContextMenu.prototype.cancel = function() {
+      return false;
+    };
+
+    ContextMenu.prototype.copy = function() {
+      return this.stage.clipboard.copyInternal();
+    };
+
+    ContextMenu.prototype.paste = function() {
+      return this.stage.clipboard.pasteInternal();
+    };
+
+    ContextMenu.prototype.bringForward = function() {
+      return this.stage.bringForward();
+    };
+
+    ContextMenu.prototype.bringBack = function() {
+      return this.stage.bringBack();
+    };
+
+    ContextMenu.prototype.bringToFront = function() {
+      return this.stage.bringToFront();
+    };
+
+    ContextMenu.prototype.bringToBack = function() {
+      return this.stage.bringToBack();
+    };
+
+    return ContextMenu;
+
+  })(Spine.Controller);
+
+  Context = (function(_super) {
+
+    __extends(Context, _super);
 
     Context.name = 'Context';
 
+    Context.prototype.events = {
+      'contextmenu': 'show'
+    };
+
     function Context(stage) {
       this.stage = stage;
-      this.contextmenu = __bind(this.contextmenu, this);
+      this.remove = __bind(this.remove, this);
 
-      this.stage.el.bind('contextmenu', this.contextmenu);
+      Context.__super__.constructor.call(this, {
+        el: this.stage.el
+      });
+      $('body').bind('mousedown', this.remove);
     }
 
-    Context.prototype.contextmenu = function(e) {
-      return e.preventDefault();
+    Context.prototype.show = function(e) {
+      var position;
+      e.preventDefault();
+      this.remove();
+      position = {
+        left: e.pageX + 1,
+        top: e.pageY + 1
+      };
+      this.menu = new ContextMenu(this.stage, position);
+      return $('body').append(this.menu.el);
+    };
+
+    Context.prototype.remove = function() {
+      var _ref;
+      if ((_ref = this.menu) != null) {
+        _ref.remove();
+      }
+      return this.menu = null;
+    };
+
+    Context.prototype.release = function() {
+      $('body').unbind('mousedown', this.remove);
+      return Context.__super__.release.apply(this, arguments);
     };
 
     return Context;
 
-  })();
+  })(Spine.Controller);
 
   module.exports = Context;
 
@@ -14926,6 +15149,10 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
         return;
       }
       return this.stage.clipboard.pasteInternal();
+    };
+
+    KeyBindings.prototype.release = function() {
+      return $(document).unbind('keydown', this.keypress);
     };
 
     return KeyBindings;
@@ -15312,6 +15539,10 @@ this.require.define({"app/controllers/stage/selection":function(exports, require
         _results.push(el.moveBy(toPosition));
       }
       return _results;
+    };
+
+    Selection.prototype.release = function() {
+      return this.elements = [];
     };
 
     return Selection;
@@ -16213,6 +16444,9 @@ this.require.define({"app/models/serialize":function(exports, require, module){(
 
   fromObject = function(object) {
     var args, constructor, k, name, o, path, result, v, _ref;
+    if (object == null) {
+      return object;
+    }
     if (typeof object !== 'object') {
       return object;
     }
@@ -16328,6 +16562,57 @@ this.require.define({"app/models/undo":function(exports, require, module){(funct
 
 }).call(this);
 ;}});
+(function() {
+  this.JST || (this.JST = {});
+  this.JST["app/views/context_menu"] = function(__obj) {
+    if (!__obj) __obj = {};
+    var __out = [], __capture = function(callback) {
+      var out = __out, result;
+      __out = [];
+      callback.call(this);
+      result = __out.join('');
+      __out = out;
+      return __safe(result);
+    }, __sanitize = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else if (typeof value !== 'undefined' && value != null) {
+        return __escape(value);
+      } else {
+        return '';
+      }
+    }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+    __safe = __obj.safe = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else {
+        if (!(typeof value !== 'undefined' && value != null)) value = '';
+        var result = new String(value);
+        result.ecoSafe = true;
+        return result;
+      }
+    };
+    if (!__escape) {
+      __escape = __obj.escape = function(value) {
+        return ('' + value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      };
+    }
+    (function() {
+      (function() {
+      
+        __out.push('<div data-type="copy" data-require="select">Copy</div>\n<div data-type="paste">Paste</div>\n<div data-type="bringForward" data-require="select">Bring Forwards</div>\n<div data-type="bringToFront" data-require="select">Bring to Front</div>\n<div data-type="bringBack" data-require="select">Send Backwards</div>\n<div data-type="bringToBack" data-require="select">Send To Back</div>\n');
+      
+      }).call(this);
+      
+    }).call(__obj);
+    __obj.safe = __objSafe, __obj.escape = __escape;
+    return __out.join('');
+  };
+}).call(this);
 (function() {
   this.JST || (this.JST = {});
   this.JST["app/views/header"] = function(__obj) {

@@ -94,25 +94,51 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
     }
 
     Inspector.prototype.render = function() {
+      this.sweep();
+      this.append(this.dimensions = new Dimensions({
+        stage: this.stage
+      }));
+      this.append(this.background = new Background({
+        stage: this.stage
+      }));
+      this.append(this.border = new Border({
+        stage: this.stage
+      }));
+      this.append(this.borderRadius = new BorderRadius({
+        stage: this.stage
+      }));
+      this.append(this.boxShadow = new BoxShadow({
+        stage: this.stage
+      }));
+      return this.append(this.opacity = new Opacity({
+        stage: this.stage
+      }));
+    };
+
+    Inspector.prototype.sweep = function() {
+      var _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
       this.el.empty();
-      this.append(new Dimensions({
-        stage: this.stage
-      }));
-      this.append(new Background({
-        stage: this.stage
-      }));
-      this.append(new Border({
-        stage: this.stage
-      }));
-      this.append(new BorderRadius({
-        stage: this.stage
-      }));
-      this.append(new BoxShadow({
-        stage: this.stage
-      }));
-      return this.append(new Opacity({
-        stage: this.stage
-      }));
+      if ((_ref = this.dimensions) != null) {
+        _ref.release();
+      }
+      if ((_ref1 = this.background) != null) {
+        _ref1.release();
+      }
+      if ((_ref2 = this.border) != null) {
+        _ref2.release();
+      }
+      if ((_ref3 = this.borderRadius) != null) {
+        _ref3.release();
+      }
+      if ((_ref4 = this.boxShadow) != null) {
+        _ref4.release();
+      }
+      return (_ref5 = this.opacity) != null ? _ref5.release() : void 0;
+    };
+
+    Inspector.prototype.release = function() {
+      this.stage.selection.unbind('change', this.render);
+      return Inspector.__super__.release.apply(this, arguments);
     };
 
     return Inspector;

@@ -52,7 +52,7 @@ class Element extends Spine.Controller
 
   resize: (area) ->
     @set(area)
-    @el.trigger('element:resize', [this])
+    @el.trigger('resize.element', [this])
 
   moveBy: (toPosition) ->
     area       = @area()

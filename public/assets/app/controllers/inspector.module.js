@@ -88,12 +88,18 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
 
     function Inspector() {
       this.render = __bind(this.render, this);
+
+      var _this = this;
       Inspector.__super__.constructor.apply(this, arguments);
-      this.stage.selection.bind('change', this.render);
+      this.stage.selection.bind('change', function() {
+        return setTimeout(_this.render);
+      });
       this.render();
     }
 
     Inspector.prototype.render = function() {
+      this.el.hide();
+      this.el.empty();
       this.sweep();
       this.append(this.dimensions = new Dimensions({
         stage: this.stage
@@ -110,14 +116,14 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
       this.append(this.boxShadow = new BoxShadow({
         stage: this.stage
       }));
-      return this.append(this.opacity = new Opacity({
+      this.append(this.opacity = new Opacity({
         stage: this.stage
       }));
+      return this.el.show();
     };
 
     Inspector.prototype.sweep = function() {
       var _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
-      this.el.empty();
       if ((_ref = this.dimensions) != null) {
         _ref.release();
       }

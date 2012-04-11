@@ -129,12 +129,14 @@ this.require.define({"app/controllers/stage/dragging":function(exports, require,
         left: e.pageX,
         top: e.pageY
       };
+      this.active = false;
       $(document).mousemove(this.drag);
       return $(document).mouseup(this.drop);
     };
 
     Dragging.prototype.drag = function(e) {
       var difference;
+      this.active = true;
       difference = {
         left: e.pageX - this.dragPosition.left,
         top: e.pageY - this.dragPosition.top
@@ -159,7 +161,9 @@ this.require.define({"app/controllers/stage/dragging":function(exports, require,
       var _ref;
       $(document).unbind('mousemove', this.drag);
       $(document).unbind('mouseup', this.drop);
-      this.el.trigger('end.dragging');
+      if (this.active) {
+        this.el.trigger('end.dragging');
+      }
       if ((_ref = this.coordTitle) != null) {
         _ref.remove();
       }

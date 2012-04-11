@@ -13318,12 +13318,18 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
 
     function Inspector() {
       this.render = __bind(this.render, this);
+
+      var _this = this;
       Inspector.__super__.constructor.apply(this, arguments);
-      this.stage.selection.bind('change', this.render);
+      this.stage.selection.bind('change', function() {
+        return setTimeout(_this.render);
+      });
       this.render();
     }
 
     Inspector.prototype.render = function() {
+      this.el.hide();
+      this.el.empty();
       this.sweep();
       this.append(this.dimensions = new Dimensions({
         stage: this.stage
@@ -13340,14 +13346,14 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
       this.append(this.boxShadow = new BoxShadow({
         stage: this.stage
       }));
-      return this.append(this.opacity = new Opacity({
+      this.append(this.opacity = new Opacity({
         stage: this.stage
       }));
+      return this.el.show();
     };
 
     Inspector.prototype.sweep = function() {
       var _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
-      this.el.empty();
       if ((_ref = this.dimensions) != null) {
         _ref.release();
       }
@@ -14926,12 +14932,14 @@ this.require.define({"app/controllers/stage/dragging":function(exports, require,
         left: e.pageX,
         top: e.pageY
       };
+      this.active = false;
       $(document).mousemove(this.drag);
       return $(document).mouseup(this.drop);
     };
 
     Dragging.prototype.drag = function(e) {
       var difference;
+      this.active = true;
       difference = {
         left: e.pageX - this.dragPosition.left,
         top: e.pageY - this.dragPosition.top
@@ -14956,7 +14964,9 @@ this.require.define({"app/controllers/stage/dragging":function(exports, require,
       var _ref;
       $(document).unbind('mousemove', this.drag);
       $(document).unbind('mouseup', this.drop);
-      this.el.trigger('end.dragging');
+      if (this.active) {
+        this.el.trigger('end.dragging');
+      }
       if ((_ref = this.coordTitle) != null) {
         _ref.remove();
       }
@@ -15941,7 +15951,9 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         snap = _ref[_i];
-        _results.push(snap.remove());
+        if (snap.active) {
+          _results.push(snap.remove());
+        }
       }
       return _results;
     };

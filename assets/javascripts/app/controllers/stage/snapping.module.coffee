@@ -243,6 +243,6 @@ class Snapping extends Spine.Controller
     difference
 
   remove: ->
-    snap.remove() for snap in @snaps
+    snap.remove() for snap in @snaps when snap.active
 
 module.exports = Snapping

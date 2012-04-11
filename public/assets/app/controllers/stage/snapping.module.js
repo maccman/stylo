@@ -457,7 +457,9 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         snap = _ref[_i];
-        _results.push(snap.remove());
+        if (snap.active) {
+          _results.push(snap.remove());
+        }
       }
       return _results;
     };

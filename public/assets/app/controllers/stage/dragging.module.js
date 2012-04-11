@@ -60,7 +60,7 @@
 }).call(this);
 this.require.define({"app/controllers/stage/dragging":function(exports, require, module){(function() {
   var CoordTitle, Dragging,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
@@ -68,8 +68,10 @@ this.require.define({"app/controllers/stage/dragging":function(exports, require,
 
     __extends(CoordTitle, _super);
 
+    CoordTitle.name = 'CoordTitle';
+
     function CoordTitle() {
-      CoordTitle.__super__.constructor.apply(this, arguments);
+      return CoordTitle.__super__.constructor.apply(this, arguments);
     }
 
     CoordTitle.prototype.className = 'coordTitle';
@@ -97,6 +99,8 @@ this.require.define({"app/controllers/stage/dragging":function(exports, require,
 
     __extends(Dragging, _super);
 
+    Dragging.name = 'Dragging';
+
     Dragging.prototype.events = {
       'mousedown .selected': 'listen'
     };
@@ -104,8 +108,11 @@ this.require.define({"app/controllers/stage/dragging":function(exports, require,
     function Dragging(stage) {
       this.stage = stage;
       this.drop = __bind(this.drop, this);
+
       this.drag = __bind(this.drag, this);
+
       this.listen = __bind(this.listen, this);
+
       Dragging.__super__.constructor.call(this, {
         el: this.stage.el
       });
@@ -153,12 +160,16 @@ this.require.define({"app/controllers/stage/dragging":function(exports, require,
       $(document).unbind('mousemove', this.drag);
       $(document).unbind('mouseup', this.drop);
       this.el.trigger('end.dragging');
-      if ((_ref = this.coordTitle) != null) _ref.remove();
+      if ((_ref = this.coordTitle) != null) {
+        _ref.remove();
+      }
       return this.coordTitle = null;
     };
 
     Dragging.prototype.moveCoordTitle = function() {
-      if (!this.coordTitle) this.append(this.coordTitle = new CoordTitle);
+      if (!this.coordTitle) {
+        this.append(this.coordTitle = new CoordTitle);
+      }
       this.coordTitle.move({
         left: this.dragPosition.left - this.stageArea.left + 10,
         top: this.dragPosition.top - this.stageArea.top + 10

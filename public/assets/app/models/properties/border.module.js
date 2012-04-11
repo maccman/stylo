@@ -60,7 +60,7 @@
 }).call(this);
 this.require.define({"app/models/properties/border":function(exports, require, module){(function() {
   var Border, Color, Property,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Property = require('app/models/property');
@@ -70,6 +70,8 @@ this.require.define({"app/models/properties/border":function(exports, require, m
   Border = (function(_super) {
 
     __extends(Border, _super);
+
+    Border.name = 'Border';
 
     Border.prototype.id = module.id;
 

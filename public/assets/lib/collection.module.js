@@ -60,14 +60,16 @@
 }).call(this);
 this.require.define({"lib/collection":function(exports, require, module){(function() {
   var Collection,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
-    __slice = Array.prototype.slice;
+    __slice = [].slice;
 
   Collection = (function(_super) {
     var k, v, _ref;
 
     __extends(Collection, _super);
+
+    Collection.name = 'Collection';
 
     _ref = Spine.Events;
     for (k in _ref) {

@@ -61,10 +61,10 @@
 this.require.define({"app/controllers/element":function(exports, require, module){(function() {
   var Background, Color, Element, Resizing, Serialize, Utils,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
-    __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
-    __slice = Array.prototype.slice;
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
+    __slice = [].slice;
 
   Resizing = require('./element/resizing');
 
@@ -79,6 +79,8 @@ this.require.define({"app/controllers/element":function(exports, require, module
   Element = (function(_super) {
 
     __extends(Element, _super);
+
+    Element.name = 'Element';
 
     Element.include(Serialize);
 
@@ -104,8 +106,11 @@ this.require.define({"app/controllers/element":function(exports, require, module
     };
 
     function Element(attrs) {
-      if (attrs == null) attrs = {};
+      if (attrs == null) {
+        attrs = {};
+      }
       this.selected = __bind(this.selected, this);
+
       Element.__super__.constructor.call(this, {
         el: attrs.el
       });
@@ -207,12 +212,20 @@ this.require.define({"app/controllers/element":function(exports, require, module
       _ref = this.properties;
       for (name in _ref) {
         value = _ref[name];
-        if (__indexOf.call(this.ignoredStyles, name) >= 0) continue;
-        if (!value) continue;
-        if (typeof value === 'number' && !$.cssNumber[name]) value += 'px';
+        if (__indexOf.call(this.ignoredStyles, name) >= 0) {
+          continue;
+        }
+        if (!value) {
+          continue;
+        }
+        if (typeof value === 'number' && !$.cssNumber[name]) {
+          value += 'px';
+        }
         name = Utils.dasherize(name);
         value = value.toString();
-        if (!value) continue;
+        if (!value) {
+          continue;
+        }
         styles[name] = value;
       }
       styles = ((function() {

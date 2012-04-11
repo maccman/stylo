@@ -60,7 +60,7 @@
 }).call(this);
 this.require.define({"app/controllers/elements/ellipsis":function(exports, require, module){(function() {
   var Element, Ellipsis,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Element = require('../element');
@@ -68,6 +68,8 @@ this.require.define({"app/controllers/elements/ellipsis":function(exports, requi
   Ellipsis = (function(_super) {
 
     __extends(Ellipsis, _super);
+
+    Ellipsis.name = 'Ellipsis';
 
     Ellipsis.prototype.className = 'ellipsis';
 

@@ -60,15 +60,17 @@
 }).call(this);
 this.require.define({"app/controllers/stage/resizing":function(exports, require, module){(function() {
   var AreaTitle, Resizing,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   AreaTitle = (function(_super) {
 
     __extends(AreaTitle, _super);
 
+    AreaTitle.name = 'AreaTitle';
+
     function AreaTitle() {
-      AreaTitle.__super__.constructor.apply(this, arguments);
+      return AreaTitle.__super__.constructor.apply(this, arguments);
     }
 
     AreaTitle.prototype.className = 'areaTitle';
@@ -96,6 +98,8 @@ this.require.define({"app/controllers/stage/resizing":function(exports, require,
 
     __extends(Resizing, _super);
 
+    Resizing.name = 'Resizing';
+
     Resizing.prototype.events = {
       'resize.element': 'resized',
       'end.resize': 'resizeEnd'
@@ -111,7 +115,9 @@ this.require.define({"app/controllers/stage/resizing":function(exports, require,
     Resizing.prototype.resized = function(e, element) {
       var area;
       area = element.area();
-      if (!this.areaTitle) this.append(this.areaTitle = new AreaTitle);
+      if (!this.areaTitle) {
+        this.append(this.areaTitle = new AreaTitle);
+      }
       this.areaTitle.move({
         left: area.left + area.width + 10,
         top: area.top + area.height + 10
@@ -121,7 +127,9 @@ this.require.define({"app/controllers/stage/resizing":function(exports, require,
 
     Resizing.prototype.resizeEnd = function() {
       var _ref;
-      if ((_ref = this.areaTitle) != null) _ref.remove();
+      if ((_ref = this.areaTitle) != null) {
+        _ref.remove();
+      }
       return this.areaTitle = null;
     };
 

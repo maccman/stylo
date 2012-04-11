@@ -60,7 +60,7 @@
 }).call(this);
 this.require.define({"app/controllers/elements/canvas":function(exports, require, module){(function() {
   var Canvas, Element,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Element = require('../element');
@@ -68,6 +68,8 @@ this.require.define({"app/controllers/elements/canvas":function(exports, require
   Canvas = (function(_super) {
 
     __extends(Canvas, _super);
+
+    Canvas.name = 'Canvas';
 
     Canvas.prototype.tag = 'canvas';
 
@@ -79,16 +81,18 @@ this.require.define({"app/controllers/elements/canvas":function(exports, require
     }
 
     Canvas.prototype.paint = function() {
-      var first, point, points, _i, _len, _ref, _ref2, _ref3;
+      var first, point, points, _i, _len, _ref, _ref1, _ref2;
       first = this.points[0];
       points = this.points.slice(1, this.points.length);
-      if (!first) return;
+      if (!first) {
+        return;
+      }
       this.ctx.beginPath();
       (_ref = this.ctx).moveTo.apply(_ref, first);
-      _ref2 = this.points;
-      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-        point = _ref2[_i];
-        (_ref3 = this.ctx).lineTo.apply(_ref3, point);
+      _ref1 = this.points;
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        point = _ref1[_i];
+        (_ref2 = this.ctx).lineTo.apply(_ref2, point);
       }
       return this.ctx.fill();
     };

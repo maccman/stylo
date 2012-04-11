@@ -1,10 +1,10 @@
-Spine ?= require('spine')
+Spine = @Spine or require('spine')
 
 Spine.Model.Local =
   extended: ->
     @change @saveLocal
     @fetch @loadLocal
-    
+
   saveLocal: ->
     result = JSON.stringify(@)
     localStorage[@className] = result
@@ -12,5 +12,5 @@ Spine.Model.Local =
   loadLocal: ->
     result = localStorage[@className]
     @refresh(result or [], clear: true)
-    
+
 module?.exports = Spine.Model.Local

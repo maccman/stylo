@@ -60,13 +60,15 @@
 }).call(this);
 this.require.define({"app/controllers/stage/select_area":function(exports, require, module){(function() {
   var Area, SelectArea,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   Area = (function(_super) {
 
     __extends(Area, _super);
+
+    Area.name = 'Area';
 
     Area.prototype.className = 'selectArea';
 
@@ -117,6 +119,8 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
 
     __extends(SelectArea, _super);
 
+    SelectArea.name = 'SelectArea';
+
     SelectArea.prototype.events = {
       'mousedown': 'listen'
     };
@@ -124,8 +128,11 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
     function SelectArea(stage) {
       this.stage = stage;
       this.drop = __bind(this.drop, this);
+
       this.drag = __bind(this.drag, this);
+
       this.listen = __bind(this.listen, this);
+
       SelectArea.__super__.constructor.call(this, {
         el: this.stage.el
       });
@@ -133,12 +140,16 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
 
     SelectArea.prototype.listen = function(e) {
       var _ref;
-      if (e.target !== e.currentTarget) return;
+      if (e.target !== e.currentTarget) {
+        return;
+      }
       e.preventDefault();
       this.offset = this.el.offset();
       this.offset.left -= this.el.scrollLeft();
       this.offset.top -= this.el.scrollTop();
-      if ((_ref = this.selectArea) != null) _ref.remove();
+      if ((_ref = this.selectArea) != null) {
+        _ref.remove();
+      }
       $(document).mousemove(this.drag);
       return $(document).mouseup(this.drop);
     };
@@ -166,7 +177,9 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
 
     SelectArea.prototype.drop = function(e) {
       var _ref;
-      if ((_ref = this.selectArea) != null) _ref.remove();
+      if ((_ref = this.selectArea) != null) {
+        _ref.remove();
+      }
       this.selectArea = null;
       $(document).unbind('mousemove', this.drag);
       return $(document).unbind('mouseup', this.drop);

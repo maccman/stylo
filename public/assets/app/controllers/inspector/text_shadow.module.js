@@ -60,7 +60,7 @@
 }).call(this);
 this.require.define({"app/controllers/inspector/text_shadow":function(exports, require, module){(function() {
   var ColorPicker, PositionPicker, Shadow, TextShadow,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Shadow = require('app/models/properties/shadow');
@@ -72,6 +72,8 @@ this.require.define({"app/controllers/inspector/text_shadow":function(exports, r
   TextShadow = (function(_super) {
 
     __extends(TextShadow, _super);
+
+    TextShadow.name = 'TextShadow';
 
     TextShadow.prototype.className = 'textShadow';
 
@@ -128,7 +130,9 @@ this.require.define({"app/controllers/inspector/text_shadow":function(exports, r
     TextShadow.prototype.showColorPicker = function(e) {
       var color, picker, _ref,
         _this = this;
-      if (this.disabled) return;
+      if (this.disabled) {
+        return;
+      }
       color = (_ref = this.shadow) != null ? _ref.color : void 0;
       picker = new ColorPicker({
         color: color

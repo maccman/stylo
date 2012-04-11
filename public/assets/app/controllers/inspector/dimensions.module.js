@@ -61,12 +61,14 @@
 this.require.define({"app/controllers/inspector/dimensions":function(exports, require, module){(function() {
   var Dimensions,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Dimensions = (function(_super) {
 
     __extends(Dimensions, _super);
+
+    Dimensions.name = 'Dimensions';
 
     Dimensions.prototype.className = 'dimensions';
 
@@ -84,8 +86,12 @@ this.require.define({"app/controllers/inspector/dimensions":function(exports, re
 
     function Dimensions() {
       this.update = __bind(this.update, this);
-      this.render = __bind(this.render, this);      Dimensions.__super__.constructor.apply(this, arguments);
-      if (!this.stage) throw 'stage required';
+
+      this.render = __bind(this.render, this);
+      Dimensions.__super__.constructor.apply(this, arguments);
+      if (!this.stage) {
+        throw 'stage required';
+      }
       $(document).bind('resize.element move.element', this.update);
       this.render();
     }
@@ -100,7 +106,9 @@ this.require.define({"app/controllers/inspector/dimensions":function(exports, re
 
     Dimensions.prototype.update = function() {
       this.disabled = !this.stage.selection.isSingle();
-      if (this.disabled) return;
+      if (this.disabled) {
+        return;
+      }
       this.$width.val(this.stage.selection.get('width'));
       this.$height.val(this.stage.selection.get('height'));
       this.$x.val(this.stage.selection.get('left'));

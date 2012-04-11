@@ -61,12 +61,14 @@
 this.require.define({"lib/position_picker":function(exports, require, module){(function() {
   var PositionPicker,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   PositionPicker = (function(_super) {
 
     __extends(PositionPicker, _super);
+
+    PositionPicker.name = 'PositionPicker';
 
     PositionPicker.prototype.className = 'positionPicker';
 
@@ -80,7 +82,9 @@ this.require.define({"lib/position_picker":function(exports, require, module){(f
 
     function PositionPicker() {
       this.drop = __bind(this.drop, this);
-      this.over = __bind(this.over, this);      PositionPicker.__super__.constructor.apply(this, arguments);
+
+      this.over = __bind(this.over, this);
+      PositionPicker.__super__.constructor.apply(this, arguments);
       this.el.css({
         width: this.width,
         height: this.height
@@ -106,7 +110,9 @@ this.require.define({"lib/position_picker":function(exports, require, module){(f
     };
 
     PositionPicker.prototype.drag = function(e) {
-      if (this.disabled) return;
+      if (this.disabled) {
+        return;
+      }
       this.offset = $(this.el).offset();
       $(document).mousemove(this.over);
       $(document).mouseup(this.drop);

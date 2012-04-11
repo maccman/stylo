@@ -60,7 +60,7 @@
 }).call(this);
 this.require.define({"app/models/properties/shadow":function(exports, require, module){(function() {
   var Color, Property, Shadow,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Property = require('app/models/property');
@@ -71,11 +71,15 @@ this.require.define({"app/models/properties/shadow":function(exports, require, m
 
     __extends(Shadow, _super);
 
+    Shadow.name = 'Shadow';
+
     Shadow.prototype.id = module.id;
 
     function Shadow(properties) {
       var k, v;
-      if (properties == null) properties = {};
+      if (properties == null) {
+        properties = {};
+      }
       for (k in properties) {
         v = properties[k];
         this[k] = v;
@@ -88,11 +92,17 @@ this.require.define({"app/models/properties/shadow":function(exports, require, m
     Shadow.prototype.toString = function() {
       var result;
       result = [];
-      if (this.inset) result.push('inset');
+      if (this.inset) {
+        result.push('inset');
+      }
       result.push(this.x + 'px');
       result.push(this.y + 'px');
-      if (this.blur != null) result.push(this.blur + 'px');
-      if (this.spread != null) result.push(this.spread + 'px');
+      if (this.blur != null) {
+        result.push(this.blur + 'px');
+      }
+      if (this.spread != null) {
+        result.push(this.spread + 'px');
+      }
       result.push(this.color.toString());
       return result.join(' ');
     };

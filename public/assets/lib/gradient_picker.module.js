@@ -61,7 +61,7 @@
 this.require.define({"lib/gradient_picker":function(exports, require, module){(function() {
   var Background, Color, ColorPicker, ColorStop, GradientPicker, LinearGradient, Popup, Slider,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Popup = require('./popup');
@@ -80,6 +80,8 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
 
     __extends(Slider, _super);
 
+    Slider.name = 'Slider';
+
     Slider.prototype.className = 'slider';
 
     Slider.prototype.events = {
@@ -90,8 +92,11 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
     function Slider(colorStop) {
       this.colorStop = colorStop != null ? colorStop : new ColorStop;
       this.drop = __bind(this.drop, this);
+
       this.drag = __bind(this.drag, this);
+
       this.listen = __bind(this.listen, this);
+
       Slider.__super__.constructor.call(this);
       this.inner = $('<div />').addClass('inner');
       this.append(this.inner);
@@ -120,7 +125,9 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
       var left, length, top, _ref;
       this.moved = true;
       if ((_ref = this.picker) != null) {
-        if (typeof _ref.close === "function") _ref.close();
+        if (typeof _ref.close === "function") {
+          _ref.close();
+        }
       }
       this.picker = false;
       top = e.pageY - this.offset.top;
@@ -134,7 +141,9 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
     Slider.prototype.drop = function(e) {
       $(document).unbind('mousemove', this.drag);
       $(document).unbind('mouseup', this.drop);
-      if (this.remove) return this.release();
+      if (this.remove) {
+        return this.release();
+      }
     };
 
     Slider.prototype.move = function(length) {
@@ -156,7 +165,9 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
 
     Slider.prototype.openColorPicker = function() {
       var _this = this;
-      if (this.moved) return;
+      if (this.moved) {
+        return;
+      }
       this.picker = new ColorPicker({
         color: this.colorStop.color
       });
@@ -175,6 +186,8 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
   GradientPicker = (function(_super) {
 
     __extends(GradientPicker, _super);
+
+    GradientPicker.name = 'GradientPicker';
 
     GradientPicker.prototype.className = 'gradientPicker';
 
@@ -203,7 +216,9 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
     }
 
     GradientPicker.prototype.addSlider = function(colorStop) {
-      if (colorStop == null) colorStop = new ColorStop;
+      if (colorStop == null) {
+        colorStop = new ColorStop;
+      }
       this.gradient.addStop(colorStop);
       this.append(new Slider(colorStop));
       return this.set();
@@ -222,7 +237,9 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
 
     GradientPicker.prototype.createSlider = function(e) {
       var left, length;
-      if (e.target !== e.currentTarget) return;
+      if (e.target !== e.currentTarget) {
+        return;
+      }
       left = e.pageX - this.el.offset().left;
       length = (left / this.el.width()) * 100;
       return this.addSlider(new ColorStop(new Color.White, length));

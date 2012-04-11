@@ -61,12 +61,14 @@
 this.require.define({"app/controllers/stage/key_bindings":function(exports, require, module){(function() {
   var KeyBindings,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   KeyBindings = (function(_super) {
 
     __extends(KeyBindings, _super);
+
+    KeyBindings.name = 'KeyBindings';
 
     KeyBindings.include(Spine.Log);
 
@@ -89,12 +91,15 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
     function KeyBindings(stage) {
       this.stage = stage;
       this.keypress = __bind(this.keypress, this);
+
       $(document).bind('keydown', this.keypress);
     }
 
     KeyBindings.prototype.keypress = function(e) {
       var _name;
-      if ('value' in e.target) return;
+      if ('value' in e.target) {
+        return;
+      }
       return typeof this[_name = this.mapping[e.which]] === "function" ? this[_name](e) : void 0;
     };
 
@@ -107,7 +112,9 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       var amount;
       e.preventDefault();
       amount = -1;
-      if (e.shiftKey) amount *= 5;
+      if (e.shiftKey) {
+        amount *= 5;
+      }
       return this.stage.selection.moveBy({
         left: amount,
         top: 0
@@ -118,7 +125,9 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       var amount;
       e.preventDefault();
       amount = -1;
-      if (e.shiftKey) amount *= 5;
+      if (e.shiftKey) {
+        amount *= 5;
+      }
       return this.stage.selection.moveBy({
         left: 0,
         top: amount
@@ -129,7 +138,9 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       var amount;
       e.preventDefault();
       amount = 1;
-      if (e.shiftKey) amount *= 5;
+      if (e.shiftKey) {
+        amount *= 5;
+      }
       return this.stage.selection.moveBy({
         left: amount,
         top: 0
@@ -140,7 +151,9 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       var amount;
       e.preventDefault();
       amount = 1;
-      if (e.shiftKey) amount *= 5;
+      if (e.shiftKey) {
+        amount *= 5;
+      }
       return this.stage.selection.moveBy({
         left: 0,
         top: amount
@@ -148,42 +161,58 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
     };
 
     KeyBindings.prototype.aKey = function(e) {
-      if (!e.metaKey) return;
+      if (!e.metaKey) {
+        return;
+      }
       e.preventDefault();
       return this.stage.selectAll();
     };
 
     KeyBindings.prototype.dKey = function(e) {
-      if (!e.metaKey) return;
+      if (!e.metaKey) {
+        return;
+      }
       e.preventDefault();
-      if (e.metaKey) return this.stage.selection.clear();
+      if (e.metaKey) {
+        return this.stage.selection.clear();
+      }
     };
 
     KeyBindings.prototype.sKey = function(e) {
-      if (!e.metaKey) return;
+      if (!e.metaKey) {
+        return;
+      }
       e.preventDefault();
       return this.log('save');
     };
 
     KeyBindings.prototype.plusKey = function(e) {
-      if (!e.metaKey) return;
+      if (!e.metaKey) {
+        return;
+      }
       e.preventDefault();
       return this.log('zoomIn');
     };
 
     KeyBindings.prototype.minusKey = function(e) {
-      if (!e.metaKey) return;
+      if (!e.metaKey) {
+        return;
+      }
       e.preventDefault();
       return this.log('zoomOut');
     };
 
     KeyBindings.prototype.cKey = function(e) {
-      if (!e.metaKey) return;
+      if (!e.metaKey) {
+        return;
+      }
       return this.stage.clipboard.copyInternal();
     };
 
     KeyBindings.prototype.vKey = function(e) {
-      if (!e.metaKey) return;
+      if (!e.metaKey) {
+        return;
+      }
       return this.stage.clipboard.pasteInternal();
     };
 

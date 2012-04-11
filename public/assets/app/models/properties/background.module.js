@@ -60,15 +60,17 @@
 }).call(this);
 this.require.define({"app/models/properties/background":function(exports, require, module){(function() {
   var Background, BackgroundImage, Color, ColorStop, LinearGradient, Position, Property, URL,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
-    __slice = Array.prototype.slice;
+    __slice = [].slice;
 
   Property = require('app/models/property');
 
   Color = require('./color');
 
   Position = (function() {
+
+    Position.name = 'Position';
 
     Position.prototype.id = "" + module.id + ".Position";
 
@@ -89,6 +91,8 @@ this.require.define({"app/models/properties/background":function(exports, requir
   })();
 
   ColorStop = (function() {
+
+    ColorStop.name = 'ColorStop';
 
     ColorStop.prototype.id = "" + module.id + ".ColorStop";
 
@@ -118,8 +122,10 @@ this.require.define({"app/models/properties/background":function(exports, requir
 
     __extends(BackgroundImage, _super);
 
+    BackgroundImage.name = 'BackgroundImage';
+
     function BackgroundImage() {
-      BackgroundImage.__super__.constructor.apply(this, arguments);
+      return BackgroundImage.__super__.constructor.apply(this, arguments);
     }
 
     BackgroundImage.prototype.id = "" + module.id + ".BackgroundImage";
@@ -131,6 +137,8 @@ this.require.define({"app/models/properties/background":function(exports, requir
   LinearGradient = (function(_super) {
 
     __extends(LinearGradient, _super);
+
+    LinearGradient.name = 'LinearGradient';
 
     LinearGradient.prototype.id = "" + module.id + ".LinearGradient";
 
@@ -177,6 +185,8 @@ this.require.define({"app/models/properties/background":function(exports, requir
 
     __extends(URL, _super);
 
+    URL.name = 'URL';
+
     URL.prototype.id = "" + module.id + ".URL";
 
     function URL(url) {
@@ -196,6 +206,8 @@ this.require.define({"app/models/properties/background":function(exports, requir
   })(BackgroundImage);
 
   Background = (function() {
+
+    Background.name = 'Background';
 
     Background.prototype.id = module.id;
 

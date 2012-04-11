@@ -61,12 +61,14 @@
 this.require.define({"app/controllers/inspector/border_radius":function(exports, require, module){(function() {
   var BorderRadius,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   BorderRadius = (function(_super) {
 
     __extends(BorderRadius, _super);
+
+    BorderRadius.name = 'BorderRadius';
 
     BorderRadius.prototype.className = 'borderRadius';
 
@@ -83,14 +85,19 @@ this.require.define({"app/controllers/inspector/border_radius":function(exports,
     BorderRadius.prototype.current = 'borderRadius';
 
     function BorderRadius() {
-      this.render = __bind(this.render, this);      BorderRadius.__super__.constructor.apply(this, arguments);
-      if (!this.stage) throw 'stage required';
+      this.render = __bind(this.render, this);
+      BorderRadius.__super__.constructor.apply(this, arguments);
+      if (!this.stage) {
+        throw 'stage required';
+      }
       this.render();
     }
 
     BorderRadius.prototype.render = function() {
       this.disabled = !this.stage.selection.isAny();
-      if (this.stage.selection.get('borderRadius') === false) this.disabled = true;
+      if (this.stage.selection.get('borderRadius') === false) {
+        this.disabled = true;
+      }
       this.html(JST['app/views/inspector/border_radius'](this));
       this.change(this.current);
       this.el.toggleClass('disabled', this.disabled);
@@ -99,7 +106,9 @@ this.require.define({"app/controllers/inspector/border_radius":function(exports,
 
     BorderRadius.prototype.change = function(current) {
       this.current = current;
-      if (this.disabled) return;
+      if (this.disabled) {
+        return;
+      }
       this.$borders.removeClass('active');
       this.$borders.filter("[data-border-radius=" + this.current + "]").addClass('active');
       this.radius = this.stage.selection.get(this.current);

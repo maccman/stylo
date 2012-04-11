@@ -60,7 +60,7 @@
 }).call(this);
 this.require.define({"app/controllers/inspector/background":function(exports, require, module){(function() {
   var Background, BackgroundImage, BackgroundInspector, Backgrounds, Collection, Color, ColorPicker, Edit, GradientPicker, List,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
@@ -80,8 +80,10 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
 
     __extends(Backgrounds, _super);
 
+    Backgrounds.name = 'Backgrounds';
+
     function Backgrounds() {
-      Backgrounds.__super__.constructor.apply(this, arguments);
+      return Backgrounds.__super__.constructor.apply(this, arguments);
     }
 
     Backgrounds.prototype.getColor = function() {
@@ -103,6 +105,8 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
   Edit = (function(_super) {
 
     __extends(Edit, _super);
+
+    Edit.name = 'Edit';
 
     Edit.prototype.className = 'edit';
 
@@ -164,6 +168,8 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
 
     __extends(List, _super);
 
+    List.name = 'List';
+
     List.prototype.className = 'list';
 
     List.prototype.events = {
@@ -173,8 +179,11 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
     };
 
     function List() {
-      this.render = __bind(this.render, this);      List.__super__.constructor.apply(this, arguments);
-      if (!this.backgrounds) throw 'backgrounds required';
+      this.render = __bind(this.render, this);
+      List.__super__.constructor.apply(this, arguments);
+      if (!this.backgrounds) {
+        throw 'backgrounds required';
+      }
       this.backgrounds.change(this.render);
       this.render();
     }
@@ -216,11 +225,15 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
 
     __extends(BackgroundInspector, _super);
 
+    BackgroundInspector.name = 'BackgroundInspector';
+
     BackgroundInspector.prototype.className = 'background';
 
     function BackgroundInspector() {
       this.set = __bind(this.set, this);
-      this.render = __bind(this.render, this);      BackgroundInspector.__super__.constructor.apply(this, arguments);
+
+      this.render = __bind(this.render, this);
+      BackgroundInspector.__super__.constructor.apply(this, arguments);
       this.render();
     }
 
@@ -232,7 +245,9 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
       this.backgrounds = this.stage.selection.get('backgroundImage');
       this.backgrounds = new Backgrounds(this.backgrounds);
       backgroundColor = this.stage.selection.get('backgroundColor');
-      if (backgroundColor) this.backgrounds.push(backgroundColor);
+      if (backgroundColor) {
+        this.backgrounds.push(backgroundColor);
+      }
       this.current = this.backgrounds.first();
       this.backgrounds.change(this.set);
       this.el.empty();

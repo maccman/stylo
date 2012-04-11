@@ -61,12 +61,14 @@
 this.require.define({"lib/popup":function(exports, require, module){(function() {
   var Popup,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Popup = (function(_super) {
 
     __extends(Popup, _super);
+
+    Popup.name = 'Popup';
 
     Popup.open = function() {
       var _ref;
@@ -77,8 +79,11 @@ this.require.define({"lib/popup":function(exports, require, module){(function() 
 
     function Popup() {
       this.remove = __bind(this.remove, this);
+
       this.close = __bind(this.close, this);
-      this.open = __bind(this.open, this);      Popup.__super__.constructor.apply(this, arguments);
+
+      this.open = __bind(this.open, this);
+      Popup.__super__.constructor.apply(this, arguments);
       this.el.delegate('click', '.close', this.close);
       this.el.addClass('popup');
       this.el.css({
@@ -120,7 +125,9 @@ this.require.define({"lib/popup":function(exports, require, module){(function() 
     };
 
     Popup.prototype.remove = function(e) {
-      if (!$(e.target).closest(this.el).length) return this.close();
+      if (!$(e.target).closest(this.el).length) {
+        return this.close();
+      }
     };
 
     return Popup;

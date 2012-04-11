@@ -60,7 +60,7 @@
 }).call(this);
 this.require.define({"app/controllers/header":function(exports, require, module){(function() {
   var Ellipsis, Header, Rectangle, Text,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Rectangle = require('./elements/rectangle');
@@ -72,6 +72,8 @@ this.require.define({"app/controllers/header":function(exports, require, module)
   Header = (function(_super) {
 
     __extends(Header, _super);
+
+    Header.name = 'Header';
 
     Header.prototype.tag = 'header';
 
@@ -85,7 +87,9 @@ this.require.define({"app/controllers/header":function(exports, require, module)
 
     function Header() {
       Header.__super__.constructor.apply(this, arguments);
-      if (!this.stage) throw 'stage required';
+      if (!this.stage) {
+        throw 'stage required';
+      }
       this.html(JST['app/views/header'](this));
     }
 

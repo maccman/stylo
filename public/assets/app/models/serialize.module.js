@@ -63,7 +63,9 @@ this.require.define({"app/models/serialize":function(exports, require, module){(
 
   fromObject = function(object) {
     var args, constructor, k, name, o, path, result, v, _ref;
-    if (typeof object !== 'object') return object;
+    if (typeof object !== 'object') {
+      return object;
+    }
     if (Array.isArray(object)) {
       return (function() {
         var _i, _len, _results;
@@ -84,7 +86,9 @@ this.require.define({"app/models/serialize":function(exports, require, module){(
     }
     _ref = object.id.split('.', 2), path = _ref[0], name = _ref[1];
     constructor = require(path);
-    if (name) constructor = constructor[name];
+    if (name) {
+      constructor = constructor[name];
+    }
     if (result = typeof constructor.fromValue === "function" ? constructor.fromValue(object) : void 0) {
       return result;
     }
@@ -97,7 +101,9 @@ this.require.define({"app/models/serialize":function(exports, require, module){(
   };
 
   fromJSON = function(object) {
-    if (typeof object === 'string') object = JSON.parse(object);
+    if (typeof object === 'string') {
+      object = JSON.parse(object);
+    }
     return fromObject(object);
   };
 

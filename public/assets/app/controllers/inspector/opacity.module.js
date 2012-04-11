@@ -61,12 +61,14 @@
 this.require.define({"app/controllers/inspector/opacity":function(exports, require, module){(function() {
   var Opacity,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Opacity = (function(_super) {
 
     __extends(Opacity, _super);
+
+    Opacity.name = 'Opacity';
 
     Opacity.prototype.className = 'opacity';
 
@@ -79,8 +81,11 @@ this.require.define({"app/controllers/inspector/opacity":function(exports, requi
     };
 
     function Opacity() {
-      this.render = __bind(this.render, this);      Opacity.__super__.constructor.apply(this, arguments);
-      if (!this.stage) throw 'stage required';
+      this.render = __bind(this.render, this);
+      Opacity.__super__.constructor.apply(this, arguments);
+      if (!this.stage) {
+        throw 'stage required';
+      }
       this.render();
     }
 

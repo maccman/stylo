@@ -68,11 +68,16 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
 
   Clipboard = (function() {
 
+    Clipboard.name = 'Clipboard';
+
     function Clipboard(stage) {
       this.stage = stage;
       this.paste = __bind(this.paste, this);
+
       this.copy = __bind(this.copy, this);
+
       this.cancel = __bind(this.cancel, this);
+
       $(window).bind('beforecopy', this.cancel);
       $(window).bind('copy', this.copy);
       $(window).bind('beforepaste', this.cancel);
@@ -85,7 +90,9 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
 
     Clipboard.prototype.copy = function(e) {
       var el, json, styles;
-      if (!this.stage.selection.isAny()) return;
+      if (!this.stage.selection.isAny()) {
+        return;
+      }
       e.preventDefault();
       e = e.originalEvent;
       json = JSON.stringify(this.stage.selection.elements);
@@ -106,12 +113,16 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
 
     Clipboard.prototype.paste = function(e) {
       var el, elements, json, _i, _len;
-      if ('value' in e.target) return;
+      if ('value' in e.target) {
+        return;
+      }
       e.preventDefault();
       e = e.originalEvent;
       json = e.clipboardData.getData('json/x-stylo');
       json || (json = e.clipboardData.getData('text/html'));
-      if (!json) return;
+      if (!json) {
+        return;
+      }
       elements = Serialize.fromJSON(json);
       for (_i = 0, _len = elements.length; _i < _len; _i++) {
         el = elements[_i];
@@ -128,7 +139,9 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
 
     Clipboard.prototype.copyInternal = function() {
       var el;
-      if (Utils.browser.chrome) return;
+      if (Utils.browser.chrome) {
+        return;
+      }
       return this.data = (function() {
         var _i, _len, _ref, _results;
         _ref = this.stage.selection.elements;
@@ -143,8 +156,12 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
 
     Clipboard.prototype.pasteInternal = function(e) {
       var el, _i, _len, _ref;
-      if (Utils.browser.chrome) return;
-      if (!this.data) return;
+      if (Utils.browser.chrome) {
+        return;
+      }
+      if (!this.data) {
+        return;
+      }
       _ref = this.data;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         el = _ref[_i];

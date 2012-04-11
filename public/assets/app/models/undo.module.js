@@ -63,6 +63,8 @@ this.require.define({"app/models/undo":function(exports, require, module){(funct
 
   Undo = (function() {
 
+    Undo.name = 'Undo';
+
     function Undo() {}
 
     Undo.undoStack = [];
@@ -78,7 +80,9 @@ this.require.define({"app/models/undo":function(exports, require, module){(funct
     Undo.undo = function() {
       var action, redo, undo;
       action = this.undoStack.pop();
-      if (!action) return;
+      if (!action) {
+        return;
+      }
       undo = action[0], redo = action[1];
       undo();
       return this.redoStack.push(action);
@@ -87,7 +91,9 @@ this.require.define({"app/models/undo":function(exports, require, module){(funct
     Undo.redo = function() {
       var action, redo, undo;
       action = this.redoStack.pop();
-      if (!action) return;
+      if (!action) {
+        return;
+      }
       undo = action[0], redo = action[1];
       redo();
       return this.undoStack.push(action);

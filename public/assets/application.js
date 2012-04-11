@@ -9327,10 +9327,11 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 })( window );
 (function() {
   var $, Controller, Events, Log, Model, Module, Spine, isArray, isBlank, makeArray, moduleKeywords,
-    __slice = Array.prototype.slice,
-    __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
-    __hasProp = Object.prototype.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+    __slice = [].slice,
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   Events = {
     bind: function(ev, callback) {
@@ -9355,28 +9356,36 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
       args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       ev = args.shift();
       list = this.hasOwnProperty('_callbacks') && ((_ref = this._callbacks) != null ? _ref[ev] : void 0);
-      if (!list) return;
+      if (!list) {
+        return;
+      }
       for (_i = 0, _len = list.length; _i < _len; _i++) {
         callback = list[_i];
-        if (callback.apply(this, args) === false) break;
+        if (callback.apply(this, args) === false) {
+          break;
+        }
       }
       return true;
     },
     unbind: function(ev, callback) {
-      var cb, i, list, _len, _ref;
+      var cb, i, list, _i, _len, _ref;
       if (!ev) {
         this._callbacks = {};
         return this;
       }
       list = (_ref = this._callbacks) != null ? _ref[ev] : void 0;
-      if (!list) return this;
+      if (!list) {
+        return this;
+      }
       if (!callback) {
         delete this._callbacks[ev];
         return this;
       }
-      for (i = 0, _len = list.length; i < _len; i++) {
+      for (i = _i = 0, _len = list.length; _i < _len; i = ++_i) {
         cb = list[i];
-        if (!(cb === callback)) continue;
+        if (!(cb === callback)) {
+          continue;
+        }
         list = list.slice();
         list.splice(i, 1);
         this._callbacks[ev] = list;
@@ -9392,10 +9401,16 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     log: function() {
       var args;
       args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-      if (!this.trace) return;
-      if (this.logPrefix) args.unshift(this.logPrefix);
+      if (!this.trace) {
+        return;
+      }
+      if (this.logPrefix) {
+        args.unshift(this.logPrefix);
+      }
       if (typeof console !== "undefined" && console !== null) {
-        if (typeof console.log === "function") console.log.apply(console, args);
+        if (typeof console.log === "function") {
+          console.log.apply(console, args);
+        }
       }
       return this;
     }
@@ -9405,31 +9420,44 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
   Module = (function() {
 
+    Module.name = 'Module';
+
     Module.include = function(obj) {
       var key, value, _ref;
-      if (!obj) throw 'include(obj) requires obj';
+      if (!obj) {
+        throw 'include(obj) requires obj';
+      }
       for (key in obj) {
         value = obj[key];
-        if (__indexOf.call(moduleKeywords, key) < 0) this.prototype[key] = value;
+        if (__indexOf.call(moduleKeywords, key) < 0) {
+          this.prototype[key] = value;
+        }
       }
-      if ((_ref = obj.included) != null) _ref.apply(this);
+      if ((_ref = obj.included) != null) {
+        _ref.apply(this);
+      }
       return this;
     };
 
     Module.extend = function(obj) {
       var key, value, _ref;
-      if (!obj) throw 'extend(obj) requires obj';
+      if (!obj) {
+        throw 'extend(obj) requires obj';
+      }
       for (key in obj) {
         value = obj[key];
-        if (__indexOf.call(moduleKeywords, key) < 0) this[key] = value;
+        if (__indexOf.call(moduleKeywords, key) < 0) {
+          this[key] = value;
+        }
       }
-      if ((_ref = obj.extended) != null) _ref.apply(this);
+      if ((_ref = obj.extended) != null) {
+        _ref.apply(this);
+      }
       return this;
     };
 
     Module.proxy = function(func) {
       var _this = this;
-      if (!func) throw 'func required';
       return function() {
         return func.apply(_this, arguments);
       };
@@ -9437,14 +9465,15 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
     Module.prototype.proxy = function(func) {
       var _this = this;
-      if (!func) throw 'func required';
       return function() {
         return func.apply(_this, arguments);
       };
     };
 
     function Module() {
-      if (typeof this.init === "function") this.init.apply(this, arguments);
+      if (typeof this.init === "function") {
+        this.init.apply(this, arguments);
+      }
     }
 
     return Module;
@@ -9454,6 +9483,8 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
   Model = (function(_super) {
 
     __extends(Model, _super);
+
+    Model.name = 'Model';
 
     Model.extend(Events);
 
@@ -9469,7 +9500,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
       this.className = name;
       this.records = {};
       this.crecords = {};
-      if (attributes.length) this.attributes = attributes;
+      if (attributes.length) {
+        this.attributes = attributes;
+      }
       this.attributes && (this.attributes = makeArray(this.attributes));
       this.attributes || (this.attributes = []);
       this.unbind();
@@ -9483,15 +9516,21 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     Model.find = function(id) {
       var record;
       record = this.records[id];
-      if (!record && ("" + id).match(/c-\d+/)) return this.findCID(id);
-      if (!record) throw 'Unknown record';
+      if (!record && ("" + id).match(/c-\d+/)) {
+        return this.findCID(id);
+      }
+      if (!record) {
+        throw 'Unknown record';
+      }
       return record.clone();
     };
 
     Model.findCID = function(cid) {
       var record;
       record = this.crecords[cid];
-      if (!record) throw 'Unknown record';
+      if (!record) {
+        throw 'Unknown record';
+      }
       return record.clone();
     };
 
@@ -9505,19 +9544,24 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
     Model.refresh = function(values, options) {
       var record, records, _i, _len;
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       if (options.clear) {
         this.records = {};
         this.crecords = {};
       }
       records = this.fromJSON(values);
-      if (!isArray(records)) records = [records];
+      if (!isArray(records)) {
+        records = [records];
+      }
       for (_i = 0, _len = records.length; _i < _len; _i++) {
         record = records[_i];
         record.id || (record.id = record.cid);
         this.records[record.id] = record;
         this.crecords[record.cid] = record;
       }
+      this.resetIdCounter();
       this.trigger('refresh', !options.clear && this.cloneArray(records));
       return this;
     };
@@ -9530,7 +9574,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
         _results = [];
         for (id in _ref) {
           record = _ref[id];
-          if (callback(record)) _results.push(record);
+          if (callback(record)) {
+            _results.push(record);
+          }
         }
         return _results;
       }).call(this);
@@ -9542,7 +9588,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
       _ref = this.records;
       for (id in _ref) {
         record = _ref[id];
-        if (record[name] === value) return record.clone();
+        if (record[name] === value) {
+          return record.clone();
+        }
       }
       return null;
     };
@@ -9643,8 +9691,12 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
     Model.fromJSON = function(objects) {
       var value, _i, _len, _results;
-      if (!objects) return;
-      if (typeof objects === 'string') objects = JSON.parse(objects);
+      if (!objects) {
+        return;
+      }
+      if (typeof objects === 'string') {
+        objects = JSON.parse(objects);
+      }
       if (isArray(objects)) {
         _results = [];
         for (_i = 0, _len = objects.length; _i < _len; _i++) {
@@ -9685,14 +9737,39 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
     Model.idCounter = 0;
 
-    Model.uid = function() {
-      return this.idCounter++;
+    Model.resetIdCounter = function() {
+      var ids, lastID, model;
+      ids = ((function() {
+        var _i, _len, _ref, _results;
+        _ref = this.all();
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          model = _ref[_i];
+          _results.push(model.id);
+        }
+        return _results;
+      }).call(this)).sort(function(a, b) {
+        return a > b;
+      });
+      lastID = ids[ids.length - 1];
+      lastID = (lastID != null ? typeof lastID.replace === "function" ? lastID.replace(/^c-/, '') : void 0 : void 0) || lastID;
+      lastID = parseInt(lastID, 10);
+      return this.idCounter = (lastID + 1) || 0;
+    };
+
+    Model.uid = function(prefix) {
+      if (prefix == null) {
+        prefix = '';
+      }
+      return prefix + this.idCounter++;
     };
 
     function Model(atts) {
       Model.__super__.constructor.apply(this, arguments);
-      if (atts) this.load(atts);
-      this.cid || (this.cid = 'c-' + this.constructor.uid());
+      if (atts) {
+        this.load(atts);
+      }
+      this.cid || (this.cid = this.constructor.uid('c-'));
     }
 
     Model.prototype.isNew = function() {
@@ -9732,7 +9809,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
           }
         }
       }
-      if (this.id) result.id = this.id;
+      if (this.id) {
+        result.id = this.id;
+      }
       return result;
     };
 
@@ -9742,7 +9821,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
     Model.prototype.save = function(options) {
       var error, record;
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       if (options.validate !== false) {
         error = this.validate();
         if (error) {
@@ -9756,9 +9837,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
       return record;
     };
 
-    Model.prototype.updateAttribute = function(name, value) {
+    Model.prototype.updateAttribute = function(name, value, options) {
       this[name] = value;
-      return this.save();
+      return this.save(options);
     };
 
     Model.prototype.updateAttributes = function(atts, options) {
@@ -9776,7 +9857,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     };
 
     Model.prototype.destroy = function(options) {
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       this.trigger('beforeDestroy', options);
       delete this.constructor.records[this.id];
       delete this.constructor.crecords[this.cid];
@@ -9804,7 +9887,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
     Model.prototype.reload = function() {
       var original;
-      if (this.isNew()) return this;
+      if (this.isNew()) {
+        return this;
+      }
       original = this.constructor.find(this.id);
       this.load(original.attributes());
       return original;
@@ -9847,7 +9932,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     Model.prototype.create = function(options) {
       var clone, record;
       this.trigger('beforeCreate', options);
-      if (!this.id) this.id = this.cid;
+      if (!this.id) {
+        this.id = this.cid;
+      }
       record = this.dup(false);
       this.constructor.records[this.id] = record;
       this.constructor.crecords[this.cid] = record;
@@ -9861,7 +9948,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
       var binder, unbinder,
         _this = this;
       this.constructor.bind(events, binder = function(record) {
-        if (record && _this.eql(record)) return callback.apply(_this, arguments);
+        if (record && _this.eql(record)) {
+          return callback.apply(_this, arguments);
+        }
       });
       this.constructor.bind('unbind', unbinder = function(record) {
         if (record && _this.eql(record)) {
@@ -9900,6 +9989,8 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
     __extends(Controller, _super);
 
+    Controller.name = 'Controller';
+
     Controller.include(Events);
 
     Controller.include(Log);
@@ -9909,6 +10000,8 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     Controller.prototype.tag = 'div';
 
     function Controller(options) {
+      this.release = __bind(this.release, this);
+
       var key, value, _ref;
       this.options = options;
       _ref = this.options;
@@ -9916,20 +10009,40 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
         value = _ref[key];
         this[key] = value;
       }
-      if (!this.el) this.el = document.createElement(this.tag);
+      if (!this.el) {
+        this.el = document.createElement(this.tag);
+      }
       this.el = $(this.el);
-      if (this.className) this.el.addClass(this.className);
-      if (this.attributes) this.el.attr(this.attributes);
-      if (!this.events) this.events = this.constructor.events;
-      if (!this.elements) this.elements = this.constructor.elements;
-      if (this.events) this.delegateEvents(this.events);
-      if (this.elements) this.refreshElements();
+      if (this.className) {
+        this.el.addClass(this.className);
+      }
+      if (this.attributes) {
+        this.el.attr(this.attributes);
+      }
+      this.release(function() {
+        return this.el.remove();
+      });
+      if (!this.events) {
+        this.events = this.constructor.events;
+      }
+      if (!this.elements) {
+        this.elements = this.constructor.elements;
+      }
+      if (this.events) {
+        this.delegateEvents(this.events);
+      }
+      if (this.elements) {
+        this.refreshElements();
+      }
       Controller.__super__.constructor.apply(this, arguments);
     }
 
-    Controller.prototype.release = function() {
-      this.el.remove();
-      return this.unbind();
+    Controller.prototype.release = function(callback) {
+      if (typeof callback === 'function') {
+        return this.bind('release', callback);
+      } else {
+        return this.trigger('release');
+      }
     };
 
     Controller.prototype.$ = function(selector) {
@@ -9941,7 +10054,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
       _results = [];
       for (key in events) {
         method = events[key];
-        if (typeof method !== 'function') method = this.proxy(this[method]);
+        if (typeof method !== 'function') {
+          method = this.proxy(this[method]);
+        }
         match = key.match(this.eventSplitter);
         eventName = match[1];
         selector = match[2];
@@ -10047,7 +10162,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
   isBlank = function(value) {
     var key;
-    if (!value) return true;
+    if (!value) {
+      return true;
+    }
     for (key in value) {
       return false;
     }
@@ -10060,7 +10177,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
   Spine = this.Spine = {};
 
-  if (typeof module !== "undefined" && module !== null) module.exports = Spine;
+  if (typeof module !== "undefined" && module !== null) {
+    module.exports = Spine;
+  }
 
   Spine.version = '1.0.6';
 
@@ -10088,28 +10207,40 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
       __extends(result, _super);
 
+      result.name = 'result';
+
       function result() {
-        result.__super__.constructor.apply(this, arguments);
+        return result.__super__.constructor.apply(this, arguments);
       }
 
       return result;
 
     })(this);
-    if (instances) result.include(instances);
-    if (statics) result.extend(statics);
-    if (typeof result.unbind === "function") result.unbind();
+    if (instances) {
+      result.include(instances);
+    }
+    if (statics) {
+      result.extend(statics);
+    }
+    if (typeof result.unbind === "function") {
+      result.unbind();
+    }
     return result;
   };
 
   Model.setup = function(name, attributes) {
     var Instance;
-    if (attributes == null) attributes = [];
+    if (attributes == null) {
+      attributes = [];
+    }
     Instance = (function(_super) {
 
       __extends(Instance, _super);
 
+      Instance.name = 'Instance';
+
       function Instance() {
-        Instance.__super__.constructor.apply(this, arguments);
+        return Instance.__super__.constructor.apply(this, arguments);
       }
 
       return Instance;
@@ -10127,18 +10258,20 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
 }).call(this);
 (function() {
-  var $,
-    __hasProp = Object.prototype.hasOwnProperty,
+  var $, Spine,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
-    __slice = Array.prototype.slice;
+    __slice = [].slice;
 
-  if (typeof Spine === "undefined" || Spine === null) Spine = require('spine');
+  Spine = this.Spine || require('spine');
 
   $ = Spine.$;
 
   Spine.Manager = (function(_super) {
 
     __extends(Manager, _super);
+
+    Manager.name = 'Manager';
 
     Manager.include(Spine.Events);
 
@@ -10225,6 +10358,8 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
     __extends(Stack, _super);
 
+    Stack.name = 'Stack';
+
     Stack.prototype.controllers = {};
 
     Stack.prototype.routes = {};
@@ -10232,7 +10367,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     Stack.prototype.className = 'spine stack';
 
     function Stack() {
-      var key, value, _fn, _ref, _ref2,
+      var key, value, _fn, _ref, _ref1,
         _this = this;
       Stack.__super__.constructor.apply(this, arguments);
       this.manager = new Spine.Manager;
@@ -10244,21 +10379,25 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
         });
         this.add(this[key]);
       }
-      _ref2 = this.routes;
+      _ref1 = this.routes;
       _fn = function(key, value) {
         var callback;
-        if (typeof value === 'function') callback = value;
+        if (typeof value === 'function') {
+          callback = value;
+        }
         callback || (callback = function() {
-          var _ref3;
-          return (_ref3 = _this[value]).active.apply(_ref3, arguments);
+          var _ref2;
+          return (_ref2 = _this[value]).active.apply(_ref2, arguments);
         });
         return _this.route(key, callback);
       };
-      for (key in _ref2) {
-        value = _ref2[key];
+      for (key in _ref1) {
+        value = _ref1[key];
         _fn(key, value);
       }
-      if (this["default"]) this[this["default"]].active();
+      if (this["default"]) {
+        this[this["default"]].active();
+      }
     }
 
     Stack.prototype.add = function(controller) {
@@ -10276,12 +10415,12 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
 }).call(this);
 (function() {
-  var $, escapeRegExp, hashStrip, namedParam, splatParam,
-    __hasProp = Object.prototype.hasOwnProperty,
+  var $, Spine, escapeRegExp, hashStrip, namedParam, splatParam,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
-    __slice = Array.prototype.slice;
+    __slice = [].slice;
 
-  if (typeof Spine === "undefined" || Spine === null) Spine = require('spine');
+  Spine = this.Spine || require('spine');
 
   $ = Spine.$;
 
@@ -10297,6 +10436,8 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     var _ref;
 
     __extends(Route, _super);
+
+    Route.name = 'Route';
 
     Route.extend(Spine.Events);
 
@@ -10325,12 +10466,16 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     };
 
     Route.setup = function(options) {
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       this.options = $.extend({}, this.options, options);
       if (this.options.history) {
         this.history = this.historySupport && this.options.history;
       }
-      if (this.options.shim) return;
+      if (this.options.shim) {
+        return;
+      }
       if (this.history) {
         $(window).bind('popstate', this.change);
       } else {
@@ -10359,11 +10504,17 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
       }
       options = $.extend({}, this.options, options);
       path = args.join('/');
-      if (this.path === path) return;
+      if (this.path === path) {
+        return;
+      }
       this.path = path;
       this.trigger('navigate', this.path);
-      if (options.trigger) this.matchRoute(this.path, options);
-      if (options.shim) return;
+      if (options.trigger) {
+        this.matchRoute(this.path, options);
+      }
+      if (options.shim) {
+        return;
+      }
       if (this.history) {
         return history.pushState({}, document.title, this.path);
       } else {
@@ -10374,7 +10525,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     Route.getPath = function() {
       var path;
       path = window.location.pathname;
-      if (path.substr(0, 1) !== '/') path = '/' + path;
+      if (path.substr(0, 1) !== '/') {
+        path = '/' + path;
+      }
       return path;
     };
 
@@ -10393,16 +10546,18 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     Route.change = function() {
       var path;
       path = this.getFragment() !== '' ? this.getFragment() : this.getPath();
-      if (path === this.path) return;
+      if (path === this.path) {
+        return;
+      }
       this.path = path;
       return this.matchRoute(this.path);
     };
 
     Route.matchRoute = function(path, options) {
-      var route, _i, _len, _ref2;
-      _ref2 = this.routes;
-      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-        route = _ref2[_i];
+      var route, _i, _len, _ref1;
+      _ref1 = this.routes;
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        route = _ref1[_i];
         if (route.match(path, options)) {
           this.trigger('change', route, path);
           return route;
@@ -10428,14 +10583,18 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     }
 
     Route.prototype.match = function(path, options) {
-      var i, match, param, params, _len;
-      if (options == null) options = {};
+      var i, match, param, params, _i, _len;
+      if (options == null) {
+        options = {};
+      }
       match = this.route.exec(path);
-      if (!match) return false;
+      if (!match) {
+        return false;
+      }
       options.match = match;
       params = match.slice(1);
       if (this.names.length) {
-        for (i = 0, _len = params.length; i < _len; i++) {
+        for (i = _i = 0, _len = params.length; _i < _len; i = ++_i) {
           param = params[i];
           options[this.names[i]] = param;
         }
@@ -10474,26 +10633,28 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 }).call(this);
 (function() {
   var Collection, Instance, Singleton, Spine, isArray, require, singularize, underscore,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Spine = this.Spine || require('spine');
 
   isArray = Spine.isArray;
 
-  if (typeof require === "undefined" || require === null) {
-    require = (function(value) {
-      return eval(value);
-    });
-  }
+  require = this.require || (function(value) {
+    return eval(value);
+  });
 
   Collection = (function(_super) {
 
     __extends(Collection, _super);
 
+    Collection.name = 'Collection';
+
     function Collection(options) {
       var key, value;
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       for (key in options) {
         value = options[key];
         this[key] = value;
@@ -10523,14 +10684,16 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
       records = this.select(function(rec) {
         return rec.id + '' === id + '';
       });
-      if (!records[0]) throw 'Unknown record';
+      if (!records[0]) {
+        throw 'Unknown record';
+      }
       return records[0];
     };
 
     Collection.prototype.findAllByAttribute = function(name, value) {
       var _this = this;
       return this.model.select(function(rec) {
-        return rec[name] === value;
+        return _this.associated(rec) && rec[name] === value;
       });
     };
 
@@ -10546,21 +10709,23 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     };
 
     Collection.prototype.refresh = function(values) {
-      var record, records, _i, _j, _len, _len2, _ref;
+      var record, records, _i, _j, _len, _len1, _ref;
       _ref = this.all();
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         record = _ref[_i];
         delete this.model.records[record.id];
       }
       records = this.model.fromJSON(values);
-      if (!isArray(records)) records = [records];
-      for (_j = 0, _len2 = records.length; _j < _len2; _j++) {
+      if (!isArray(records)) {
+        records = [records];
+      }
+      for (_j = 0, _len1 = records.length; _j < _len1; _j++) {
         record = records[_j];
         record.newRecord = false;
         record[this.fkey] = this.record.id;
         this.model.records[record.id] = record;
       }
-      return this.model.trigger('refresh', records);
+      return this.model.trigger('refresh', this.model.cloneArray(records));
     };
 
     Collection.prototype.create = function(record) {
@@ -10580,9 +10745,13 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
     __extends(Instance, _super);
 
+    Instance.name = 'Instance';
+
     function Instance(options) {
       var key, value;
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       for (key in options) {
         value = options[key];
         this[key] = value;
@@ -10594,8 +10763,12 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     };
 
     Instance.prototype.update = function(value) {
-      if (!(value instanceof this.model)) value = new this.model(value);
-      if (value.isNew()) value.save();
+      if (!(value instanceof this.model)) {
+        value = new this.model(value);
+      }
+      if (value.isNew()) {
+        value.save();
+      }
       return this.record[this.fkey] = value && value.id;
     };
 
@@ -10607,9 +10780,13 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
     __extends(Singleton, _super);
 
+    Singleton.name = 'Singleton';
+
     function Singleton(options) {
       var key, value;
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       for (key in options) {
         value = options[key];
         this[key] = value;
@@ -10621,7 +10798,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     };
 
     Singleton.prototype.update = function(value) {
-      if (!(value instanceof this.model)) value = this.model.fromJSON(value);
+      if (!(value instanceof this.model)) {
+        value = this.model.fromJSON(value);
+      }
       value[this.fkey] = this.record.id;
       return value.save();
     };
@@ -10641,9 +10820,13 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
   Spine.Model.extend({
     hasMany: function(name, model, fkey) {
       var association;
-      if (fkey == null) fkey = "" + (underscore(this.className)) + "_id";
+      if (fkey == null) {
+        fkey = "" + (underscore(this.className)) + "_id";
+      }
       association = function(record) {
-        if (typeof model === 'string') model = require(model);
+        if (typeof model === 'string') {
+          model = require(model);
+        }
         return new Collection({
           name: name,
           model: model,
@@ -10652,15 +10835,21 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
         });
       };
       return this.prototype[name] = function(value) {
-        if (value != null) association(this).refresh(value);
+        if (value != null) {
+          association(this).refresh(value);
+        }
         return association(this);
       };
     },
     belongsTo: function(name, model, fkey) {
       var association;
-      if (fkey == null) fkey = "" + (singularize(name)) + "_id";
+      if (fkey == null) {
+        fkey = "" + (singularize(name)) + "_id";
+      }
       association = function(record) {
-        if (typeof model === 'string') model = require(model);
+        if (typeof model === 'string') {
+          model = require(model);
+        }
         return new Instance({
           name: name,
           model: model,
@@ -10669,16 +10858,22 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
         });
       };
       this.prototype[name] = function(value) {
-        if (value != null) association(this).update(value);
+        if (value != null) {
+          association(this).update(value);
+        }
         return association(this).exists();
       };
       return this.attributes.push(fkey);
     },
     hasOne: function(name, model, fkey) {
       var association;
-      if (fkey == null) fkey = "" + (underscore(this.className)) + "_id";
+      if (fkey == null) {
+        fkey = "" + (underscore(this.className)) + "_id";
+      }
       association = function(record) {
-        if (typeof model === 'string') model = require(model);
+        if (typeof model === 'string') {
+          model = require(model);
+        }
         return new Singleton({
           name: name,
           model: model,
@@ -10687,7 +10882,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
         });
       };
       return this.prototype[name] = function(value) {
-        if (value != null) association(this).update(value);
+        if (value != null) {
+          association(this).update(value);
+        }
         return association(this).find();
       };
     }
@@ -10696,11 +10893,13 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 }).call(this);
 (function() {
   var $, defaults, n, prefix, transformTypes, vendor, vendorNames, _base,
-    __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   $ = typeof jQuery !== "undefined" && jQuery !== null ? jQuery : require('jqueryify');
 
-  if (!$) throw 'jQuery required';
+  if (!$) {
+    throw 'jQuery required';
+  }
 
   (_base = $.support).transition || (_base.transition = (function() {
     var style;
@@ -10747,7 +10946,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
       return called = true;
     });
     callback = function() {
-      if (!called) return $(_this).trigger(n.transitionEnd);
+      if (!called) {
+        return $(_this).trigger(n.transitionEnd);
+      }
     };
     return setTimeout(callback, duration);
   };
@@ -10755,28 +10956,40 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
   $.fn.transform = function(properties, options) {
     var key, opts, transforms, value;
     opts = $.extend({}, defaults, options);
-    if (!opts.enabled) return this;
+    if (!opts.enabled) {
+      return this;
+    }
     transforms = [];
     for (key in properties) {
       value = properties[key];
-      if (!(__indexOf.call(transformTypes, key) >= 0)) continue;
+      if (!(__indexOf.call(transformTypes, key) >= 0)) {
+        continue;
+      }
       transforms.push("" + key + "(" + value + ")");
       delete properties[key];
     }
-    if (transforms.length) properties[n.transform] = transforms.join(' ');
-    if (opts.origin) properties["" + prefix + "transform-origin"] = opts.origin;
+    if (transforms.length) {
+      properties[n.transform] = transforms.join(' ');
+    }
+    if (opts.origin) {
+      properties["" + prefix + "transform-origin"] = opts.origin;
+    }
     return $(this).css(properties);
   };
 
   $.fn.gfx = function(properties, options) {
     var callback, opts;
     opts = $.extend({}, defaults, options);
-    if (!opts.enabled) return this;
+    if (!opts.enabled) {
+      return this;
+    }
     properties[n.transition] = "all " + opts.duration + "ms " + opts.easing;
     callback = function() {
       var _ref;
       $(this).css(n.transition, '');
-      if ((_ref = opts.complete) != null) _ref.apply(this, arguments);
+      if ((_ref = opts.complete) != null) {
+        _ref.apply(this, arguments);
+      }
       return $(this).dequeue();
     };
     return this[opts.queue === false ? 'each' : 'queue'](function() {
@@ -10790,8 +11003,12 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 (function() {
 
   $.fn.gfxPopIn = function(options) {
-    if (options == null) options = {};
-    if (options.scale == null) options.scale = '.2';
+    if (options == null) {
+      options = {};
+    }
+    if (options.scale == null) {
+      options.scale = '.2';
+    }
     $(this).queueNext(function() {
       return $(this).transform({
         '-webkit-transform-origin': '50% 50%',
@@ -10827,8 +11044,12 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
   };
 
   $.fn.gfxFadeIn = function(options) {
-    if (options == null) options = {};
-    if (options.duration == null) options.duration = 1000;
+    if (options == null) {
+      options = {};
+    }
+    if (options.duration == null) {
+      options.duration = 1000;
+    }
     $(this).queueNext(function() {
       return $(this).css({
         opacity: '0'
@@ -10840,7 +11061,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
   };
 
   $.fn.gfxFadeOut = function(options) {
-    if (options == null) options = {};
+    if (options == null) {
+      options = {};
+    }
     $(this).queueNext(function() {
       return $(this).css({
         opacity: 1
@@ -10858,9 +11081,15 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
   $.fn.gfxShake = function(options) {
     var distance;
-    if (options == null) options = {};
-    if (options.duration == null) options.duration = 100;
-    if (options.easing == null) options.easing = 'ease-out';
+    if (options == null) {
+      options = {};
+    }
+    if (options.duration == null) {
+      options.duration = 100;
+    }
+    if (options.easing == null) {
+      options.easing = 'ease-out';
+    }
     distance = options.distance || 20;
     $(this).gfx({
       translateX: "-" + distance + "px"
@@ -10882,7 +11111,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
   };
 
   $.fn.gfxBlip = function(options) {
-    if (options == null) options = {};
+    if (options == null) {
+      options = {};
+    }
     options.scale || (options.scale = '1.15');
     $(this).gfx({
       scale: options.scale
@@ -10893,7 +11124,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
   };
 
   $.fn.gfxExplodeIn = function(options) {
-    if (options == null) options = {};
+    if (options == null) {
+      options = {};
+    }
     options.scale || (options.scale = '3');
     $(this).queueNext(function() {
       return $(this).transform({
@@ -10908,7 +11141,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
   };
 
   $.fn.gfxExplodeOut = function(options) {
-    if (options == null) options = {};
+    if (options == null) {
+      options = {};
+    }
     options.scale || (options.scale = '3');
     $(this).queueNext(function() {
       return $(this).transform({
@@ -10932,7 +11167,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
   };
 
   $.fn.gfxFlipIn = function(options) {
-    if (options == null) options = {};
+    if (options == null) {
+      options = {};
+    }
     $(this).queueNext(function() {
       return $(this).transform({
         rotateY: '180deg',
@@ -10947,7 +11184,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
   };
 
   $.fn.gfxFlipOut = function(options) {
-    if (options == null) options = {};
+    if (options == null) {
+      options = {};
+    }
     $(this).queueNext(function() {
       return $(this).transform({
         rotateY: 0,
@@ -10971,7 +11210,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
   };
 
   $.fn.gfxRotateOut = function(options) {
-    if (options == null) options = {};
+    if (options == null) {
+      options = {};
+    }
     $(this).queueNext(function() {
       return $(this).transform({
         rotateY: 0
@@ -10993,7 +11234,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
   $.fn.gfxRotateIn = function(options) {
     var $;
-    if (options == null) options = {};
+    if (options == null) {
+      options = {};
+    }
     $(this).queueNext(function() {
       return $(this).transform({
         rotateY: '180deg',
@@ -11011,10 +11254,14 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
   $.fn.gfxSlideOut = function(options) {
     var distance, opacity;
-    if (options == null) options = {};
+    if (options == null) {
+      options = {};
+    }
     options.direction || (options.direction = 'right');
     distance = options.distance || 100;
-    if (options.direction === 'left') distance *= -1;
+    if (options.direction === 'left') {
+      distance *= -1;
+    }
     distance += "%";
     opacity = options.fade ? 0 : 1;
     $(this).queueNext(function() {
@@ -11034,10 +11281,14 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
   $.fn.gfxSlideIn = function(options) {
     var distance, opacity;
-    if (options == null) options = {};
+    if (options == null) {
+      options = {};
+    }
     options.direction || (options.direction = 'right');
     distance = options.distance || 100;
-    if (options.direction === 'left') distance *= -1;
+    if (options.direction === 'left') {
+      distance *= -1;
+    }
     distance += "%";
     opacity = options.fade ? 0 : 1;
     $(this).queueNext(function() {
@@ -11053,7 +11304,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
   };
 
   $.fn.gfxRaisedIn = function(options) {
-    if (options == null) options = {};
+    if (options == null) {
+      options = {};
+    }
     $(this).queueNext(function() {
       return $(this).transform({
         scale: '1',
@@ -11069,7 +11322,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
   };
 
   $.fn.gfxRaisedOut = function(options) {
-    if (options == null) options = {};
+    if (options == null) {
+      options = {};
+    }
     $(this).queueNext(function() {
       return $(this).transform({
         scale: '1',
@@ -11119,14 +11374,16 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 }).call(this);
 this.require.define({"lib/collection":function(exports, require, module){(function() {
   var Collection,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
-    __slice = Array.prototype.slice;
+    __slice = [].slice;
 
   Collection = (function(_super) {
     var k, v, _ref;
 
     __extends(Collection, _super);
+
+    Collection.name = 'Collection';
 
     _ref = Spine.Events;
     for (k in _ref) {
@@ -11206,19 +11463,23 @@ this.require.define({"lib/collection":function(exports, require, module){(functi
 this.require.define({"lib/color_picker":function(exports, require, module){(function() {
   var Alpha, Canvas, Color, ColorPicker, Display, Gradient, Input, Popup, Preview, Spectrum,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
-    __slice = Array.prototype.slice;
+    __slice = [].slice;
 
   Popup = require('./popup');
 
   Color = (function() {
 
+    Color.name = 'Color';
+
     Color.regex = /(?:#([0-9a-f]{3,6})|rgba?\(([^)]+)\))/i;
 
     Color.fromHex = function(hex) {
       var b, g, r;
-      if (hex[0] === '#') hex = hex.substring(1, 7);
+      if (hex[0] === '#') {
+        hex = hex.substring(1, 7);
+      }
       if (hex.length === 3) {
         hex = hex.charAt(0) + hex.charAt(0) + hex.charAt(1) + hex.charAt(1) + hex.charAt(2) + hex.charAt(2);
       }
@@ -11231,7 +11492,9 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
     Color.fromString = function(str) {
       var a, b, g, hex, match, r, rgba, _ref;
       match = str.match(this.regex);
-      if (!match) return null;
+      if (!match) {
+        return null;
+      }
       if (hex = match[1]) {
         return this.fromHex(hex);
       } else if (rgba = match[2]) {
@@ -11253,10 +11516,18 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
     };
 
     function Color(r, g, b, a) {
-      if (a == null) a = 1;
-      if (r != null) this.r = parseInt(r, 10);
-      if (g != null) this.g = parseInt(g, 10);
-      if (b != null) this.b = parseInt(b, 10);
+      if (a == null) {
+        a = 1;
+      }
+      if (r != null) {
+        this.r = parseInt(r, 10);
+      }
+      if (g != null) {
+        this.g = parseInt(g, 10);
+      }
+      if (b != null) {
+        this.b = parseInt(b, 10);
+      }
       this.a = parseFloat(a);
     }
 
@@ -11340,6 +11611,8 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
     __extends(Canvas, _super);
 
+    Canvas.name = 'Canvas';
+
     Canvas.prototype.tag = 'canvas';
 
     Canvas.prototype.width = 100;
@@ -11352,7 +11625,9 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
     function Canvas() {
       this.drop = __bind(this.drop, this);
-      this.over = __bind(this.over, this);      Canvas.__super__.constructor.apply(this, arguments);
+
+      this.over = __bind(this.over, this);
+      Canvas.__super__.constructor.apply(this, arguments);
       this.el.attr({
         width: this.width,
         height: this.height
@@ -11399,6 +11674,8 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
     __extends(Gradient, _super);
 
+    Gradient.name = 'Gradient';
+
     Gradient.prototype.className = 'gradient';
 
     Gradient.prototype.width = 250;
@@ -11424,11 +11701,11 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
     };
 
     Gradient.prototype.renderGradient = function() {
-      var color, colors, gradient, index, xy, _len, _ref, _ref2;
+      var color, colors, gradient, index, xy, _i, _len, _ref, _ref1;
       xy = arguments[0], colors = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
       gradient = (_ref = this.ctx).createLinearGradient.apply(_ref, [0, 0].concat(__slice.call(xy)));
-      gradient.addColorStop(0, (_ref2 = colors.shift()) != null ? _ref2.toString() : void 0);
-      for (index = 0, _len = colors.length; index < _len; index++) {
+      gradient.addColorStop(0, (_ref1 = colors.shift()) != null ? _ref1.toString() : void 0);
+      for (index = _i = 0, _len = colors.length; _i < _len; index = ++_i) {
         color = colors[index];
         gradient.addColorStop(index + 1 / colors.length, color.toString());
       }
@@ -11455,6 +11732,8 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
   Spectrum = (function(_super) {
 
     __extends(Spectrum, _super);
+
+    Spectrum.name = 'Spectrum';
 
     Spectrum.prototype.className = 'spectrum';
 
@@ -11495,6 +11774,8 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
   Alpha = (function(_super) {
 
     __extends(Alpha, _super);
+
+    Alpha.name = 'Alpha';
 
     Alpha.prototype.className = 'alpha';
 
@@ -11542,6 +11823,8 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
   Display = (function(_super) {
 
     __extends(Display, _super);
+
+    Display.name = 'Display';
 
     Display.prototype.tag = 'article';
 
@@ -11609,6 +11892,8 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
   ColorPicker = (function(_super) {
 
     __extends(ColorPicker, _super);
+
+    ColorPicker.name = 'ColorPicker';
 
     ColorPicker.prototype.className = 'colorPicker';
 
@@ -11682,7 +11967,9 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
     };
 
     ColorPicker.prototype.change = function(color) {
-      if (color == null) color = this.color;
+      if (color == null) {
+        color = this.color;
+      }
       return this.trigger('change', color);
     };
 
@@ -11714,6 +12001,8 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
     __extends(Input, _super);
 
+    Input.name = 'Input';
+
     Input.prototype.className = 'colorInput';
 
     Input.prototype.events = {
@@ -11723,7 +12012,9 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
     function Input() {
       this.change = __bind(this.change, this);
-      this.open = __bind(this.open, this);      Input.__super__.constructor.apply(this, arguments);
+
+      this.open = __bind(this.open, this);
+      Input.__super__.constructor.apply(this, arguments);
       this.color || (this.color = new Color);
       this.$preview = $('<div />').addClass('preview');
       this.$preview.css({
@@ -11761,6 +12052,8 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
     __extends(Preview, _super);
 
+    Preview.name = 'Preview';
+
     Preview.prototype.className = 'colorPreview';
 
     Preview.prototype.events = {
@@ -11768,7 +12061,8 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
     };
 
     function Preview() {
-      this.open = __bind(this.open, this);      Preview.__super__.constructor.apply(this, arguments);
+      this.open = __bind(this.open, this);
+      Preview.__super__.constructor.apply(this, arguments);
       this.color || (this.color = new Color);
       this.inner = $('<div />').addClass('inner');
       this.append(this.inner);
@@ -11819,7 +12113,7 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 this.require.define({"lib/gradient_picker":function(exports, require, module){(function() {
   var Background, Color, ColorPicker, ColorStop, GradientPicker, LinearGradient, Popup, Slider,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Popup = require('./popup');
@@ -11838,6 +12132,8 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
 
     __extends(Slider, _super);
 
+    Slider.name = 'Slider';
+
     Slider.prototype.className = 'slider';
 
     Slider.prototype.events = {
@@ -11848,8 +12144,11 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
     function Slider(colorStop) {
       this.colorStop = colorStop != null ? colorStop : new ColorStop;
       this.drop = __bind(this.drop, this);
+
       this.drag = __bind(this.drag, this);
+
       this.listen = __bind(this.listen, this);
+
       Slider.__super__.constructor.call(this);
       this.inner = $('<div />').addClass('inner');
       this.append(this.inner);
@@ -11878,7 +12177,9 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
       var left, length, top, _ref;
       this.moved = true;
       if ((_ref = this.picker) != null) {
-        if (typeof _ref.close === "function") _ref.close();
+        if (typeof _ref.close === "function") {
+          _ref.close();
+        }
       }
       this.picker = false;
       top = e.pageY - this.offset.top;
@@ -11892,7 +12193,9 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
     Slider.prototype.drop = function(e) {
       $(document).unbind('mousemove', this.drag);
       $(document).unbind('mouseup', this.drop);
-      if (this.remove) return this.release();
+      if (this.remove) {
+        return this.release();
+      }
     };
 
     Slider.prototype.move = function(length) {
@@ -11914,7 +12217,9 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
 
     Slider.prototype.openColorPicker = function() {
       var _this = this;
-      if (this.moved) return;
+      if (this.moved) {
+        return;
+      }
       this.picker = new ColorPicker({
         color: this.colorStop.color
       });
@@ -11933,6 +12238,8 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
   GradientPicker = (function(_super) {
 
     __extends(GradientPicker, _super);
+
+    GradientPicker.name = 'GradientPicker';
 
     GradientPicker.prototype.className = 'gradientPicker';
 
@@ -11961,7 +12268,9 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
     }
 
     GradientPicker.prototype.addSlider = function(colorStop) {
-      if (colorStop == null) colorStop = new ColorStop;
+      if (colorStop == null) {
+        colorStop = new ColorStop;
+      }
       this.gradient.addStop(colorStop);
       this.append(new Slider(colorStop));
       return this.set();
@@ -11980,7 +12289,9 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
 
     GradientPicker.prototype.createSlider = function(e) {
       var left, length;
-      if (e.target !== e.currentTarget) return;
+      if (e.target !== e.currentTarget) {
+        return;
+      }
       left = e.pageX - this.el.offset().left;
       length = (left / this.el.width()) * 100;
       return this.addSlider(new ColorStop(new Color.White, length));
@@ -11997,12 +12308,14 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
 this.require.define({"lib/popup":function(exports, require, module){(function() {
   var Popup,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Popup = (function(_super) {
 
     __extends(Popup, _super);
+
+    Popup.name = 'Popup';
 
     Popup.open = function() {
       var _ref;
@@ -12013,8 +12326,11 @@ this.require.define({"lib/popup":function(exports, require, module){(function() 
 
     function Popup() {
       this.remove = __bind(this.remove, this);
+
       this.close = __bind(this.close, this);
-      this.open = __bind(this.open, this);      Popup.__super__.constructor.apply(this, arguments);
+
+      this.open = __bind(this.open, this);
+      Popup.__super__.constructor.apply(this, arguments);
       this.el.delegate('click', '.close', this.close);
       this.el.addClass('popup');
       this.el.css({
@@ -12056,7 +12372,9 @@ this.require.define({"lib/popup":function(exports, require, module){(function() 
     };
 
     Popup.prototype.remove = function(e) {
-      if (!$(e.target).closest(this.el).length) return this.close();
+      if (!$(e.target).closest(this.el).length) {
+        return this.close();
+      }
     };
 
     return Popup;
@@ -12070,12 +12388,14 @@ this.require.define({"lib/popup":function(exports, require, module){(function() 
 this.require.define({"lib/position_picker":function(exports, require, module){(function() {
   var PositionPicker,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   PositionPicker = (function(_super) {
 
     __extends(PositionPicker, _super);
+
+    PositionPicker.name = 'PositionPicker';
 
     PositionPicker.prototype.className = 'positionPicker';
 
@@ -12089,7 +12409,9 @@ this.require.define({"lib/position_picker":function(exports, require, module){(f
 
     function PositionPicker() {
       this.drop = __bind(this.drop, this);
-      this.over = __bind(this.over, this);      PositionPicker.__super__.constructor.apply(this, arguments);
+
+      this.over = __bind(this.over, this);
+      PositionPicker.__super__.constructor.apply(this, arguments);
       this.el.css({
         width: this.width,
         height: this.height
@@ -12115,7 +12437,9 @@ this.require.define({"lib/position_picker":function(exports, require, module){(f
     };
 
     PositionPicker.prototype.drag = function(e) {
-      if (this.disabled) return;
+      if (this.disabled) {
+        return;
+      }
       this.offset = $(this.el).offset();
       $(document).mousemove(this.over);
       $(document).mouseup(this.drop);
@@ -12216,10 +12540,10 @@ this.require.define({"lib/utils":function(exports, require, module){(function() 
 this.require.define({"app/controllers/element":function(exports, require, module){(function() {
   var Background, Color, Element, Resizing, Serialize, Utils,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
-    __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
-    __slice = Array.prototype.slice;
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
+    __slice = [].slice;
 
   Resizing = require('./element/resizing');
 
@@ -12234,6 +12558,8 @@ this.require.define({"app/controllers/element":function(exports, require, module
   Element = (function(_super) {
 
     __extends(Element, _super);
+
+    Element.name = 'Element';
 
     Element.include(Serialize);
 
@@ -12259,8 +12585,11 @@ this.require.define({"app/controllers/element":function(exports, require, module
     };
 
     function Element(attrs) {
-      if (attrs == null) attrs = {};
+      if (attrs == null) {
+        attrs = {};
+      }
       this.selected = __bind(this.selected, this);
+
       Element.__super__.constructor.call(this, {
         el: attrs.el
       });
@@ -12362,12 +12691,20 @@ this.require.define({"app/controllers/element":function(exports, require, module
       _ref = this.properties;
       for (name in _ref) {
         value = _ref[name];
-        if (__indexOf.call(this.ignoredStyles, name) >= 0) continue;
-        if (!value) continue;
-        if (typeof value === 'number' && !$.cssNumber[name]) value += 'px';
+        if (__indexOf.call(this.ignoredStyles, name) >= 0) {
+          continue;
+        }
+        if (!value) {
+          continue;
+        }
+        if (typeof value === 'number' && !$.cssNumber[name]) {
+          value += 'px';
+        }
         name = Utils.dasherize(name);
         value = value.toString();
-        if (!value) continue;
+        if (!value) {
+          continue;
+        }
         styles[name] = value;
       }
       styles = ((function() {
@@ -12406,12 +12743,14 @@ this.require.define({"app/controllers/element":function(exports, require, module
 this.require.define({"app/controllers/element/resizing":function(exports, require, module){(function() {
   var Resizing, Thumb,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Thumb = (function(_super) {
 
     __extends(Thumb, _super);
+
+    Thumb.name = 'Thumb';
 
     Thumb.prototype.className = 'thumb';
 
@@ -12422,8 +12761,11 @@ this.require.define({"app/controllers/element/resizing":function(exports, requir
     function Thumb(type) {
       this.type = type;
       this.drop = __bind(this.drop, this);
+
       this.drag = __bind(this.drag, this);
+
       this.listen = __bind(this.listen, this);
+
       Thumb.__super__.constructor.call(this);
       this.el.addClass(this.type);
     }
@@ -12465,6 +12807,8 @@ this.require.define({"app/controllers/element/resizing":function(exports, requir
   Resizing = (function(_super) {
 
     __extends(Resizing, _super);
+
+    Resizing.name = 'Resizing';
 
     Resizing.prototype.className = 'resizing';
 
@@ -12561,7 +12905,7 @@ this.require.define({"app/controllers/element/resizing":function(exports, requir
 ;}});
 this.require.define({"app/controllers/elements/canvas":function(exports, require, module){(function() {
   var Canvas, Element,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Element = require('../element');
@@ -12569,6 +12913,8 @@ this.require.define({"app/controllers/elements/canvas":function(exports, require
   Canvas = (function(_super) {
 
     __extends(Canvas, _super);
+
+    Canvas.name = 'Canvas';
 
     Canvas.prototype.tag = 'canvas';
 
@@ -12580,16 +12926,18 @@ this.require.define({"app/controllers/elements/canvas":function(exports, require
     }
 
     Canvas.prototype.paint = function() {
-      var first, point, points, _i, _len, _ref, _ref2, _ref3;
+      var first, point, points, _i, _len, _ref, _ref1, _ref2;
       first = this.points[0];
       points = this.points.slice(1, this.points.length);
-      if (!first) return;
+      if (!first) {
+        return;
+      }
       this.ctx.beginPath();
       (_ref = this.ctx).moveTo.apply(_ref, first);
-      _ref2 = this.points;
-      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-        point = _ref2[_i];
-        (_ref3 = this.ctx).lineTo.apply(_ref3, point);
+      _ref1 = this.points;
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        point = _ref1[_i];
+        (_ref2 = this.ctx).lineTo.apply(_ref2, point);
       }
       return this.ctx.fill();
     };
@@ -12618,7 +12966,7 @@ this.require.define({"app/controllers/elements/canvas":function(exports, require
 ;}});
 this.require.define({"app/controllers/elements/ellipsis":function(exports, require, module){(function() {
   var Element, Ellipsis,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Element = require('../element');
@@ -12626,6 +12974,8 @@ this.require.define({"app/controllers/elements/ellipsis":function(exports, requi
   Ellipsis = (function(_super) {
 
     __extends(Ellipsis, _super);
+
+    Ellipsis.name = 'Ellipsis';
 
     Ellipsis.prototype.className = 'ellipsis';
 
@@ -12651,7 +13001,7 @@ this.require.define({"app/controllers/elements/ellipsis":function(exports, requi
 ;}});
 this.require.define({"app/controllers/elements/input":function(exports, require, module){(function() {
   var CheckBox, Element, Input, Text, Textarea,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Element = require('../element');
@@ -12660,8 +13010,10 @@ this.require.define({"app/controllers/elements/input":function(exports, require,
 
     __extends(Input, _super);
 
+    Input.name = 'Input';
+
     function Input() {
-      Input.__super__.constructor.apply(this, arguments);
+      return Input.__super__.constructor.apply(this, arguments);
     }
 
     Input.prototype.tag = 'input';
@@ -12674,8 +13026,10 @@ this.require.define({"app/controllers/elements/input":function(exports, require,
 
     __extends(Text, _super);
 
+    Text.name = 'Text';
+
     function Text() {
-      Text.__super__.constructor.apply(this, arguments);
+      return Text.__super__.constructor.apply(this, arguments);
     }
 
     Text.prototype.attrs = {
@@ -12690,8 +13044,10 @@ this.require.define({"app/controllers/elements/input":function(exports, require,
 
     __extends(Textarea, _super);
 
+    Textarea.name = 'Textarea';
+
     function Textarea() {
-      Textarea.__super__.constructor.apply(this, arguments);
+      return Textarea.__super__.constructor.apply(this, arguments);
     }
 
     Textarea.prototype.tag = 'textarea';
@@ -12704,8 +13060,10 @@ this.require.define({"app/controllers/elements/input":function(exports, require,
 
     __extends(CheckBox, _super);
 
+    CheckBox.name = 'CheckBox';
+
     function CheckBox() {
-      CheckBox.__super__.constructor.apply(this, arguments);
+      return CheckBox.__super__.constructor.apply(this, arguments);
     }
 
     CheckBox.prototype.attrs = {
@@ -12726,7 +13084,7 @@ this.require.define({"app/controllers/elements/input":function(exports, require,
 ;}});
 this.require.define({"app/controllers/elements/line":function(exports, require, module){(function() {
   var Element, Line,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Element = require('../element');
@@ -12735,8 +13093,10 @@ this.require.define({"app/controllers/elements/line":function(exports, require, 
 
     __extends(Line, _super);
 
+    Line.name = 'Line';
+
     function Line() {
-      Line.__super__.constructor.apply(this, arguments);
+      return Line.__super__.constructor.apply(this, arguments);
     }
 
     Line.prototype.className = 'line';
@@ -12751,7 +13111,7 @@ this.require.define({"app/controllers/elements/line":function(exports, require, 
 ;}});
 this.require.define({"app/controllers/elements/rectangle":function(exports, require, module){(function() {
   var Element, Rectangle,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Element = require('../element');
@@ -12760,8 +13120,10 @@ this.require.define({"app/controllers/elements/rectangle":function(exports, requ
 
     __extends(Rectangle, _super);
 
+    Rectangle.name = 'Rectangle';
+
     function Rectangle() {
-      Rectangle.__super__.constructor.apply(this, arguments);
+      return Rectangle.__super__.constructor.apply(this, arguments);
     }
 
     Rectangle.prototype.className = 'rectangle';
@@ -12778,7 +13140,7 @@ this.require.define({"app/controllers/elements/rectangle":function(exports, requ
 ;}});
 this.require.define({"app/controllers/elements/text":function(exports, require, module){(function() {
   var Rectangle, Text,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Rectangle = require('./rectangle');
@@ -12787,8 +13149,10 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
 
     __extends(Text, _super);
 
+    Text.name = 'Text';
+
     function Text() {
-      Text.__super__.constructor.apply(this, arguments);
+      return Text.__super__.constructor.apply(this, arguments);
     }
 
     Text.prototype.className = 'text';
@@ -12809,11 +13173,15 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
 
     Text.prototype.selected = function(bool) {
       Text.__super__.selected.apply(this, arguments);
-      if (bool === false) return this.stopEditing();
+      if (bool === false) {
+        return this.stopEditing();
+      }
     };
 
     Text.prototype.text = function(text) {
-      if (text != null) this.el.text(text);
+      if (text != null) {
+        this.el.text(text);
+      }
       return this.el.text();
     };
 
@@ -12834,7 +13202,7 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
 ;}});
 this.require.define({"app/controllers/elements/triangle":function(exports, require, module){(function() {
   var Canvas, Triangle,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Canvas = require('./canvas');
@@ -12843,8 +13211,10 @@ this.require.define({"app/controllers/elements/triangle":function(exports, requi
 
     __extends(Triangle, _super);
 
+    Triangle.name = 'Triangle';
+
     function Triangle() {
-      Triangle.__super__.constructor.apply(this, arguments);
+      return Triangle.__super__.constructor.apply(this, arguments);
     }
 
     Triangle.prototype.className = 'triangle';
@@ -12861,7 +13231,7 @@ this.require.define({"app/controllers/elements/triangle":function(exports, requi
 ;}});
 this.require.define({"app/controllers/header":function(exports, require, module){(function() {
   var Ellipsis, Header, Rectangle, Text,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Rectangle = require('./elements/rectangle');
@@ -12873,6 +13243,8 @@ this.require.define({"app/controllers/header":function(exports, require, module)
   Header = (function(_super) {
 
     __extends(Header, _super);
+
+    Header.name = 'Header';
 
     Header.prototype.tag = 'header';
 
@@ -12886,7 +13258,9 @@ this.require.define({"app/controllers/header":function(exports, require, module)
 
     function Header() {
       Header.__super__.constructor.apply(this, arguments);
-      if (!this.stage) throw 'stage required';
+      if (!this.stage) {
+        throw 'stage required';
+      }
       this.html(JST['app/views/header'](this));
     }
 
@@ -12926,7 +13300,7 @@ this.require.define({"app/controllers/header":function(exports, require, module)
 this.require.define({"app/controllers/inspector":function(exports, require, module){(function() {
   var Background, Border, BorderRadius, BoxShadow, Dimensions, Inspector, Opacity, TextShadow,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Background = require('./inspector/background');
@@ -12947,10 +13321,13 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
 
     __extends(Inspector, _super);
 
+    Inspector.name = 'Inspector';
+
     Inspector.prototype.className = 'inspector';
 
     function Inspector() {
-      this.render = __bind(this.render, this);      Inspector.__super__.constructor.apply(this, arguments);
+      this.render = __bind(this.render, this);
+      Inspector.__super__.constructor.apply(this, arguments);
       this.stage.selection.bind('change', this.render);
       this.render();
     }
@@ -12987,7 +13364,7 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
 ;}});
 this.require.define({"app/controllers/inspector/background":function(exports, require, module){(function() {
   var Background, BackgroundImage, BackgroundInspector, Backgrounds, Collection, Color, ColorPicker, Edit, GradientPicker, List,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
@@ -13007,8 +13384,10 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
 
     __extends(Backgrounds, _super);
 
+    Backgrounds.name = 'Backgrounds';
+
     function Backgrounds() {
-      Backgrounds.__super__.constructor.apply(this, arguments);
+      return Backgrounds.__super__.constructor.apply(this, arguments);
     }
 
     Backgrounds.prototype.getColor = function() {
@@ -13030,6 +13409,8 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
   Edit = (function(_super) {
 
     __extends(Edit, _super);
+
+    Edit.name = 'Edit';
 
     Edit.prototype.className = 'edit';
 
@@ -13091,6 +13472,8 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
 
     __extends(List, _super);
 
+    List.name = 'List';
+
     List.prototype.className = 'list';
 
     List.prototype.events = {
@@ -13100,8 +13483,11 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
     };
 
     function List() {
-      this.render = __bind(this.render, this);      List.__super__.constructor.apply(this, arguments);
-      if (!this.backgrounds) throw 'backgrounds required';
+      this.render = __bind(this.render, this);
+      List.__super__.constructor.apply(this, arguments);
+      if (!this.backgrounds) {
+        throw 'backgrounds required';
+      }
       this.backgrounds.change(this.render);
       this.render();
     }
@@ -13143,11 +13529,15 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
 
     __extends(BackgroundInspector, _super);
 
+    BackgroundInspector.name = 'BackgroundInspector';
+
     BackgroundInspector.prototype.className = 'background';
 
     function BackgroundInspector() {
       this.set = __bind(this.set, this);
-      this.render = __bind(this.render, this);      BackgroundInspector.__super__.constructor.apply(this, arguments);
+
+      this.render = __bind(this.render, this);
+      BackgroundInspector.__super__.constructor.apply(this, arguments);
       this.render();
     }
 
@@ -13159,7 +13549,9 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
       this.backgrounds = this.stage.selection.get('backgroundImage');
       this.backgrounds = new Backgrounds(this.backgrounds);
       backgroundColor = this.stage.selection.get('backgroundColor');
-      if (backgroundColor) this.backgrounds.push(backgroundColor);
+      if (backgroundColor) {
+        this.backgrounds.push(backgroundColor);
+      }
       this.current = this.backgrounds.first();
       this.backgrounds.change(this.set);
       this.el.empty();
@@ -13198,7 +13590,7 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
 this.require.define({"app/controllers/inspector/border":function(exports, require, module){(function() {
   var Border, BorderController, ColorPicker,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Border = require('app/models/properties/border');
@@ -13208,6 +13600,8 @@ this.require.define({"app/controllers/inspector/border":function(exports, requir
   BorderController = (function(_super) {
 
     __extends(BorderController, _super);
+
+    BorderController.name = 'BorderController';
 
     BorderController.prototype.className = 'border';
 
@@ -13226,14 +13620,17 @@ this.require.define({"app/controllers/inspector/border":function(exports, requir
     BorderController.prototype.current = 'border';
 
     function BorderController() {
-      this.render = __bind(this.render, this);      BorderController.__super__.constructor.apply(this, arguments);
+      this.render = __bind(this.render, this);
+      BorderController.__super__.constructor.apply(this, arguments);
       this.render();
     }
 
     BorderController.prototype.render = function() {
       var _this = this;
       this.disabled = !this.stage.selection.isAny();
-      if (this.stage.selection.get('border') === false) this.disabled = true;
+      if (this.stage.selection.get('border') === false) {
+        this.disabled = true;
+      }
       this.html(JST['app/views/inspector/border'](this));
       this.$color = new ColorPicker.Preview;
       this.$color.bind('change', function() {
@@ -13248,7 +13645,9 @@ this.require.define({"app/controllers/inspector/border":function(exports, requir
     BorderController.prototype.change = function(current) {
       var _ref;
       this.current = current;
-      if (this.disabled) return;
+      if (this.disabled) {
+        return;
+      }
       this.$borders.removeClass('active');
       this.$borders.filter("[data-border=" + this.current + "]").addClass('active');
       this.currentBorder = this.stage.selection.get(this.current);
@@ -13295,12 +13694,14 @@ this.require.define({"app/controllers/inspector/border":function(exports, requir
 this.require.define({"app/controllers/inspector/border_radius":function(exports, require, module){(function() {
   var BorderRadius,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   BorderRadius = (function(_super) {
 
     __extends(BorderRadius, _super);
+
+    BorderRadius.name = 'BorderRadius';
 
     BorderRadius.prototype.className = 'borderRadius';
 
@@ -13317,14 +13718,19 @@ this.require.define({"app/controllers/inspector/border_radius":function(exports,
     BorderRadius.prototype.current = 'borderRadius';
 
     function BorderRadius() {
-      this.render = __bind(this.render, this);      BorderRadius.__super__.constructor.apply(this, arguments);
-      if (!this.stage) throw 'stage required';
+      this.render = __bind(this.render, this);
+      BorderRadius.__super__.constructor.apply(this, arguments);
+      if (!this.stage) {
+        throw 'stage required';
+      }
       this.render();
     }
 
     BorderRadius.prototype.render = function() {
       this.disabled = !this.stage.selection.isAny();
-      if (this.stage.selection.get('borderRadius') === false) this.disabled = true;
+      if (this.stage.selection.get('borderRadius') === false) {
+        this.disabled = true;
+      }
       this.html(JST['app/views/inspector/border_radius'](this));
       this.change(this.current);
       this.el.toggleClass('disabled', this.disabled);
@@ -13333,7 +13739,9 @@ this.require.define({"app/controllers/inspector/border_radius":function(exports,
 
     BorderRadius.prototype.change = function(current) {
       this.current = current;
-      if (this.disabled) return;
+      if (this.disabled) {
+        return;
+      }
       this.$borders.removeClass('active');
       this.$borders.filter("[data-border-radius=" + this.current + "]").addClass('active');
       this.radius = this.stage.selection.get(this.current);
@@ -13375,7 +13783,7 @@ this.require.define({"app/controllers/inspector/border_radius":function(exports,
 ;}});
 this.require.define({"app/controllers/inspector/box_shadow":function(exports, require, module){(function() {
   var BoxShadow, BoxShadowEdit, BoxShadowList, Collection, ColorPicker, Popup, PositionPicker, Shadow,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
@@ -13392,6 +13800,8 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
   BoxShadowEdit = (function(_super) {
 
     __extends(BoxShadowEdit, _super);
+
+    BoxShadowEdit.name = 'BoxShadowEdit';
 
     BoxShadowEdit.prototype.className = 'edit';
 
@@ -13468,6 +13878,8 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
 
     __extends(BoxShadowList, _super);
 
+    BoxShadowList.name = 'BoxShadowList';
+
     BoxShadowList.prototype.className = 'list';
 
     BoxShadowList.prototype.events = {
@@ -13477,8 +13889,11 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
     };
 
     function BoxShadowList() {
-      this.render = __bind(this.render, this);      BoxShadowList.__super__.constructor.apply(this, arguments);
-      if (!this.shadows) throw 'shadows required';
+      this.render = __bind(this.render, this);
+      BoxShadowList.__super__.constructor.apply(this, arguments);
+      if (!this.shadows) {
+        throw 'shadows required';
+      }
       this.shadows.change(this.render);
       this.render();
     }
@@ -13521,10 +13936,13 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
 
     __extends(BoxShadow, _super);
 
+    BoxShadow.name = 'BoxShadow';
+
     BoxShadow.prototype.className = 'boxShadow';
 
     function BoxShadow() {
-      this.set = __bind(this.set, this);      BoxShadow.__super__.constructor.apply(this, arguments);
+      this.set = __bind(this.set, this);
+      BoxShadow.__super__.constructor.apply(this, arguments);
       this.render();
     }
 
@@ -13560,7 +13978,11 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
     };
 
     BoxShadow.prototype.set = function(shadow) {
-      if (shadow) if (!this.shadows.include(shadow)) this.shadows.push(shadow);
+      if (shadow) {
+        if (!this.shadows.include(shadow)) {
+          this.shadows.push(shadow);
+        }
+      }
       return this.stage.selection.set('boxShadow', this.shadows.valueOf());
     };
 
@@ -13575,12 +13997,14 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
 this.require.define({"app/controllers/inspector/dimensions":function(exports, require, module){(function() {
   var Dimensions,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Dimensions = (function(_super) {
 
     __extends(Dimensions, _super);
+
+    Dimensions.name = 'Dimensions';
 
     Dimensions.prototype.className = 'dimensions';
 
@@ -13598,8 +14022,12 @@ this.require.define({"app/controllers/inspector/dimensions":function(exports, re
 
     function Dimensions() {
       this.update = __bind(this.update, this);
-      this.render = __bind(this.render, this);      Dimensions.__super__.constructor.apply(this, arguments);
-      if (!this.stage) throw 'stage required';
+
+      this.render = __bind(this.render, this);
+      Dimensions.__super__.constructor.apply(this, arguments);
+      if (!this.stage) {
+        throw 'stage required';
+      }
       $(document).bind('resize.element move.element', this.update);
       this.render();
     }
@@ -13614,7 +14042,9 @@ this.require.define({"app/controllers/inspector/dimensions":function(exports, re
 
     Dimensions.prototype.update = function() {
       this.disabled = !this.stage.selection.isSingle();
-      if (this.disabled) return;
+      if (this.disabled) {
+        return;
+      }
       this.$width.val(this.stage.selection.get('width'));
       this.$height.val(this.stage.selection.get('height'));
       this.$x.val(this.stage.selection.get('left'));
@@ -13639,12 +14069,14 @@ this.require.define({"app/controllers/inspector/dimensions":function(exports, re
 this.require.define({"app/controllers/inspector/opacity":function(exports, require, module){(function() {
   var Opacity,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Opacity = (function(_super) {
 
     __extends(Opacity, _super);
+
+    Opacity.name = 'Opacity';
 
     Opacity.prototype.className = 'opacity';
 
@@ -13657,8 +14089,11 @@ this.require.define({"app/controllers/inspector/opacity":function(exports, requi
     };
 
     function Opacity() {
-      this.render = __bind(this.render, this);      Opacity.__super__.constructor.apply(this, arguments);
-      if (!this.stage) throw 'stage required';
+      this.render = __bind(this.render, this);
+      Opacity.__super__.constructor.apply(this, arguments);
+      if (!this.stage) {
+        throw 'stage required';
+      }
       this.render();
     }
 
@@ -13687,7 +14122,7 @@ this.require.define({"app/controllers/inspector/opacity":function(exports, requi
 ;}});
 this.require.define({"app/controllers/inspector/text_shadow":function(exports, require, module){(function() {
   var ColorPicker, PositionPicker, Shadow, TextShadow,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Shadow = require('app/models/properties/shadow');
@@ -13699,6 +14134,8 @@ this.require.define({"app/controllers/inspector/text_shadow":function(exports, r
   TextShadow = (function(_super) {
 
     __extends(TextShadow, _super);
+
+    TextShadow.name = 'TextShadow';
 
     TextShadow.prototype.className = 'textShadow';
 
@@ -13755,7 +14192,9 @@ this.require.define({"app/controllers/inspector/text_shadow":function(exports, r
     TextShadow.prototype.showColorPicker = function(e) {
       var color, picker, _ref,
         _this = this;
-      if (this.disabled) return;
+      if (this.disabled) {
+        return;
+      }
       color = (_ref = this.shadow) != null ? _ref.color : void 0;
       picker = new ColorPicker({
         color: color
@@ -13791,7 +14230,7 @@ this.require.define({"app/controllers/inspector/text_shadow":function(exports, r
 this.require.define({"app/controllers/stage":function(exports, require, module){(function() {
   var Clipboard, Context, Dragging, Ellipsis, KeyBindings, Properties, Rectangle, Resizing, SelectArea, Selection, Serialize, Snapping, Stage, ZIndex,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Serialize = require('app/models/serialize').Serialize;
@@ -13824,6 +14263,8 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
 
     __extends(Stage, _super);
 
+    Stage.name = 'Stage';
+
     Stage.prototype.className = 'stage';
 
     Stage.prototype.events = {
@@ -13836,10 +14277,15 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
 
     function Stage() {
       this.deselectAll = __bind(this.deselectAll, this);
+
       this.deselect = __bind(this.deselect, this);
+
       this.select = __bind(this.select, this);
+
       this.remove = __bind(this.remove, this);
+
       this.add = __bind(this.add, this);
+
       var rectangle1, rectangle2,
         _this = this;
       Stage.__super__.constructor.apply(this, arguments);
@@ -13920,16 +14366,22 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
     };
 
     Stage.prototype.select = function(e, element, modifier) {
-      if (!this.selection.isMultiple() && !modifier) this.selection.clear();
+      if (!this.selection.isMultiple() && !modifier) {
+        this.selection.clear();
+      }
       return this.selection.add(element);
     };
 
     Stage.prototype.deselect = function(e, element, modifier) {
-      if (modifier) return this.selection.remove(element);
+      if (modifier) {
+        return this.selection.remove(element);
+      }
     };
 
     Stage.prototype.deselectAll = function(e) {
-      if (e.target === e.currentTarget) return this.selection.clear();
+      if (e.target === e.currentTarget) {
+        return this.selection.clear();
+      }
     };
 
     Stage.prototype.resizeStart = function() {
@@ -14048,11 +14500,16 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
 
   Clipboard = (function() {
 
+    Clipboard.name = 'Clipboard';
+
     function Clipboard(stage) {
       this.stage = stage;
       this.paste = __bind(this.paste, this);
+
       this.copy = __bind(this.copy, this);
+
       this.cancel = __bind(this.cancel, this);
+
       $(window).bind('beforecopy', this.cancel);
       $(window).bind('copy', this.copy);
       $(window).bind('beforepaste', this.cancel);
@@ -14065,7 +14522,9 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
 
     Clipboard.prototype.copy = function(e) {
       var el, json, styles;
-      if (!this.stage.selection.isAny()) return;
+      if (!this.stage.selection.isAny()) {
+        return;
+      }
       e.preventDefault();
       e = e.originalEvent;
       json = JSON.stringify(this.stage.selection.elements);
@@ -14086,12 +14545,16 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
 
     Clipboard.prototype.paste = function(e) {
       var el, elements, json, _i, _len;
-      if ('value' in e.target) return;
+      if ('value' in e.target) {
+        return;
+      }
       e.preventDefault();
       e = e.originalEvent;
       json = e.clipboardData.getData('json/x-stylo');
       json || (json = e.clipboardData.getData('text/html'));
-      if (!json) return;
+      if (!json) {
+        return;
+      }
       elements = Serialize.fromJSON(json);
       for (_i = 0, _len = elements.length; _i < _len; _i++) {
         el = elements[_i];
@@ -14108,7 +14571,9 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
 
     Clipboard.prototype.copyInternal = function() {
       var el;
-      if (Utils.browser.chrome) return;
+      if (Utils.browser.chrome) {
+        return;
+      }
       return this.data = (function() {
         var _i, _len, _ref, _results;
         _ref = this.stage.selection.elements;
@@ -14123,8 +14588,12 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
 
     Clipboard.prototype.pasteInternal = function(e) {
       var el, _i, _len, _ref;
-      if (Utils.browser.chrome) return;
-      if (!this.data) return;
+      if (Utils.browser.chrome) {
+        return;
+      }
+      if (!this.data) {
+        return;
+      }
       _ref = this.data;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         el = _ref[_i];
@@ -14153,9 +14622,12 @@ this.require.define({"app/controllers/stage/context":function(exports, require, 
 
   Context = (function() {
 
+    Context.name = 'Context';
+
     function Context(stage) {
       this.stage = stage;
       this.contextmenu = __bind(this.contextmenu, this);
+
       this.stage.el.bind('contextmenu', this.contextmenu);
     }
 
@@ -14173,7 +14645,7 @@ this.require.define({"app/controllers/stage/context":function(exports, require, 
 ;}});
 this.require.define({"app/controllers/stage/dragging":function(exports, require, module){(function() {
   var CoordTitle, Dragging,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
@@ -14181,8 +14653,10 @@ this.require.define({"app/controllers/stage/dragging":function(exports, require,
 
     __extends(CoordTitle, _super);
 
+    CoordTitle.name = 'CoordTitle';
+
     function CoordTitle() {
-      CoordTitle.__super__.constructor.apply(this, arguments);
+      return CoordTitle.__super__.constructor.apply(this, arguments);
     }
 
     CoordTitle.prototype.className = 'coordTitle';
@@ -14210,6 +14684,8 @@ this.require.define({"app/controllers/stage/dragging":function(exports, require,
 
     __extends(Dragging, _super);
 
+    Dragging.name = 'Dragging';
+
     Dragging.prototype.events = {
       'mousedown .selected': 'listen'
     };
@@ -14217,8 +14693,11 @@ this.require.define({"app/controllers/stage/dragging":function(exports, require,
     function Dragging(stage) {
       this.stage = stage;
       this.drop = __bind(this.drop, this);
+
       this.drag = __bind(this.drag, this);
+
       this.listen = __bind(this.listen, this);
+
       Dragging.__super__.constructor.call(this, {
         el: this.stage.el
       });
@@ -14266,12 +14745,16 @@ this.require.define({"app/controllers/stage/dragging":function(exports, require,
       $(document).unbind('mousemove', this.drag);
       $(document).unbind('mouseup', this.drop);
       this.el.trigger('end.dragging');
-      if ((_ref = this.coordTitle) != null) _ref.remove();
+      if ((_ref = this.coordTitle) != null) {
+        _ref.remove();
+      }
       return this.coordTitle = null;
     };
 
     Dragging.prototype.moveCoordTitle = function() {
-      if (!this.coordTitle) this.append(this.coordTitle = new CoordTitle);
+      if (!this.coordTitle) {
+        this.append(this.coordTitle = new CoordTitle);
+      }
       this.coordTitle.move({
         left: this.dragPosition.left - this.stageArea.left + 10,
         top: this.dragPosition.top - this.stageArea.top + 10
@@ -14290,12 +14773,14 @@ this.require.define({"app/controllers/stage/dragging":function(exports, require,
 this.require.define({"app/controllers/stage/key_bindings":function(exports, require, module){(function() {
   var KeyBindings,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   KeyBindings = (function(_super) {
 
     __extends(KeyBindings, _super);
+
+    KeyBindings.name = 'KeyBindings';
 
     KeyBindings.include(Spine.Log);
 
@@ -14318,12 +14803,15 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
     function KeyBindings(stage) {
       this.stage = stage;
       this.keypress = __bind(this.keypress, this);
+
       $(document).bind('keydown', this.keypress);
     }
 
     KeyBindings.prototype.keypress = function(e) {
       var _name;
-      if ('value' in e.target) return;
+      if ('value' in e.target) {
+        return;
+      }
       return typeof this[_name = this.mapping[e.which]] === "function" ? this[_name](e) : void 0;
     };
 
@@ -14336,7 +14824,9 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       var amount;
       e.preventDefault();
       amount = -1;
-      if (e.shiftKey) amount *= 5;
+      if (e.shiftKey) {
+        amount *= 5;
+      }
       return this.stage.selection.moveBy({
         left: amount,
         top: 0
@@ -14347,7 +14837,9 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       var amount;
       e.preventDefault();
       amount = -1;
-      if (e.shiftKey) amount *= 5;
+      if (e.shiftKey) {
+        amount *= 5;
+      }
       return this.stage.selection.moveBy({
         left: 0,
         top: amount
@@ -14358,7 +14850,9 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       var amount;
       e.preventDefault();
       amount = 1;
-      if (e.shiftKey) amount *= 5;
+      if (e.shiftKey) {
+        amount *= 5;
+      }
       return this.stage.selection.moveBy({
         left: amount,
         top: 0
@@ -14369,7 +14863,9 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       var amount;
       e.preventDefault();
       amount = 1;
-      if (e.shiftKey) amount *= 5;
+      if (e.shiftKey) {
+        amount *= 5;
+      }
       return this.stage.selection.moveBy({
         left: 0,
         top: amount
@@ -14377,42 +14873,58 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
     };
 
     KeyBindings.prototype.aKey = function(e) {
-      if (!e.metaKey) return;
+      if (!e.metaKey) {
+        return;
+      }
       e.preventDefault();
       return this.stage.selectAll();
     };
 
     KeyBindings.prototype.dKey = function(e) {
-      if (!e.metaKey) return;
+      if (!e.metaKey) {
+        return;
+      }
       e.preventDefault();
-      if (e.metaKey) return this.stage.selection.clear();
+      if (e.metaKey) {
+        return this.stage.selection.clear();
+      }
     };
 
     KeyBindings.prototype.sKey = function(e) {
-      if (!e.metaKey) return;
+      if (!e.metaKey) {
+        return;
+      }
       e.preventDefault();
       return this.log('save');
     };
 
     KeyBindings.prototype.plusKey = function(e) {
-      if (!e.metaKey) return;
+      if (!e.metaKey) {
+        return;
+      }
       e.preventDefault();
       return this.log('zoomIn');
     };
 
     KeyBindings.prototype.minusKey = function(e) {
-      if (!e.metaKey) return;
+      if (!e.metaKey) {
+        return;
+      }
       e.preventDefault();
       return this.log('zoomOut');
     };
 
     KeyBindings.prototype.cKey = function(e) {
-      if (!e.metaKey) return;
+      if (!e.metaKey) {
+        return;
+      }
       return this.stage.clipboard.copyInternal();
     };
 
     KeyBindings.prototype.vKey = function(e) {
-      if (!e.metaKey) return;
+      if (!e.metaKey) {
+        return;
+      }
       return this.stage.clipboard.pasteInternal();
     };
 
@@ -14426,15 +14938,17 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
 ;}});
 this.require.define({"app/controllers/stage/resizing":function(exports, require, module){(function() {
   var AreaTitle, Resizing,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   AreaTitle = (function(_super) {
 
     __extends(AreaTitle, _super);
 
+    AreaTitle.name = 'AreaTitle';
+
     function AreaTitle() {
-      AreaTitle.__super__.constructor.apply(this, arguments);
+      return AreaTitle.__super__.constructor.apply(this, arguments);
     }
 
     AreaTitle.prototype.className = 'areaTitle';
@@ -14462,6 +14976,8 @@ this.require.define({"app/controllers/stage/resizing":function(exports, require,
 
     __extends(Resizing, _super);
 
+    Resizing.name = 'Resizing';
+
     Resizing.prototype.events = {
       'resize.element': 'resized',
       'end.resize': 'resizeEnd'
@@ -14477,7 +14993,9 @@ this.require.define({"app/controllers/stage/resizing":function(exports, require,
     Resizing.prototype.resized = function(e, element) {
       var area;
       area = element.area();
-      if (!this.areaTitle) this.append(this.areaTitle = new AreaTitle);
+      if (!this.areaTitle) {
+        this.append(this.areaTitle = new AreaTitle);
+      }
       this.areaTitle.move({
         left: area.left + area.width + 10,
         top: area.top + area.height + 10
@@ -14487,7 +15005,9 @@ this.require.define({"app/controllers/stage/resizing":function(exports, require,
 
     Resizing.prototype.resizeEnd = function() {
       var _ref;
-      if ((_ref = this.areaTitle) != null) _ref.remove();
+      if ((_ref = this.areaTitle) != null) {
+        _ref.remove();
+      }
       return this.areaTitle = null;
     };
 
@@ -14501,13 +15021,15 @@ this.require.define({"app/controllers/stage/resizing":function(exports, require,
 ;}});
 this.require.define({"app/controllers/stage/select_area":function(exports, require, module){(function() {
   var Area, SelectArea,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   Area = (function(_super) {
 
     __extends(Area, _super);
+
+    Area.name = 'Area';
 
     Area.prototype.className = 'selectArea';
 
@@ -14558,6 +15080,8 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
 
     __extends(SelectArea, _super);
 
+    SelectArea.name = 'SelectArea';
+
     SelectArea.prototype.events = {
       'mousedown': 'listen'
     };
@@ -14565,8 +15089,11 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
     function SelectArea(stage) {
       this.stage = stage;
       this.drop = __bind(this.drop, this);
+
       this.drag = __bind(this.drag, this);
+
       this.listen = __bind(this.listen, this);
+
       SelectArea.__super__.constructor.call(this, {
         el: this.stage.el
       });
@@ -14574,12 +15101,16 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
 
     SelectArea.prototype.listen = function(e) {
       var _ref;
-      if (e.target !== e.currentTarget) return;
+      if (e.target !== e.currentTarget) {
+        return;
+      }
       e.preventDefault();
       this.offset = this.el.offset();
       this.offset.left -= this.el.scrollLeft();
       this.offset.top -= this.el.scrollTop();
-      if ((_ref = this.selectArea) != null) _ref.remove();
+      if ((_ref = this.selectArea) != null) {
+        _ref.remove();
+      }
       $(document).mousemove(this.drag);
       return $(document).mouseup(this.drop);
     };
@@ -14607,7 +15138,9 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
 
     SelectArea.prototype.drop = function(e) {
       var _ref;
-      if ((_ref = this.selectArea) != null) _ref.remove();
+      if ((_ref = this.selectArea) != null) {
+        _ref.remove();
+      }
       this.selectArea = null;
       $(document).unbind('mousemove', this.drag);
       return $(document).unbind('mouseup', this.drop);
@@ -14623,27 +15156,41 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
 ;}});
 this.require.define({"app/controllers/stage/selection":function(exports, require, module){(function() {
   var Selection, max, min,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
-    __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   min = function(a, b) {
-    if (a == null) a = 0;
-    if (b == null) b = 0;
-    if (a === 0) return b;
+    if (a == null) {
+      a = 0;
+    }
+    if (b == null) {
+      b = 0;
+    }
+    if (a === 0) {
+      return b;
+    }
     return Math.min(a, b);
   };
 
   max = function(a, b) {
-    if (a == null) a = 0;
-    if (b == null) b = 0;
-    if (a === 0) return b;
+    if (a == null) {
+      a = 0;
+    }
+    if (b == null) {
+      b = 0;
+    }
+    if (a === 0) {
+      return b;
+    }
     return Math.max(a, b);
   };
 
   Selection = (function(_super) {
 
     __extends(Selection, _super);
+
+    Selection.name = 'Selection';
 
     Selection.include(Spine.Events);
 
@@ -14652,13 +15199,17 @@ this.require.define({"app/controllers/stage/selection":function(exports, require
     }
 
     Selection.prototype.get = function(key) {
-      var el, first, _i, _len, _ref, _ref2;
-      if (!this.isAny()) return null;
+      var el, first, _i, _len, _ref, _ref1;
+      if (!this.isAny()) {
+        return null;
+      }
       first = (_ref = this.elements[0]) != null ? _ref.get(key) : void 0;
-      _ref2 = this.elements;
-      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-        el = _ref2[_i];
-        if (el.get(key) !== first) return null;
+      _ref1 = this.elements;
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        el = _ref1[_i];
+        if (el.get(key) !== first) {
+          return null;
+        }
       }
       return first;
     };
@@ -14687,7 +15238,9 @@ this.require.define({"app/controllers/stage/selection":function(exports, require
     };
 
     Selection.prototype.add = function(element) {
-      if (__indexOf.call(this.elements, element) >= 0) return;
+      if (__indexOf.call(this.elements, element) >= 0) {
+        return;
+      }
       this.elements.push(element);
       element.selected(true);
       return this.trigger('change');
@@ -14695,7 +15248,9 @@ this.require.define({"app/controllers/stage/selection":function(exports, require
 
     Selection.prototype.remove = function(element) {
       var elements, index;
-      if (__indexOf.call(this.elements, element) < 0) return;
+      if (__indexOf.call(this.elements, element) < 0) {
+        return;
+      }
       element.selected(false);
       index = this.elements.indexOf(element);
       elements = this.elements.slice();
@@ -14728,7 +15283,9 @@ this.require.define({"app/controllers/stage/selection":function(exports, require
 
     Selection.prototype.area = function() {
       var area, element, elementArea, _i, _len, _ref;
-      if (this.elements.length === 1) return this.elements[0].area();
+      if (this.elements.length === 1) {
+        return this.elements[0].area();
+      }
       area = {};
       _ref = this.elements;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -14767,13 +15324,15 @@ this.require.define({"app/controllers/stage/selection":function(exports, require
 ;}});
 this.require.define({"app/controllers/stage/snapping":function(exports, require, module){(function() {
   var HorizontalCenterSnap, HorizontalEdgeSnap, HorizontalElementSnap, Snap, SnapLine, Snapping, VerticalCenterSnap, VerticalEdgeSnap, VerticalElementSnap,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
-    __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   SnapLine = (function(_super) {
 
     __extends(SnapLine, _super);
+
+    SnapLine.name = 'SnapLine';
 
     SnapLine.prototype.className = 'snapLine';
 
@@ -14821,6 +15380,8 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
   Snap = (function(_super) {
 
     __extends(Snap, _super);
+
+    Snap.name = 'Snap';
 
     Snap.prototype.threshold = 6;
 
@@ -14884,7 +15445,9 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
     };
 
     Snap.prototype.withinThreshold = function(value, threshold) {
-      if (threshold == null) threshold = this.threshold;
+      if (threshold == null) {
+        threshold = this.threshold;
+      }
       return value > -threshold && value < threshold;
     };
 
@@ -14896,8 +15459,10 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
 
     __extends(VerticalCenterSnap, _super);
 
+    VerticalCenterSnap.name = 'VerticalCenterSnap';
+
     function VerticalCenterSnap() {
-      VerticalCenterSnap.__super__.constructor.apply(this, arguments);
+      return VerticalCenterSnap.__super__.constructor.apply(this, arguments);
     }
 
     VerticalCenterSnap.prototype.type = 'vertical';
@@ -14921,8 +15486,10 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
 
     __extends(HorizontalCenterSnap, _super);
 
+    HorizontalCenterSnap.name = 'HorizontalCenterSnap';
+
     function HorizontalCenterSnap() {
-      HorizontalCenterSnap.__super__.constructor.apply(this, arguments);
+      return HorizontalCenterSnap.__super__.constructor.apply(this, arguments);
     }
 
     HorizontalCenterSnap.prototype.type = 'horizontal';
@@ -14946,8 +15513,10 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
 
     __extends(HorizontalEdgeSnap, _super);
 
+    HorizontalEdgeSnap.name = 'HorizontalEdgeSnap';
+
     function HorizontalEdgeSnap() {
-      HorizontalEdgeSnap.__super__.constructor.apply(this, arguments);
+      return HorizontalEdgeSnap.__super__.constructor.apply(this, arguments);
     }
 
     HorizontalEdgeSnap.prototype.type = 'horizontal';
@@ -14974,8 +15543,10 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
 
     __extends(VerticalEdgeSnap, _super);
 
+    VerticalEdgeSnap.name = 'VerticalEdgeSnap';
+
     function VerticalEdgeSnap() {
-      VerticalEdgeSnap.__super__.constructor.apply(this, arguments);
+      return VerticalEdgeSnap.__super__.constructor.apply(this, arguments);
     }
 
     VerticalEdgeSnap.prototype.type = 'vertical';
@@ -15002,22 +15573,26 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
 
     __extends(HorizontalElementSnap, _super);
 
+    HorizontalElementSnap.name = 'HorizontalElementSnap';
+
     function HorizontalElementSnap() {
-      HorizontalElementSnap.__super__.constructor.apply(this, arguments);
+      return HorizontalElementSnap.__super__.constructor.apply(this, arguments);
     }
 
     HorizontalElementSnap.prototype.type = 'horizontal';
 
     HorizontalElementSnap.prototype.snapIn = function(currentArea, difference) {
-      var area, areas, current, element, i, typeA, typeB, valueA, valueB, _i, _j, _len, _len2, _len3, _ref;
+      var area, areas, current, element, i, typeA, typeB, valueA, valueB, _i, _j, _k, _len, _len1, _len2, _ref;
       areas = [currentArea];
       _ref = this.stage.elements;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         element = _ref[_i];
-        if (__indexOf.call(this.stage.selection.elements, element) >= 0) continue;
+        if (__indexOf.call(this.stage.selection.elements, element) >= 0) {
+          continue;
+        }
         areas.push(element.area());
       }
-      for (i = 0, _len2 = areas.length; i < _len2; i++) {
+      for (i = _j = 0, _len1 = areas.length; _j < _len1; i = ++_j) {
         area = areas[i];
         areas[i] = {
           top: area.top,
@@ -15026,8 +15601,8 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
         };
       }
       current = areas.shift();
-      for (_j = 0, _len3 = areas.length; _j < _len3; _j++) {
-        area = areas[_j];
+      for (_k = 0, _len2 = areas.length; _k < _len2; _k++) {
+        area = areas[_k];
         for (typeA in current) {
           valueA = current[typeA];
           for (typeB in area) {
@@ -15051,22 +15626,26 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
 
     __extends(VerticalElementSnap, _super);
 
+    VerticalElementSnap.name = 'VerticalElementSnap';
+
     function VerticalElementSnap() {
-      VerticalElementSnap.__super__.constructor.apply(this, arguments);
+      return VerticalElementSnap.__super__.constructor.apply(this, arguments);
     }
 
     VerticalElementSnap.prototype.type = 'vertical';
 
     VerticalElementSnap.prototype.snapIn = function(currentArea, difference) {
-      var area, areas, current, element, i, typeA, typeB, valueA, valueB, _i, _j, _len, _len2, _len3, _ref;
+      var area, areas, current, element, i, typeA, typeB, valueA, valueB, _i, _j, _k, _len, _len1, _len2, _ref;
       areas = [currentArea];
       _ref = this.stage.elements;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         element = _ref[_i];
-        if (__indexOf.call(this.stage.selection.elements, element) >= 0) continue;
+        if (__indexOf.call(this.stage.selection.elements, element) >= 0) {
+          continue;
+        }
         areas.push(element.area());
       }
-      for (i = 0, _len2 = areas.length; i < _len2; i++) {
+      for (i = _j = 0, _len1 = areas.length; _j < _len1; i = ++_j) {
         area = areas[i];
         areas[i] = {
           left: area.left,
@@ -15075,8 +15654,8 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
         };
       }
       current = areas.shift();
-      for (_j = 0, _len3 = areas.length; _j < _len3; _j++) {
-        area = areas[_j];
+      for (_k = 0, _len2 = areas.length; _k < _len2; _k++) {
+        area = areas[_k];
         for (typeA in current) {
           valueA = current[typeA];
           for (typeB in area) {
@@ -15099,6 +15678,8 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
   Snapping = (function(_super) {
 
     __extends(Snapping, _super);
+
+    Snapping.name = 'Snapping';
 
     Snapping.prototype.events = {
       'resize.element': 'remove',
@@ -15160,6 +15741,8 @@ this.require.define({"app/controllers/stage/zindex":function(exports, require, m
 
   ZIndex = (function() {
 
+    ZIndex.name = 'ZIndex';
+
     function ZIndex(stage) {
       this.stage = stage;
       this.order = this.stage.elements;
@@ -15202,10 +15785,10 @@ this.require.define({"app/controllers/stage/zindex":function(exports, require, m
     };
 
     ZIndex.prototype.set = function() {
-      var element, index, _len, _ref, _results;
+      var element, index, _i, _len, _ref, _results;
       _ref = this.order;
       _results = [];
-      for (index = 0, _len = _ref.length; index < _len; index++) {
+      for (index = _i = 0, _len = _ref.length; _i < _len; index = ++_i) {
         element = _ref[index];
         _results.push(element.set('order', index));
       }
@@ -15222,7 +15805,7 @@ this.require.define({"app/controllers/stage/zindex":function(exports, require, m
 ;}});
 this.require.define({"app/index":function(exports, require, module){(function() {
   var App, Header, Inspector, Stage,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Stage = require('./controllers/stage');
@@ -15234,6 +15817,8 @@ this.require.define({"app/index":function(exports, require, module){(function() 
   App = (function(_super) {
 
     __extends(App, _super);
+
+    App.name = 'App';
 
     App.prototype.className = 'app';
 
@@ -15276,15 +15861,17 @@ this.require.define({"app/models/properties":function(exports, require, module){
 ;}});
 this.require.define({"app/models/properties/background":function(exports, require, module){(function() {
   var Background, BackgroundImage, Color, ColorStop, LinearGradient, Position, Property, URL,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
-    __slice = Array.prototype.slice;
+    __slice = [].slice;
 
   Property = require('app/models/property');
 
   Color = require('./color');
 
   Position = (function() {
+
+    Position.name = 'Position';
 
     Position.prototype.id = "" + module.id + ".Position";
 
@@ -15305,6 +15892,8 @@ this.require.define({"app/models/properties/background":function(exports, requir
   })();
 
   ColorStop = (function() {
+
+    ColorStop.name = 'ColorStop';
 
     ColorStop.prototype.id = "" + module.id + ".ColorStop";
 
@@ -15334,8 +15923,10 @@ this.require.define({"app/models/properties/background":function(exports, requir
 
     __extends(BackgroundImage, _super);
 
+    BackgroundImage.name = 'BackgroundImage';
+
     function BackgroundImage() {
-      BackgroundImage.__super__.constructor.apply(this, arguments);
+      return BackgroundImage.__super__.constructor.apply(this, arguments);
     }
 
     BackgroundImage.prototype.id = "" + module.id + ".BackgroundImage";
@@ -15347,6 +15938,8 @@ this.require.define({"app/models/properties/background":function(exports, requir
   LinearGradient = (function(_super) {
 
     __extends(LinearGradient, _super);
+
+    LinearGradient.name = 'LinearGradient';
 
     LinearGradient.prototype.id = "" + module.id + ".LinearGradient";
 
@@ -15393,6 +15986,8 @@ this.require.define({"app/models/properties/background":function(exports, requir
 
     __extends(URL, _super);
 
+    URL.name = 'URL';
+
     URL.prototype.id = "" + module.id + ".URL";
 
     function URL(url) {
@@ -15412,6 +16007,8 @@ this.require.define({"app/models/properties/background":function(exports, requir
   })(BackgroundImage);
 
   Background = (function() {
+
+    Background.name = 'Background';
 
     Background.prototype.id = module.id;
 
@@ -15448,7 +16045,7 @@ this.require.define({"app/models/properties/background":function(exports, requir
 ;}});
 this.require.define({"app/models/properties/border":function(exports, require, module){(function() {
   var Border, Color, Property,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Property = require('app/models/property');
@@ -15458,6 +16055,8 @@ this.require.define({"app/models/properties/border":function(exports, require, m
   Border = (function(_super) {
 
     __extends(Border, _super);
+
+    Border.name = 'Border';
 
     Border.prototype.id = module.id;
 
@@ -15496,7 +16095,7 @@ this.require.define({"app/models/properties/color":function(exports, require, mo
 ;}});
 this.require.define({"app/models/properties/shadow":function(exports, require, module){(function() {
   var Color, Property, Shadow,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Property = require('app/models/property');
@@ -15507,11 +16106,15 @@ this.require.define({"app/models/properties/shadow":function(exports, require, m
 
     __extends(Shadow, _super);
 
+    Shadow.name = 'Shadow';
+
     Shadow.prototype.id = module.id;
 
     function Shadow(properties) {
       var k, v;
-      if (properties == null) properties = {};
+      if (properties == null) {
+        properties = {};
+      }
       for (k in properties) {
         v = properties[k];
         this[k] = v;
@@ -15524,11 +16127,17 @@ this.require.define({"app/models/properties/shadow":function(exports, require, m
     Shadow.prototype.toString = function() {
       var result;
       result = [];
-      if (this.inset) result.push('inset');
+      if (this.inset) {
+        result.push('inset');
+      }
       result.push(this.x + 'px');
       result.push(this.y + 'px');
-      if (this.blur != null) result.push(this.blur + 'px');
-      if (this.spread != null) result.push(this.spread + 'px');
+      if (this.blur != null) {
+        result.push(this.blur + 'px');
+      }
+      if (this.spread != null) {
+        result.push(this.spread + 'px');
+      }
       result.push(this.color.toString());
       return result.join(' ');
     };
@@ -15552,7 +16161,7 @@ this.require.define({"app/models/properties/shadow":function(exports, require, m
 ;}});
 this.require.define({"app/models/property":function(exports, require, module){(function() {
   var Collection, Property, Serialize, Values,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Collection = require('lib/collection');
@@ -15563,8 +16172,10 @@ this.require.define({"app/models/property":function(exports, require, module){(f
 
     __extends(Values, _super);
 
+    Values.name = 'Values';
+
     function Values() {
-      Values.__super__.constructor.apply(this, arguments);
+      return Values.__super__.constructor.apply(this, arguments);
     }
 
     Values.prototype.toString = function() {
@@ -15579,8 +16190,10 @@ this.require.define({"app/models/property":function(exports, require, module){(f
 
     __extends(Property, _super);
 
+    Property.name = 'Property';
+
     function Property() {
-      Property.__super__.constructor.apply(this, arguments);
+      return Property.__super__.constructor.apply(this, arguments);
     }
 
     Property.include(Serialize);
@@ -15600,7 +16213,9 @@ this.require.define({"app/models/serialize":function(exports, require, module){(
 
   fromObject = function(object) {
     var args, constructor, k, name, o, path, result, v, _ref;
-    if (typeof object !== 'object') return object;
+    if (typeof object !== 'object') {
+      return object;
+    }
     if (Array.isArray(object)) {
       return (function() {
         var _i, _len, _results;
@@ -15621,7 +16236,9 @@ this.require.define({"app/models/serialize":function(exports, require, module){(
     }
     _ref = object.id.split('.', 2), path = _ref[0], name = _ref[1];
     constructor = require(path);
-    if (name) constructor = constructor[name];
+    if (name) {
+      constructor = constructor[name];
+    }
     if (result = typeof constructor.fromValue === "function" ? constructor.fromValue(object) : void 0) {
       return result;
     }
@@ -15634,7 +16251,9 @@ this.require.define({"app/models/serialize":function(exports, require, module){(
   };
 
   fromJSON = function(object) {
-    if (typeof object === 'string') object = JSON.parse(object);
+    if (typeof object === 'string') {
+      object = JSON.parse(object);
+    }
     return fromObject(object);
   };
 
@@ -15665,6 +16284,8 @@ this.require.define({"app/models/undo":function(exports, require, module){(funct
 
   Undo = (function() {
 
+    Undo.name = 'Undo';
+
     function Undo() {}
 
     Undo.undoStack = [];
@@ -15680,7 +16301,9 @@ this.require.define({"app/models/undo":function(exports, require, module){(funct
     Undo.undo = function() {
       var action, redo, undo;
       action = this.undoStack.pop();
-      if (!action) return;
+      if (!action) {
+        return;
+      }
       undo = action[0], redo = action[1];
       undo();
       return this.redoStack.push(action);
@@ -15689,7 +16312,9 @@ this.require.define({"app/models/undo":function(exports, require, module){(funct
     Undo.redo = function() {
       var action, redo, undo;
       action = this.redoStack.pop();
-      if (!action) return;
+      if (!action) {
+        return;
+      }
       undo = action[0], redo = action[1];
       redo();
       return this.undoStack.push(action);
@@ -16293,7 +16918,9 @@ this.require.define({"app/models/undo":function(exports, require, module){(funct
       
         __out.push('"\n      min="0" max="1" step="0.05"\n      ');
       
-        if (this.disabled) __out.push('disabled="disabled"');
+        if (this.disabled) {
+          __out.push('disabled="disabled"');
+        }
       
         __out.push('>\n\n    <input\n      type="number"\n      value="');
       
@@ -16301,7 +16928,9 @@ this.require.define({"app/models/undo":function(exports, require, module){(funct
       
         __out.push('"\n      min="0" max="1" step="0.05"\n      ');
       
-        if (this.disabled) __out.push('disabled="disabled"');
+        if (this.disabled) {
+          __out.push('disabled="disabled"');
+        }
       
         __out.push('>\n  </label>\n</article>\n');
       
@@ -16353,7 +16982,7 @@ this.require.define({"app/models/undo":function(exports, require, module){(funct
     }
     (function() {
       (function() {
-        var _ref, _ref2, _ref3;
+        var _ref, _ref1, _ref2;
       
         __out.push('<h3>Text Shadow</h3>\n\n<article>\n  <label>\n    <span>X</span>\n    <input type="number" name="x" value="');
       
@@ -16361,11 +16990,11 @@ this.require.define({"app/models/undo":function(exports, require, module){(funct
       
         __out.push('">px\n  </label>\n\n  <label>\n    <span>Y</span>\n    <input type="number" name="y" value="');
       
-        __out.push(__sanitize((_ref2 = this.shadow) != null ? _ref2.y : void 0));
+        __out.push(__sanitize((_ref1 = this.shadow) != null ? _ref1.y : void 0));
       
         __out.push('">px\n  </label>\n\n  <label>\n    <span>Blur</span>\n    <input type="number" name="blur" value="');
       
-        __out.push(__sanitize((_ref3 = this.shadow) != null ? _ref3.blur : void 0));
+        __out.push(__sanitize((_ref2 = this.shadow) != null ? _ref2.blur : void 0));
       
         __out.push('">px\n  </label>\n\n  <div class="preview"><div class="inner"></div></div>\n</article>\n');
       

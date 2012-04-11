@@ -60,13 +60,15 @@
 }).call(this);
 this.require.define({"app/controllers/stage/snapping":function(exports, require, module){(function() {
   var HorizontalCenterSnap, HorizontalEdgeSnap, HorizontalElementSnap, Snap, SnapLine, Snapping, VerticalCenterSnap, VerticalEdgeSnap, VerticalElementSnap,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
-    __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   SnapLine = (function(_super) {
 
     __extends(SnapLine, _super);
+
+    SnapLine.name = 'SnapLine';
 
     SnapLine.prototype.className = 'snapLine';
 
@@ -114,6 +116,8 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
   Snap = (function(_super) {
 
     __extends(Snap, _super);
+
+    Snap.name = 'Snap';
 
     Snap.prototype.threshold = 6;
 
@@ -177,7 +181,9 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
     };
 
     Snap.prototype.withinThreshold = function(value, threshold) {
-      if (threshold == null) threshold = this.threshold;
+      if (threshold == null) {
+        threshold = this.threshold;
+      }
       return value > -threshold && value < threshold;
     };
 
@@ -189,8 +195,10 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
 
     __extends(VerticalCenterSnap, _super);
 
+    VerticalCenterSnap.name = 'VerticalCenterSnap';
+
     function VerticalCenterSnap() {
-      VerticalCenterSnap.__super__.constructor.apply(this, arguments);
+      return VerticalCenterSnap.__super__.constructor.apply(this, arguments);
     }
 
     VerticalCenterSnap.prototype.type = 'vertical';
@@ -214,8 +222,10 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
 
     __extends(HorizontalCenterSnap, _super);
 
+    HorizontalCenterSnap.name = 'HorizontalCenterSnap';
+
     function HorizontalCenterSnap() {
-      HorizontalCenterSnap.__super__.constructor.apply(this, arguments);
+      return HorizontalCenterSnap.__super__.constructor.apply(this, arguments);
     }
 
     HorizontalCenterSnap.prototype.type = 'horizontal';
@@ -239,8 +249,10 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
 
     __extends(HorizontalEdgeSnap, _super);
 
+    HorizontalEdgeSnap.name = 'HorizontalEdgeSnap';
+
     function HorizontalEdgeSnap() {
-      HorizontalEdgeSnap.__super__.constructor.apply(this, arguments);
+      return HorizontalEdgeSnap.__super__.constructor.apply(this, arguments);
     }
 
     HorizontalEdgeSnap.prototype.type = 'horizontal';
@@ -267,8 +279,10 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
 
     __extends(VerticalEdgeSnap, _super);
 
+    VerticalEdgeSnap.name = 'VerticalEdgeSnap';
+
     function VerticalEdgeSnap() {
-      VerticalEdgeSnap.__super__.constructor.apply(this, arguments);
+      return VerticalEdgeSnap.__super__.constructor.apply(this, arguments);
     }
 
     VerticalEdgeSnap.prototype.type = 'vertical';
@@ -295,22 +309,26 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
 
     __extends(HorizontalElementSnap, _super);
 
+    HorizontalElementSnap.name = 'HorizontalElementSnap';
+
     function HorizontalElementSnap() {
-      HorizontalElementSnap.__super__.constructor.apply(this, arguments);
+      return HorizontalElementSnap.__super__.constructor.apply(this, arguments);
     }
 
     HorizontalElementSnap.prototype.type = 'horizontal';
 
     HorizontalElementSnap.prototype.snapIn = function(currentArea, difference) {
-      var area, areas, current, element, i, typeA, typeB, valueA, valueB, _i, _j, _len, _len2, _len3, _ref;
+      var area, areas, current, element, i, typeA, typeB, valueA, valueB, _i, _j, _k, _len, _len1, _len2, _ref;
       areas = [currentArea];
       _ref = this.stage.elements;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         element = _ref[_i];
-        if (__indexOf.call(this.stage.selection.elements, element) >= 0) continue;
+        if (__indexOf.call(this.stage.selection.elements, element) >= 0) {
+          continue;
+        }
         areas.push(element.area());
       }
-      for (i = 0, _len2 = areas.length; i < _len2; i++) {
+      for (i = _j = 0, _len1 = areas.length; _j < _len1; i = ++_j) {
         area = areas[i];
         areas[i] = {
           top: area.top,
@@ -319,8 +337,8 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
         };
       }
       current = areas.shift();
-      for (_j = 0, _len3 = areas.length; _j < _len3; _j++) {
-        area = areas[_j];
+      for (_k = 0, _len2 = areas.length; _k < _len2; _k++) {
+        area = areas[_k];
         for (typeA in current) {
           valueA = current[typeA];
           for (typeB in area) {
@@ -344,22 +362,26 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
 
     __extends(VerticalElementSnap, _super);
 
+    VerticalElementSnap.name = 'VerticalElementSnap';
+
     function VerticalElementSnap() {
-      VerticalElementSnap.__super__.constructor.apply(this, arguments);
+      return VerticalElementSnap.__super__.constructor.apply(this, arguments);
     }
 
     VerticalElementSnap.prototype.type = 'vertical';
 
     VerticalElementSnap.prototype.snapIn = function(currentArea, difference) {
-      var area, areas, current, element, i, typeA, typeB, valueA, valueB, _i, _j, _len, _len2, _len3, _ref;
+      var area, areas, current, element, i, typeA, typeB, valueA, valueB, _i, _j, _k, _len, _len1, _len2, _ref;
       areas = [currentArea];
       _ref = this.stage.elements;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         element = _ref[_i];
-        if (__indexOf.call(this.stage.selection.elements, element) >= 0) continue;
+        if (__indexOf.call(this.stage.selection.elements, element) >= 0) {
+          continue;
+        }
         areas.push(element.area());
       }
-      for (i = 0, _len2 = areas.length; i < _len2; i++) {
+      for (i = _j = 0, _len1 = areas.length; _j < _len1; i = ++_j) {
         area = areas[i];
         areas[i] = {
           left: area.left,
@@ -368,8 +390,8 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
         };
       }
       current = areas.shift();
-      for (_j = 0, _len3 = areas.length; _j < _len3; _j++) {
-        area = areas[_j];
+      for (_k = 0, _len2 = areas.length; _k < _len2; _k++) {
+        area = areas[_k];
         for (typeA in current) {
           valueA = current[typeA];
           for (typeB in area) {
@@ -392,6 +414,8 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
   Snapping = (function(_super) {
 
     __extends(Snapping, _super);
+
+    Snapping.name = 'Snapping';
 
     Snapping.prototype.events = {
       'resize.element': 'remove',

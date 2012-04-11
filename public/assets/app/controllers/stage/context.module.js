@@ -64,9 +64,12 @@ this.require.define({"app/controllers/stage/context":function(exports, require, 
 
   Context = (function() {
 
+    Context.name = 'Context';
+
     function Context(stage) {
       this.stage = stage;
       this.contextmenu = __bind(this.contextmenu, this);
+
       this.stage.el.bind('contextmenu', this.contextmenu);
     }
 

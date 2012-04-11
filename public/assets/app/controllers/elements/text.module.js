@@ -60,7 +60,7 @@
 }).call(this);
 this.require.define({"app/controllers/elements/text":function(exports, require, module){(function() {
   var Rectangle, Text,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Rectangle = require('./rectangle');
@@ -69,8 +69,10 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
 
     __extends(Text, _super);
 
+    Text.name = 'Text';
+
     function Text() {
-      Text.__super__.constructor.apply(this, arguments);
+      return Text.__super__.constructor.apply(this, arguments);
     }
 
     Text.prototype.className = 'text';
@@ -91,11 +93,15 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
 
     Text.prototype.selected = function(bool) {
       Text.__super__.selected.apply(this, arguments);
-      if (bool === false) return this.stopEditing();
+      if (bool === false) {
+        return this.stopEditing();
+      }
     };
 
     Text.prototype.text = function(text) {
-      if (text != null) this.el.text(text);
+      if (text != null) {
+        this.el.text(text);
+      }
       return this.el.text();
     };
 

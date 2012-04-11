@@ -60,27 +60,41 @@
 }).call(this);
 this.require.define({"app/controllers/stage/selection":function(exports, require, module){(function() {
   var Selection, max, min,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
-    __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   min = function(a, b) {
-    if (a == null) a = 0;
-    if (b == null) b = 0;
-    if (a === 0) return b;
+    if (a == null) {
+      a = 0;
+    }
+    if (b == null) {
+      b = 0;
+    }
+    if (a === 0) {
+      return b;
+    }
     return Math.min(a, b);
   };
 
   max = function(a, b) {
-    if (a == null) a = 0;
-    if (b == null) b = 0;
-    if (a === 0) return b;
+    if (a == null) {
+      a = 0;
+    }
+    if (b == null) {
+      b = 0;
+    }
+    if (a === 0) {
+      return b;
+    }
     return Math.max(a, b);
   };
 
   Selection = (function(_super) {
 
     __extends(Selection, _super);
+
+    Selection.name = 'Selection';
 
     Selection.include(Spine.Events);
 
@@ -89,13 +103,17 @@ this.require.define({"app/controllers/stage/selection":function(exports, require
     }
 
     Selection.prototype.get = function(key) {
-      var el, first, _i, _len, _ref, _ref2;
-      if (!this.isAny()) return null;
+      var el, first, _i, _len, _ref, _ref1;
+      if (!this.isAny()) {
+        return null;
+      }
       first = (_ref = this.elements[0]) != null ? _ref.get(key) : void 0;
-      _ref2 = this.elements;
-      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-        el = _ref2[_i];
-        if (el.get(key) !== first) return null;
+      _ref1 = this.elements;
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        el = _ref1[_i];
+        if (el.get(key) !== first) {
+          return null;
+        }
       }
       return first;
     };
@@ -124,7 +142,9 @@ this.require.define({"app/controllers/stage/selection":function(exports, require
     };
 
     Selection.prototype.add = function(element) {
-      if (__indexOf.call(this.elements, element) >= 0) return;
+      if (__indexOf.call(this.elements, element) >= 0) {
+        return;
+      }
       this.elements.push(element);
       element.selected(true);
       return this.trigger('change');
@@ -132,7 +152,9 @@ this.require.define({"app/controllers/stage/selection":function(exports, require
 
     Selection.prototype.remove = function(element) {
       var elements, index;
-      if (__indexOf.call(this.elements, element) < 0) return;
+      if (__indexOf.call(this.elements, element) < 0) {
+        return;
+      }
       element.selected(false);
       index = this.elements.indexOf(element);
       elements = this.elements.slice();
@@ -165,7 +187,9 @@ this.require.define({"app/controllers/stage/selection":function(exports, require
 
     Selection.prototype.area = function() {
       var area, element, elementArea, _i, _len, _ref;
-      if (this.elements.length === 1) return this.elements[0].area();
+      if (this.elements.length === 1) {
+        return this.elements[0].area();
+      }
       area = {};
       _ref = this.elements;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {

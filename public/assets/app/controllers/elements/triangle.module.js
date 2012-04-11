@@ -60,7 +60,7 @@
 }).call(this);
 this.require.define({"app/controllers/elements/triangle":function(exports, require, module){(function() {
   var Canvas, Triangle,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Canvas = require('./canvas');
@@ -69,8 +69,10 @@ this.require.define({"app/controllers/elements/triangle":function(exports, requi
 
     __extends(Triangle, _super);
 
+    Triangle.name = 'Triangle';
+
     function Triangle() {
-      Triangle.__super__.constructor.apply(this, arguments);
+      return Triangle.__super__.constructor.apply(this, arguments);
     }
 
     Triangle.prototype.className = 'triangle';

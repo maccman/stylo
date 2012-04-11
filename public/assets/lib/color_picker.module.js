@@ -61,19 +61,23 @@
 this.require.define({"lib/color_picker":function(exports, require, module){(function() {
   var Alpha, Canvas, Color, ColorPicker, Display, Gradient, Input, Popup, Preview, Spectrum,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
-    __slice = Array.prototype.slice;
+    __slice = [].slice;
 
   Popup = require('./popup');
 
   Color = (function() {
 
+    Color.name = 'Color';
+
     Color.regex = /(?:#([0-9a-f]{3,6})|rgba?\(([^)]+)\))/i;
 
     Color.fromHex = function(hex) {
       var b, g, r;
-      if (hex[0] === '#') hex = hex.substring(1, 7);
+      if (hex[0] === '#') {
+        hex = hex.substring(1, 7);
+      }
       if (hex.length === 3) {
         hex = hex.charAt(0) + hex.charAt(0) + hex.charAt(1) + hex.charAt(1) + hex.charAt(2) + hex.charAt(2);
       }
@@ -86,7 +90,9 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
     Color.fromString = function(str) {
       var a, b, g, hex, match, r, rgba, _ref;
       match = str.match(this.regex);
-      if (!match) return null;
+      if (!match) {
+        return null;
+      }
       if (hex = match[1]) {
         return this.fromHex(hex);
       } else if (rgba = match[2]) {
@@ -108,10 +114,18 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
     };
 
     function Color(r, g, b, a) {
-      if (a == null) a = 1;
-      if (r != null) this.r = parseInt(r, 10);
-      if (g != null) this.g = parseInt(g, 10);
-      if (b != null) this.b = parseInt(b, 10);
+      if (a == null) {
+        a = 1;
+      }
+      if (r != null) {
+        this.r = parseInt(r, 10);
+      }
+      if (g != null) {
+        this.g = parseInt(g, 10);
+      }
+      if (b != null) {
+        this.b = parseInt(b, 10);
+      }
       this.a = parseFloat(a);
     }
 
@@ -195,6 +209,8 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
     __extends(Canvas, _super);
 
+    Canvas.name = 'Canvas';
+
     Canvas.prototype.tag = 'canvas';
 
     Canvas.prototype.width = 100;
@@ -207,7 +223,9 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
     function Canvas() {
       this.drop = __bind(this.drop, this);
-      this.over = __bind(this.over, this);      Canvas.__super__.constructor.apply(this, arguments);
+
+      this.over = __bind(this.over, this);
+      Canvas.__super__.constructor.apply(this, arguments);
       this.el.attr({
         width: this.width,
         height: this.height
@@ -254,6 +272,8 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
     __extends(Gradient, _super);
 
+    Gradient.name = 'Gradient';
+
     Gradient.prototype.className = 'gradient';
 
     Gradient.prototype.width = 250;
@@ -279,11 +299,11 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
     };
 
     Gradient.prototype.renderGradient = function() {
-      var color, colors, gradient, index, xy, _len, _ref, _ref2;
+      var color, colors, gradient, index, xy, _i, _len, _ref, _ref1;
       xy = arguments[0], colors = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
       gradient = (_ref = this.ctx).createLinearGradient.apply(_ref, [0, 0].concat(__slice.call(xy)));
-      gradient.addColorStop(0, (_ref2 = colors.shift()) != null ? _ref2.toString() : void 0);
-      for (index = 0, _len = colors.length; index < _len; index++) {
+      gradient.addColorStop(0, (_ref1 = colors.shift()) != null ? _ref1.toString() : void 0);
+      for (index = _i = 0, _len = colors.length; _i < _len; index = ++_i) {
         color = colors[index];
         gradient.addColorStop(index + 1 / colors.length, color.toString());
       }
@@ -310,6 +330,8 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
   Spectrum = (function(_super) {
 
     __extends(Spectrum, _super);
+
+    Spectrum.name = 'Spectrum';
 
     Spectrum.prototype.className = 'spectrum';
 
@@ -350,6 +372,8 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
   Alpha = (function(_super) {
 
     __extends(Alpha, _super);
+
+    Alpha.name = 'Alpha';
 
     Alpha.prototype.className = 'alpha';
 
@@ -397,6 +421,8 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
   Display = (function(_super) {
 
     __extends(Display, _super);
+
+    Display.name = 'Display';
 
     Display.prototype.tag = 'article';
 
@@ -464,6 +490,8 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
   ColorPicker = (function(_super) {
 
     __extends(ColorPicker, _super);
+
+    ColorPicker.name = 'ColorPicker';
 
     ColorPicker.prototype.className = 'colorPicker';
 
@@ -537,7 +565,9 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
     };
 
     ColorPicker.prototype.change = function(color) {
-      if (color == null) color = this.color;
+      if (color == null) {
+        color = this.color;
+      }
       return this.trigger('change', color);
     };
 
@@ -569,6 +599,8 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
     __extends(Input, _super);
 
+    Input.name = 'Input';
+
     Input.prototype.className = 'colorInput';
 
     Input.prototype.events = {
@@ -578,7 +610,9 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
     function Input() {
       this.change = __bind(this.change, this);
-      this.open = __bind(this.open, this);      Input.__super__.constructor.apply(this, arguments);
+
+      this.open = __bind(this.open, this);
+      Input.__super__.constructor.apply(this, arguments);
       this.color || (this.color = new Color);
       this.$preview = $('<div />').addClass('preview');
       this.$preview.css({
@@ -616,6 +650,8 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
     __extends(Preview, _super);
 
+    Preview.name = 'Preview';
+
     Preview.prototype.className = 'colorPreview';
 
     Preview.prototype.events = {
@@ -623,7 +659,8 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
     };
 
     function Preview() {
-      this.open = __bind(this.open, this);      Preview.__super__.constructor.apply(this, arguments);
+      this.open = __bind(this.open, this);
+      Preview.__super__.constructor.apply(this, arguments);
       this.color || (this.color = new Color);
       this.inner = $('<div />').addClass('inner');
       this.append(this.inner);

@@ -60,7 +60,7 @@
 }).call(this);
 this.require.define({"app/controllers/elements/rectangle":function(exports, require, module){(function() {
   var Element, Rectangle,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Element = require('../element');
@@ -69,8 +69,10 @@ this.require.define({"app/controllers/elements/rectangle":function(exports, requ
 
     __extends(Rectangle, _super);
 
+    Rectangle.name = 'Rectangle';
+
     function Rectangle() {
-      Rectangle.__super__.constructor.apply(this, arguments);
+      return Rectangle.__super__.constructor.apply(this, arguments);
     }
 
     Rectangle.prototype.className = 'rectangle';

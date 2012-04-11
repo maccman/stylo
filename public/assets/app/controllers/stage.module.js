@@ -61,7 +61,7 @@
 this.require.define({"app/controllers/stage":function(exports, require, module){(function() {
   var Clipboard, Context, Dragging, Ellipsis, KeyBindings, Properties, Rectangle, Resizing, SelectArea, Selection, Serialize, Snapping, Stage, ZIndex,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Serialize = require('app/models/serialize').Serialize;
@@ -94,6 +94,8 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
 
     __extends(Stage, _super);
 
+    Stage.name = 'Stage';
+
     Stage.prototype.className = 'stage';
 
     Stage.prototype.events = {
@@ -106,10 +108,15 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
 
     function Stage() {
       this.deselectAll = __bind(this.deselectAll, this);
+
       this.deselect = __bind(this.deselect, this);
+
       this.select = __bind(this.select, this);
+
       this.remove = __bind(this.remove, this);
+
       this.add = __bind(this.add, this);
+
       var rectangle1, rectangle2,
         _this = this;
       Stage.__super__.constructor.apply(this, arguments);
@@ -190,16 +197,22 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
     };
 
     Stage.prototype.select = function(e, element, modifier) {
-      if (!this.selection.isMultiple() && !modifier) this.selection.clear();
+      if (!this.selection.isMultiple() && !modifier) {
+        this.selection.clear();
+      }
       return this.selection.add(element);
     };
 
     Stage.prototype.deselect = function(e, element, modifier) {
-      if (modifier) return this.selection.remove(element);
+      if (modifier) {
+        return this.selection.remove(element);
+      }
     };
 
     Stage.prototype.deselectAll = function(e) {
-      if (e.target === e.currentTarget) return this.selection.clear();
+      if (e.target === e.currentTarget) {
+        return this.selection.clear();
+      }
     };
 
     Stage.prototype.resizeStart = function() {

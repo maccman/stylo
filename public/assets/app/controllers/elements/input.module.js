@@ -60,7 +60,7 @@
 }).call(this);
 this.require.define({"app/controllers/elements/input":function(exports, require, module){(function() {
   var CheckBox, Element, Input, Text, Textarea,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Element = require('../element');
@@ -69,8 +69,10 @@ this.require.define({"app/controllers/elements/input":function(exports, require,
 
     __extends(Input, _super);
 
+    Input.name = 'Input';
+
     function Input() {
-      Input.__super__.constructor.apply(this, arguments);
+      return Input.__super__.constructor.apply(this, arguments);
     }
 
     Input.prototype.tag = 'input';
@@ -83,8 +85,10 @@ this.require.define({"app/controllers/elements/input":function(exports, require,
 
     __extends(Text, _super);
 
+    Text.name = 'Text';
+
     function Text() {
-      Text.__super__.constructor.apply(this, arguments);
+      return Text.__super__.constructor.apply(this, arguments);
     }
 
     Text.prototype.attrs = {
@@ -99,8 +103,10 @@ this.require.define({"app/controllers/elements/input":function(exports, require,
 
     __extends(Textarea, _super);
 
+    Textarea.name = 'Textarea';
+
     function Textarea() {
-      Textarea.__super__.constructor.apply(this, arguments);
+      return Textarea.__super__.constructor.apply(this, arguments);
     }
 
     Textarea.prototype.tag = 'textarea';
@@ -113,8 +119,10 @@ this.require.define({"app/controllers/elements/input":function(exports, require,
 
     __extends(CheckBox, _super);
 
+    CheckBox.name = 'CheckBox';
+
     function CheckBox() {
-      CheckBox.__super__.constructor.apply(this, arguments);
+      return CheckBox.__super__.constructor.apply(this, arguments);
     }
 
     CheckBox.prototype.attrs = {

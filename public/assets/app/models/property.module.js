@@ -60,7 +60,7 @@
 }).call(this);
 this.require.define({"app/models/property":function(exports, require, module){(function() {
   var Collection, Property, Serialize, Values,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Collection = require('lib/collection');
@@ -71,8 +71,10 @@ this.require.define({"app/models/property":function(exports, require, module){(f
 
     __extends(Values, _super);
 
+    Values.name = 'Values';
+
     function Values() {
-      Values.__super__.constructor.apply(this, arguments);
+      return Values.__super__.constructor.apply(this, arguments);
     }
 
     Values.prototype.toString = function() {
@@ -87,8 +89,10 @@ this.require.define({"app/models/property":function(exports, require, module){(f
 
     __extends(Property, _super);
 
+    Property.name = 'Property';
+
     function Property() {
-      Property.__super__.constructor.apply(this, arguments);
+      return Property.__super__.constructor.apply(this, arguments);
     }
 
     Property.include(Serialize);

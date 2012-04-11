@@ -61,12 +61,14 @@
 this.require.define({"app/controllers/element/resizing":function(exports, require, module){(function() {
   var Resizing, Thumb,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Thumb = (function(_super) {
 
     __extends(Thumb, _super);
+
+    Thumb.name = 'Thumb';
 
     Thumb.prototype.className = 'thumb';
 
@@ -77,8 +79,11 @@ this.require.define({"app/controllers/element/resizing":function(exports, requir
     function Thumb(type) {
       this.type = type;
       this.drop = __bind(this.drop, this);
+
       this.drag = __bind(this.drag, this);
+
       this.listen = __bind(this.listen, this);
+
       Thumb.__super__.constructor.call(this);
       this.el.addClass(this.type);
     }
@@ -120,6 +125,8 @@ this.require.define({"app/controllers/element/resizing":function(exports, requir
   Resizing = (function(_super) {
 
     __extends(Resizing, _super);
+
+    Resizing.name = 'Resizing';
 
     Resizing.prototype.className = 'resizing';
 

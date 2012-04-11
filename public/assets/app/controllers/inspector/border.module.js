@@ -61,7 +61,7 @@
 this.require.define({"app/controllers/inspector/border":function(exports, require, module){(function() {
   var Border, BorderController, ColorPicker,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Border = require('app/models/properties/border');
@@ -71,6 +71,8 @@ this.require.define({"app/controllers/inspector/border":function(exports, requir
   BorderController = (function(_super) {
 
     __extends(BorderController, _super);
+
+    BorderController.name = 'BorderController';
 
     BorderController.prototype.className = 'border';
 
@@ -89,14 +91,17 @@ this.require.define({"app/controllers/inspector/border":function(exports, requir
     BorderController.prototype.current = 'border';
 
     function BorderController() {
-      this.render = __bind(this.render, this);      BorderController.__super__.constructor.apply(this, arguments);
+      this.render = __bind(this.render, this);
+      BorderController.__super__.constructor.apply(this, arguments);
       this.render();
     }
 
     BorderController.prototype.render = function() {
       var _this = this;
       this.disabled = !this.stage.selection.isAny();
-      if (this.stage.selection.get('border') === false) this.disabled = true;
+      if (this.stage.selection.get('border') === false) {
+        this.disabled = true;
+      }
       this.html(JST['app/views/inspector/border'](this));
       this.$color = new ColorPicker.Preview;
       this.$color.bind('change', function() {
@@ -111,7 +116,9 @@ this.require.define({"app/controllers/inspector/border":function(exports, requir
     BorderController.prototype.change = function(current) {
       var _ref;
       this.current = current;
-      if (this.disabled) return;
+      if (this.disabled) {
+        return;
+      }
       this.$borders.removeClass('active');
       this.$borders.filter("[data-border=" + this.current + "]").addClass('active');
       this.currentBorder = this.stage.selection.get(this.current);

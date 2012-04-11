@@ -60,7 +60,7 @@
 }).call(this);
 this.require.define({"app/controllers/inspector/box_shadow":function(exports, require, module){(function() {
   var BoxShadow, BoxShadowEdit, BoxShadowList, Collection, ColorPicker, Popup, PositionPicker, Shadow,
-    __hasProp = Object.prototype.hasOwnProperty,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
@@ -77,6 +77,8 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
   BoxShadowEdit = (function(_super) {
 
     __extends(BoxShadowEdit, _super);
+
+    BoxShadowEdit.name = 'BoxShadowEdit';
 
     BoxShadowEdit.prototype.className = 'edit';
 
@@ -153,6 +155,8 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
 
     __extends(BoxShadowList, _super);
 
+    BoxShadowList.name = 'BoxShadowList';
+
     BoxShadowList.prototype.className = 'list';
 
     BoxShadowList.prototype.events = {
@@ -162,8 +166,11 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
     };
 
     function BoxShadowList() {
-      this.render = __bind(this.render, this);      BoxShadowList.__super__.constructor.apply(this, arguments);
-      if (!this.shadows) throw 'shadows required';
+      this.render = __bind(this.render, this);
+      BoxShadowList.__super__.constructor.apply(this, arguments);
+      if (!this.shadows) {
+        throw 'shadows required';
+      }
       this.shadows.change(this.render);
       this.render();
     }
@@ -206,10 +213,13 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
 
     __extends(BoxShadow, _super);
 
+    BoxShadow.name = 'BoxShadow';
+
     BoxShadow.prototype.className = 'boxShadow';
 
     function BoxShadow() {
-      this.set = __bind(this.set, this);      BoxShadow.__super__.constructor.apply(this, arguments);
+      this.set = __bind(this.set, this);
+      BoxShadow.__super__.constructor.apply(this, arguments);
       this.render();
     }
 
@@ -245,7 +255,11 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
     };
 
     BoxShadow.prototype.set = function(shadow) {
-      if (shadow) if (!this.shadows.include(shadow)) this.shadows.push(shadow);
+      if (shadow) {
+        if (!this.shadows.include(shadow)) {
+          this.shadows.push(shadow);
+        }
+      }
       return this.stage.selection.set('boxShadow', this.shadows.valueOf());
     };
 

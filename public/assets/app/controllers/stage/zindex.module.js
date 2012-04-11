@@ -65,6 +65,8 @@ this.require.define({"app/controllers/stage/zindex":function(exports, require, m
 
   ZIndex = (function() {
 
+    ZIndex.name = 'ZIndex';
+
     function ZIndex(stage) {
       this.stage = stage;
       this.order = this.stage.elements;
@@ -107,10 +109,10 @@ this.require.define({"app/controllers/stage/zindex":function(exports, require, m
     };
 
     ZIndex.prototype.set = function() {
-      var element, index, _len, _ref, _results;
+      var element, index, _i, _len, _ref, _results;
       _ref = this.order;
       _results = [];
-      for (index = 0, _len = _ref.length; index < _len; index++) {
+      for (index = _i = 0, _len = _ref.length; _i < _len; index = ++_i) {
         element = _ref[index];
         _results.push(element.set('order', index));
       }

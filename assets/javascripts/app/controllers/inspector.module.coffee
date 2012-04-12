@@ -13,12 +13,12 @@ class Inspector extends Spine.Controller
   constructor: ->
     super
 
-    @dimensions   = new Dimensions(stage: @stage)
-    @background   = new Background(stage: @stage)
-    @border       = new Border(stage: @stage)
-    @borderRadius = new BorderRadius(stage: @stage)
-    @boxShadow    = new BoxShadow(stage: @stage)
-    @opacity      = new Opacity(stage: @stage)
+    @append(@dimensions   = new Dimensions(stage: @stage))
+    @append(@background   = new Background(stage: @stage))
+    @append(@border       = new Border(stage: @stage))
+    @append(@borderRadius = new BorderRadius(stage: @stage))
+    @append(@boxShadow    = new BoxShadow(stage: @stage))
+    @append(@opacity      = new Opacity(stage: @stage))
 
     # We can increase performance dramatically by using
     # requestAnimationFrame and rendering async
@@ -30,18 +30,18 @@ class Inspector extends Spine.Controller
     Utils.requestAnimationFrame(@frame)
 
   render: =>
+    # Do update in one paint
+    @dirty = false
     @el.hide()
-    @el.empty()
 
-    @append(@dimensions.render())
-    @append(@background.render())
-    @append(@border.render())
-    @append(@borderRadius.render())
-    @append(@boxShadow.render())
-    @append(@opacity.render())
+    @dimensions.render()
+    @background.render()
+    @border.render()
+    @borderRadius.render()
+    @boxShadow.render()
+    @opacity.render()
 
     @el.show()
-    @dirty = false
     this
 
   release: ->

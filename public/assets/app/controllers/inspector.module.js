@@ -95,24 +95,24 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
 
       var _this = this;
       Inspector.__super__.constructor.apply(this, arguments);
-      this.dimensions = new Dimensions({
+      this.append(this.dimensions = new Dimensions({
         stage: this.stage
-      });
-      this.background = new Background({
+      }));
+      this.append(this.background = new Background({
         stage: this.stage
-      });
-      this.border = new Border({
+      }));
+      this.append(this.border = new Border({
         stage: this.stage
-      });
-      this.borderRadius = new BorderRadius({
+      }));
+      this.append(this.borderRadius = new BorderRadius({
         stage: this.stage
-      });
-      this.boxShadow = new BoxShadow({
+      }));
+      this.append(this.boxShadow = new BoxShadow({
         stage: this.stage
-      });
-      this.opacity = new Opacity({
+      }));
+      this.append(this.opacity = new Opacity({
         stage: this.stage
-      });
+      }));
       this.stage.selection.bind('change', function() {
         return _this.dirty = true;
       });
@@ -127,16 +127,15 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
     };
 
     Inspector.prototype.render = function() {
-      this.el.hide();
-      this.el.empty();
-      this.append(this.dimensions.render());
-      this.append(this.background.render());
-      this.append(this.border.render());
-      this.append(this.borderRadius.render());
-      this.append(this.boxShadow.render());
-      this.append(this.opacity.render());
-      this.el.show();
       this.dirty = false;
+      this.el.hide();
+      this.dimensions.render();
+      this.background.render();
+      this.border.render();
+      this.borderRadius.render();
+      this.boxShadow.render();
+      this.opacity.render();
+      this.el.show();
       return this;
     };
 

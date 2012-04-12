@@ -22,16 +22,17 @@ class Inspector extends Spine.Controller
 
     # We can increase performance dramatically by using
     # requestAnimationFrame and rendering async
-    @stage.selection.bind 'change', => @dirty = true
-    @frame()
+    @stage.selection.bind 'change', @paint
 
-  frame: =>
-    @render() if @dirty
-    Utils.requestAnimationFrame(@frame)
+    @render()
+
+  paint: =>
+    return if @rendering
+    @rendering = true
+    Utils.requestAnimationFrame(@render)
 
   render: =>
     # Do update in one paint
-    @dirty = false
     @el.hide()
 
     @dimensions.render()
@@ -42,6 +43,7 @@ class Inspector extends Spine.Controller
     @opacity.render()
 
     @el.show()
+    @rendering = false
     this
 
   release: ->

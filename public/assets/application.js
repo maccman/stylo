@@ -13337,9 +13337,7 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
     function Inspector() {
       this.render = __bind(this.render, this);
 
-      this.frame = __bind(this.frame, this);
-
-      var _this = this;
+      this.paint = __bind(this.paint, this);
       Inspector.__super__.constructor.apply(this, arguments);
       this.append(this.dimensions = new Dimensions({
         stage: this.stage
@@ -13359,21 +13357,19 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
       this.append(this.opacity = new Opacity({
         stage: this.stage
       }));
-      this.stage.selection.bind('change', function() {
-        return _this.dirty = true;
-      });
-      this.frame();
+      this.stage.selection.bind('change', this.paint);
+      this.render();
     }
 
-    Inspector.prototype.frame = function() {
-      if (this.dirty) {
-        this.render();
+    Inspector.prototype.paint = function() {
+      if (this.rendering) {
+        return;
       }
-      return Utils.requestAnimationFrame(this.frame);
+      this.rendering = true;
+      return Utils.requestAnimationFrame(this.render);
     };
 
     Inspector.prototype.render = function() {
-      this.dirty = false;
       this.el.hide();
       this.dimensions.render();
       this.background.render();
@@ -13382,6 +13378,7 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
       this.boxShadow.render();
       this.opacity.render();
       this.el.show();
+      this.rendering = false;
       return this;
     };
 
@@ -16614,7 +16611,7 @@ this.require.define({"app/models/undo":function(exports, require, module){(funct
     (function() {
       (function() {
       
-        __out.push('<div data-type="copy" data-require="select">Copy</div>\n<div data-type="paste">Paste</div>\n<div data-type="bringForward" data-require="select">Bring Forwards</div>\n<div data-type="bringToFront" data-require="select">Bring to Front</div>\n<div data-type="bringBack" data-require="select">Send Backwards</div>\n<div data-type="bringToBack" data-require="select">Send To Back</div>\n');
+        __out.push('<div data-type="copy" data-require="select">Copy</div>\n<div data-type="paste">Paste</div>\n<div data-type="bringForward" data-require="select">Bring Forward</div>\n<div data-type="bringToFront" data-require="select">Bring to Front</div>\n<div data-type="bringBack" data-require="select">Send Backward</div>\n<div data-type="bringToBack" data-require="select">Send To Back</div>\n');
       
       }).call(this);
       

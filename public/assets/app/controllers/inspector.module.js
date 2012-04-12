@@ -91,9 +91,7 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
     function Inspector() {
       this.render = __bind(this.render, this);
 
-      this.frame = __bind(this.frame, this);
-
-      var _this = this;
+      this.paint = __bind(this.paint, this);
       Inspector.__super__.constructor.apply(this, arguments);
       this.append(this.dimensions = new Dimensions({
         stage: this.stage
@@ -113,21 +111,19 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
       this.append(this.opacity = new Opacity({
         stage: this.stage
       }));
-      this.stage.selection.bind('change', function() {
-        return _this.dirty = true;
-      });
-      this.frame();
+      this.stage.selection.bind('change', this.paint);
+      this.render();
     }
 
-    Inspector.prototype.frame = function() {
-      if (this.dirty) {
-        this.render();
+    Inspector.prototype.paint = function() {
+      if (this.rendering) {
+        return;
       }
-      return Utils.requestAnimationFrame(this.frame);
+      this.rendering = true;
+      return Utils.requestAnimationFrame(this.render);
     };
 
     Inspector.prototype.render = function() {
-      this.dirty = false;
       this.el.hide();
       this.dimensions.render();
       this.background.render();
@@ -136,6 +132,7 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
       this.boxShadow.render();
       this.opacity.render();
       this.el.show();
+      this.rendering = false;
       return this;
     };
 

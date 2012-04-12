@@ -13,9 +13,7 @@ class Dimensions extends Spine.Controller
 
   constructor: ->
     super
-    throw 'stage required' unless @stage
     $(document).bind 'resize.element move.element', @update
-    @render()
 
   render: =>
     @disabled = not @stage.selection.isSingle()
@@ -25,6 +23,7 @@ class Dimensions extends Spine.Controller
 
     @el.toggleClass('disabled', @disabled)
     @$inputs.attr('disabled', @disabled)
+    this
 
   update: =>
     @disabled = not @stage.selection.isSingle()

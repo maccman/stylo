@@ -11,6 +11,10 @@ class App extends Spine.Controller
     @header     = new Header(stage: @stage)
     @inspector  = new Inspector(stage: @stage)
 
-    @append(@header, @stage, @inspector)
+    @append(
+      @header.render(),
+      @stage.render(),
+      @inspector.render()
+    )
 
 module.exports = App

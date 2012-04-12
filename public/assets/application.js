@@ -13237,6 +13237,10 @@ this.require.define({"app/controllers/header":function(exports, require, module)
 
     Header.name = 'Header';
 
+    function Header() {
+      return Header.__super__.constructor.apply(this, arguments);
+    }
+
     Header.prototype.tag = 'header';
 
     Header.prototype.className = 'header';
@@ -13247,13 +13251,10 @@ this.require.define({"app/controllers/header":function(exports, require, module)
       'click .text': 'addText'
     };
 
-    function Header() {
-      Header.__super__.constructor.apply(this, arguments);
-      if (!this.stage) {
-        throw 'stage required';
-      }
+    Header.prototype.render = function() {
       this.html(JST['app/views/header'](this));
-    }
+      return this;
+    };
 
     Header.prototype.addRectangle = function() {
       return this.addElement(new Rectangle);
@@ -13318,58 +13319,39 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
 
     function Inspector() {
       this.render = __bind(this.render, this);
-
-      var _this = this;
       Inspector.__super__.constructor.apply(this, arguments);
-      this.stage.selection.bind('change', function() {
-        return setTimeout(_this.render);
+      this.dimensions = new Dimensions({
+        stage: this.stage
       });
-      this.render();
+      this.background = new Background({
+        stage: this.stage
+      });
+      this.border = new Border({
+        stage: this.stage
+      });
+      this.borderRadius = new BorderRadius({
+        stage: this.stage
+      });
+      this.boxShadow = new BoxShadow({
+        stage: this.stage
+      });
+      this.opacity = new Opacity({
+        stage: this.stage
+      });
+      this.stage.selection.bind('change', this.render);
     }
 
     Inspector.prototype.render = function() {
       this.el.hide();
       this.el.empty();
-      this.sweep();
-      this.append(this.dimensions = new Dimensions({
-        stage: this.stage
-      }));
-      this.append(this.background = new Background({
-        stage: this.stage
-      }));
-      this.append(this.border = new Border({
-        stage: this.stage
-      }));
-      this.append(this.borderRadius = new BorderRadius({
-        stage: this.stage
-      }));
-      this.append(this.boxShadow = new BoxShadow({
-        stage: this.stage
-      }));
-      this.append(this.opacity = new Opacity({
-        stage: this.stage
-      }));
-      return this.el.show();
-    };
-
-    Inspector.prototype.sweep = function() {
-      var _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
-      if ((_ref = this.dimensions) != null) {
-        _ref.release();
-      }
-      if ((_ref1 = this.background) != null) {
-        _ref1.release();
-      }
-      if ((_ref2 = this.border) != null) {
-        _ref2.release();
-      }
-      if ((_ref3 = this.borderRadius) != null) {
-        _ref3.release();
-      }
-      if ((_ref4 = this.boxShadow) != null) {
-        _ref4.release();
-      }
-      return (_ref5 = this.opacity) != null ? _ref5.release() : void 0;
+      this.append(this.dimensions.render());
+      this.append(this.background.render());
+      this.append(this.border.render());
+      this.append(this.borderRadius.render());
+      this.append(this.boxShadow.render());
+      this.append(this.opacity.render());
+      this.el.show();
+      return this;
     };
 
     Inspector.prototype.release = function() {
@@ -13463,9 +13445,9 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
           _this.background = color;
           return _this.trigger('change', _this.background);
         });
-        return this.append(picker);
+        this.append(picker);
       } else if (this.background instanceof Background.URL) {
-        return this.html(JST['app/views/inspector/background/url'](this));
+        this.html(JST['app/views/inspector/background/url'](this));
       } else if (this.background instanceof Background.LinearGradient) {
         picker = new GradientPicker({
           gradient: this.background
@@ -13474,10 +13456,11 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
           _this.background = background;
           return _this.trigger('change', _this.background);
         });
-        return this.append(picker);
+        this.append(picker);
       } else {
 
       }
+      return this;
     };
 
     Edit.prototype.inputChange = function() {
@@ -13512,7 +13495,6 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
         throw 'backgrounds required';
       }
       this.backgrounds.change(this.render);
-      this.render();
     }
 
     List.prototype.render = function() {
@@ -13520,7 +13502,8 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
       this.html(JST['app/views/inspector/background/list'](this));
       this.$('.item').removeClass('selected');
       selected = this.$('.item').get(this.backgrounds.indexOf(this.current));
-      return $(selected).addClass('selected');
+      $(selected).addClass('selected');
+      return this;
     };
 
     List.prototype.click = function(e) {
@@ -13554,15 +13537,14 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
 
     BackgroundInspector.name = 'BackgroundInspector';
 
-    BackgroundInspector.prototype.className = 'background';
-
     function BackgroundInspector() {
       this.set = __bind(this.set, this);
 
       this.render = __bind(this.render, this);
-      BackgroundInspector.__super__.constructor.apply(this, arguments);
-      this.render();
+      return BackgroundInspector.__super__.constructor.apply(this, arguments);
     }
+
+    BackgroundInspector.prototype.className = 'background';
 
     BackgroundInspector.prototype.render = function() {
       var backgroundColor,
@@ -13587,14 +13569,15 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
         _this.current = current;
         return _this.edit.change(_this.current);
       });
-      this.append(this.list);
+      this.append(this.list.render());
       this.edit = new Edit({
         background: this.current
       });
       this.edit.bind('change', function() {
         return _this.backgrounds.change();
       });
-      return this.append(this.edit);
+      this.append(this.edit);
+      return this;
     };
 
     BackgroundInspector.prototype.set = function() {
@@ -13637,6 +13620,11 @@ this.require.define({"app/controllers/inspector/border":function(exports, requir
 
     BorderController.name = 'BorderController';
 
+    function BorderController() {
+      this.render = __bind(this.render, this);
+      return BorderController.__super__.constructor.apply(this, arguments);
+    }
+
     BorderController.prototype.className = 'border';
 
     BorderController.prototype.events = {
@@ -13653,12 +13641,6 @@ this.require.define({"app/controllers/inspector/border":function(exports, requir
 
     BorderController.prototype.current = 'border';
 
-    function BorderController() {
-      this.render = __bind(this.render, this);
-      BorderController.__super__.constructor.apply(this, arguments);
-      this.render();
-    }
-
     BorderController.prototype.render = function() {
       var _this = this;
       this.disabled = !this.stage.selection.isAny();
@@ -13673,7 +13655,8 @@ this.require.define({"app/controllers/inspector/border":function(exports, requir
       this.$('input[type=color]').replaceWith(this.$color.el);
       this.change(this.current);
       this.el.toggleClass('disabled', this.disabled);
-      return this.$inputs.attr('disabled', this.disabled);
+      this.$inputs.attr('disabled', this.disabled);
+      return this;
     };
 
     BorderController.prototype.change = function(current) {
@@ -13745,6 +13728,11 @@ this.require.define({"app/controllers/inspector/border_radius":function(exports,
 
     BorderRadius.name = 'BorderRadius';
 
+    function BorderRadius() {
+      this.render = __bind(this.render, this);
+      return BorderRadius.__super__.constructor.apply(this, arguments);
+    }
+
     BorderRadius.prototype.className = 'borderRadius';
 
     BorderRadius.prototype.events = {
@@ -13759,15 +13747,6 @@ this.require.define({"app/controllers/inspector/border_radius":function(exports,
 
     BorderRadius.prototype.current = 'borderRadius';
 
-    function BorderRadius() {
-      this.render = __bind(this.render, this);
-      BorderRadius.__super__.constructor.apply(this, arguments);
-      if (!this.stage) {
-        throw 'stage required';
-      }
-      this.render();
-    }
-
     BorderRadius.prototype.render = function() {
       this.disabled = !this.stage.selection.isAny();
       if (this.stage.selection.get('borderRadius') === false) {
@@ -13776,7 +13755,8 @@ this.require.define({"app/controllers/inspector/border_radius":function(exports,
       this.html(JST['app/views/inspector/border_radius'](this));
       this.change(this.current);
       this.el.toggleClass('disabled', this.disabled);
-      return this.$inputs.attr('disabled', this.disabled);
+      this.$inputs.attr('disabled', this.disabled);
+      return this;
     };
 
     BorderRadius.prototype.change = function(current) {
@@ -13889,7 +13869,8 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
         _this.trigger('change', _this.shadow);
         return _this.update();
       });
-      return this.update();
+      this.update();
+      return this;
     };
 
     BoxShadowEdit.prototype.update = function() {
@@ -13948,7 +13929,6 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
         throw 'shadows required';
       }
       this.shadows.change(this.render);
-      this.render();
     }
 
     BoxShadowList.prototype.render = function() {
@@ -13956,7 +13936,8 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
       this.html(JST['app/views/inspector/box_shadow/list'](this));
       this.$('.item').removeClass('selected');
       selected = this.$('.item').get(this.shadows.indexOf(this.current));
-      return $(selected).addClass('selected');
+      $(selected).addClass('selected');
+      return this;
     };
 
     BoxShadowList.prototype.click = function(e) {
@@ -13991,13 +13972,12 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
 
     BoxShadow.name = 'BoxShadow';
 
-    BoxShadow.prototype.className = 'boxShadow';
-
     function BoxShadow() {
       this.set = __bind(this.set, this);
-      BoxShadow.__super__.constructor.apply(this, arguments);
-      this.render();
+      return BoxShadow.__super__.constructor.apply(this, arguments);
     }
+
+    BoxShadow.prototype.className = 'boxShadow';
 
     BoxShadow.prototype.render = function() {
       var _this = this;
@@ -14018,7 +13998,7 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
         _this.current = current;
         return _this.edit.change(_this.current);
       });
-      this.append(this.list);
+      this.append(this.list.render());
       this.edit = new BoxShadowEdit({
         shadow: this.current,
         disabled: this.disabled
@@ -14027,7 +14007,8 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
         var _ref;
         return (_ref = _this.shadows).change.apply(_ref, arguments);
       });
-      return this.append(this.edit);
+      this.append(this.edit);
+      return this;
     };
 
     BoxShadow.prototype.set = function(shadow) {
@@ -14092,11 +14073,7 @@ this.require.define({"app/controllers/inspector/dimensions":function(exports, re
 
       this.render = __bind(this.render, this);
       Dimensions.__super__.constructor.apply(this, arguments);
-      if (!this.stage) {
-        throw 'stage required';
-      }
       $(document).bind('resize.element move.element', this.update);
-      this.render();
     }
 
     Dimensions.prototype.render = function() {
@@ -14104,7 +14081,8 @@ this.require.define({"app/controllers/inspector/dimensions":function(exports, re
       this.html(JST['app/views/inspector/dimensions'](this));
       this.update();
       this.el.toggleClass('disabled', this.disabled);
-      return this.$inputs.attr('disabled', this.disabled);
+      this.$inputs.attr('disabled', this.disabled);
+      return this;
     };
 
     Dimensions.prototype.update = function() {
@@ -14151,6 +14129,11 @@ this.require.define({"app/controllers/inspector/opacity":function(exports, requi
 
     Opacity.name = 'Opacity';
 
+    function Opacity() {
+      this.render = __bind(this.render, this);
+      return Opacity.__super__.constructor.apply(this, arguments);
+    }
+
     Opacity.prototype.className = 'opacity';
 
     Opacity.prototype.events = {
@@ -14160,15 +14143,6 @@ this.require.define({"app/controllers/inspector/opacity":function(exports, requi
     Opacity.prototype.elements = {
       'input': '$inputs'
     };
-
-    function Opacity() {
-      this.render = __bind(this.render, this);
-      Opacity.__super__.constructor.apply(this, arguments);
-      if (!this.stage) {
-        throw 'stage required';
-      }
-      this.render();
-    }
 
     Opacity.prototype.render = function() {
       var _ref;
@@ -14234,7 +14208,6 @@ this.require.define({"app/controllers/inspector/text_shadow":function(exports, r
         _this.stage.selection.set('textShadow', _this.shadow.toString());
         return _this.update();
       });
-      this.render();
     }
 
     TextShadow.prototype.render = function() {
@@ -14250,7 +14223,8 @@ this.require.define({"app/controllers/inspector/text_shadow":function(exports, r
         left: this.shadow.x,
         top: this.shadow.y
       });
-      return this.append(this.positionPicker);
+      this.append(this.positionPicker);
+      return this;
     };
 
     TextShadow.prototype.update = function() {
@@ -14367,8 +14341,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
 
       this.add = __bind(this.add, this);
 
-      var rectangle1, rectangle2,
-        _this = this;
+      var _this = this;
       Stage.__super__.constructor.apply(this, arguments);
       this.elements = [];
       this.properties = {};
@@ -14384,6 +14357,10 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       this.selection.bind('change', function() {
         return _this.el.trigger('selection.change', [_this]);
       });
+    }
+
+    Stage.prototype.render = function() {
+      var rectangle1, rectangle2;
       rectangle1 = new Rectangle({
         left: 200,
         top: 200,
@@ -14392,7 +14369,8 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       rectangle2 = new Rectangle();
       this.add(rectangle1);
       this.add(rectangle2);
-    }
+      return this;
+    };
 
     Stage.prototype.add = function(element) {
       this.elements.push(element);
@@ -16063,7 +16041,7 @@ this.require.define({"app/index":function(exports, require, module){(function() 
       this.inspector = new Inspector({
         stage: this.stage
       });
-      this.append(this.header, this.stage, this.inspector);
+      this.append(this.header.render(), this.stage.render(), this.inspector.render());
     }
 
     return App;

@@ -70,6 +70,11 @@ this.require.define({"app/controllers/inspector/border_radius":function(exports,
 
     BorderRadius.name = 'BorderRadius';
 
+    function BorderRadius() {
+      this.render = __bind(this.render, this);
+      return BorderRadius.__super__.constructor.apply(this, arguments);
+    }
+
     BorderRadius.prototype.className = 'borderRadius';
 
     BorderRadius.prototype.events = {
@@ -84,15 +89,6 @@ this.require.define({"app/controllers/inspector/border_radius":function(exports,
 
     BorderRadius.prototype.current = 'borderRadius';
 
-    function BorderRadius() {
-      this.render = __bind(this.render, this);
-      BorderRadius.__super__.constructor.apply(this, arguments);
-      if (!this.stage) {
-        throw 'stage required';
-      }
-      this.render();
-    }
-
     BorderRadius.prototype.render = function() {
       this.disabled = !this.stage.selection.isAny();
       if (this.stage.selection.get('borderRadius') === false) {
@@ -101,7 +97,8 @@ this.require.define({"app/controllers/inspector/border_radius":function(exports,
       this.html(JST['app/views/inspector/border_radius'](this));
       this.change(this.current);
       this.el.toggleClass('disabled', this.disabled);
-      return this.$inputs.attr('disabled', this.disabled);
+      this.$inputs.attr('disabled', this.disabled);
+      return this;
     };
 
     BorderRadius.prototype.change = function(current) {

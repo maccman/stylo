@@ -7,11 +7,6 @@ class Opacity extends Spine.Controller
   elements:
     'input': '$inputs'
 
-  constructor: ->
-    super
-    throw 'stage required' unless @stage
-    @render()
-
   render: =>
     @disabled = not @stage.selection.isAny()
     @opacity  = @stage.selection.get('opacity') ? 1

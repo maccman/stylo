@@ -74,6 +74,11 @@ this.require.define({"app/controllers/inspector/border":function(exports, requir
 
     BorderController.name = 'BorderController';
 
+    function BorderController() {
+      this.render = __bind(this.render, this);
+      return BorderController.__super__.constructor.apply(this, arguments);
+    }
+
     BorderController.prototype.className = 'border';
 
     BorderController.prototype.events = {
@@ -90,12 +95,6 @@ this.require.define({"app/controllers/inspector/border":function(exports, requir
 
     BorderController.prototype.current = 'border';
 
-    function BorderController() {
-      this.render = __bind(this.render, this);
-      BorderController.__super__.constructor.apply(this, arguments);
-      this.render();
-    }
-
     BorderController.prototype.render = function() {
       var _this = this;
       this.disabled = !this.stage.selection.isAny();
@@ -110,7 +109,8 @@ this.require.define({"app/controllers/inspector/border":function(exports, requir
       this.$('input[type=color]').replaceWith(this.$color.el);
       this.change(this.current);
       this.el.toggleClass('disabled', this.disabled);
-      return this.$inputs.attr('disabled', this.disabled);
+      this.$inputs.attr('disabled', this.disabled);
+      return this;
     };
 
     BorderController.prototype.change = function(current) {

@@ -47,6 +47,7 @@ class BoxShadowEdit extends Spine.Controller
       @update()
 
     @update()
+    this
 
   update: ->
     @$inputs.attr('disabled', @disabled)
@@ -85,7 +86,6 @@ class BoxShadowList extends Spine.Controller
     super
     throw 'shadows required' unless @shadows
     @shadows.change @render
-    @render()
 
   render: =>
     @html JST['app/views/inspector/box_shadow/list'](@)
@@ -93,6 +93,7 @@ class BoxShadowList extends Spine.Controller
     @$('.item').removeClass('selected')
     selected = @$('.item').get(@shadows.indexOf(@current))
     $(selected).addClass('selected')
+    this
 
   click: (e) ->
     @current = @shadows[$(e.currentTarget).index()]
@@ -113,10 +114,6 @@ class BoxShadowList extends Spine.Controller
 
 class BoxShadow extends Spine.Controller
   className: 'boxShadow'
-
-  constructor: ->
-    super
-    @render()
 
   render: ->
     @disabled = not @stage.selection.isAny()
@@ -141,7 +138,7 @@ class BoxShadow extends Spine.Controller
     @list.bind 'change', (@current) =>
       @edit.change @current
 
-    @append @list
+    @append @list.render()
 
     # BoxShadow Edit
 
@@ -151,6 +148,8 @@ class BoxShadow extends Spine.Controller
 
     @edit.bind 'change', => @shadows.change(arguments...)
     @append @edit
+
+    this
 
   set: (shadow) =>
     if shadow

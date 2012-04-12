@@ -124,7 +124,8 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
         _this.trigger('change', _this.shadow);
         return _this.update();
       });
-      return this.update();
+      this.update();
+      return this;
     };
 
     BoxShadowEdit.prototype.update = function() {
@@ -183,7 +184,6 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
         throw 'shadows required';
       }
       this.shadows.change(this.render);
-      this.render();
     }
 
     BoxShadowList.prototype.render = function() {
@@ -191,7 +191,8 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
       this.html(JST['app/views/inspector/box_shadow/list'](this));
       this.$('.item').removeClass('selected');
       selected = this.$('.item').get(this.shadows.indexOf(this.current));
-      return $(selected).addClass('selected');
+      $(selected).addClass('selected');
+      return this;
     };
 
     BoxShadowList.prototype.click = function(e) {
@@ -226,13 +227,12 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
 
     BoxShadow.name = 'BoxShadow';
 
-    BoxShadow.prototype.className = 'boxShadow';
-
     function BoxShadow() {
       this.set = __bind(this.set, this);
-      BoxShadow.__super__.constructor.apply(this, arguments);
-      this.render();
+      return BoxShadow.__super__.constructor.apply(this, arguments);
     }
+
+    BoxShadow.prototype.className = 'boxShadow';
 
     BoxShadow.prototype.render = function() {
       var _this = this;
@@ -253,7 +253,7 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
         _this.current = current;
         return _this.edit.change(_this.current);
       });
-      this.append(this.list);
+      this.append(this.list.render());
       this.edit = new BoxShadowEdit({
         shadow: this.current,
         disabled: this.disabled
@@ -262,7 +262,8 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
         var _ref;
         return (_ref = _this.shadows).change.apply(_ref, arguments);
       });
-      return this.append(this.edit);
+      this.append(this.edit);
+      return this;
     };
 
     BoxShadow.prototype.set = function(shadow) {

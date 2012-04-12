@@ -136,9 +136,9 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
           _this.background = color;
           return _this.trigger('change', _this.background);
         });
-        return this.append(picker);
+        this.append(picker);
       } else if (this.background instanceof Background.URL) {
-        return this.html(JST['app/views/inspector/background/url'](this));
+        this.html(JST['app/views/inspector/background/url'](this));
       } else if (this.background instanceof Background.LinearGradient) {
         picker = new GradientPicker({
           gradient: this.background
@@ -147,10 +147,11 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
           _this.background = background;
           return _this.trigger('change', _this.background);
         });
-        return this.append(picker);
+        this.append(picker);
       } else {
 
       }
+      return this;
     };
 
     Edit.prototype.inputChange = function() {
@@ -185,7 +186,6 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
         throw 'backgrounds required';
       }
       this.backgrounds.change(this.render);
-      this.render();
     }
 
     List.prototype.render = function() {
@@ -193,7 +193,8 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
       this.html(JST['app/views/inspector/background/list'](this));
       this.$('.item').removeClass('selected');
       selected = this.$('.item').get(this.backgrounds.indexOf(this.current));
-      return $(selected).addClass('selected');
+      $(selected).addClass('selected');
+      return this;
     };
 
     List.prototype.click = function(e) {
@@ -227,15 +228,14 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
 
     BackgroundInspector.name = 'BackgroundInspector';
 
-    BackgroundInspector.prototype.className = 'background';
-
     function BackgroundInspector() {
       this.set = __bind(this.set, this);
 
       this.render = __bind(this.render, this);
-      BackgroundInspector.__super__.constructor.apply(this, arguments);
-      this.render();
+      return BackgroundInspector.__super__.constructor.apply(this, arguments);
     }
+
+    BackgroundInspector.prototype.className = 'background';
 
     BackgroundInspector.prototype.render = function() {
       var backgroundColor,
@@ -260,14 +260,15 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
         _this.current = current;
         return _this.edit.change(_this.current);
       });
-      this.append(this.list);
+      this.append(this.list.render());
       this.edit = new Edit({
         background: this.current
       });
       this.edit.bind('change', function() {
         return _this.backgrounds.change();
       });
-      return this.append(this.edit);
+      this.append(this.edit);
+      return this;
     };
 
     BackgroundInspector.prototype.set = function() {

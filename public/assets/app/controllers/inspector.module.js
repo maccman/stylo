@@ -88,58 +88,39 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
 
     function Inspector() {
       this.render = __bind(this.render, this);
-
-      var _this = this;
       Inspector.__super__.constructor.apply(this, arguments);
-      this.stage.selection.bind('change', function() {
-        return setTimeout(_this.render);
+      this.dimensions = new Dimensions({
+        stage: this.stage
       });
-      this.render();
+      this.background = new Background({
+        stage: this.stage
+      });
+      this.border = new Border({
+        stage: this.stage
+      });
+      this.borderRadius = new BorderRadius({
+        stage: this.stage
+      });
+      this.boxShadow = new BoxShadow({
+        stage: this.stage
+      });
+      this.opacity = new Opacity({
+        stage: this.stage
+      });
+      this.stage.selection.bind('change', this.render);
     }
 
     Inspector.prototype.render = function() {
       this.el.hide();
       this.el.empty();
-      this.sweep();
-      this.append(this.dimensions = new Dimensions({
-        stage: this.stage
-      }));
-      this.append(this.background = new Background({
-        stage: this.stage
-      }));
-      this.append(this.border = new Border({
-        stage: this.stage
-      }));
-      this.append(this.borderRadius = new BorderRadius({
-        stage: this.stage
-      }));
-      this.append(this.boxShadow = new BoxShadow({
-        stage: this.stage
-      }));
-      this.append(this.opacity = new Opacity({
-        stage: this.stage
-      }));
-      return this.el.show();
-    };
-
-    Inspector.prototype.sweep = function() {
-      var _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
-      if ((_ref = this.dimensions) != null) {
-        _ref.release();
-      }
-      if ((_ref1 = this.background) != null) {
-        _ref1.release();
-      }
-      if ((_ref2 = this.border) != null) {
-        _ref2.release();
-      }
-      if ((_ref3 = this.borderRadius) != null) {
-        _ref3.release();
-      }
-      if ((_ref4 = this.boxShadow) != null) {
-        _ref4.release();
-      }
-      return (_ref5 = this.opacity) != null ? _ref5.release() : void 0;
+      this.append(this.dimensions.render());
+      this.append(this.background.render());
+      this.append(this.border.render());
+      this.append(this.borderRadius.render());
+      this.append(this.boxShadow.render());
+      this.append(this.opacity.render());
+      this.el.show();
+      return this;
     };
 
     Inspector.prototype.release = function() {

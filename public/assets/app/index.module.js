@@ -86,7 +86,7 @@ this.require.define({"app/index":function(exports, require, module){(function() 
       this.inspector = new Inspector({
         stage: this.stage
       });
-      this.append(this.header, this.stage, this.inspector);
+      this.append(this.header.render(), this.stage.render(), this.inspector.render());
     }
 
     return App;

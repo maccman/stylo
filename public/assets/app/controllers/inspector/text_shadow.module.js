@@ -99,7 +99,6 @@ this.require.define({"app/controllers/inspector/text_shadow":function(exports, r
         _this.stage.selection.set('textShadow', _this.shadow.toString());
         return _this.update();
       });
-      this.render();
     }
 
     TextShadow.prototype.render = function() {
@@ -115,7 +114,8 @@ this.require.define({"app/controllers/inspector/text_shadow":function(exports, r
         left: this.shadow.x,
         top: this.shadow.y
       });
-      return this.append(this.positionPicker);
+      this.append(this.positionPicker);
+      return this;
     };
 
     TextShadow.prototype.update = function() {

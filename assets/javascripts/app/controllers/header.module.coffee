@@ -11,10 +11,9 @@ class Header extends Spine.Controller
     'click .ellipsis': 'addEllipsis'
     'click .text': 'addText'
 
-  constructor: ->
-    super
-    throw 'stage required' unless @stage
+  render: ->
     @html JST['app/views/header'](this)
+    this
 
   addRectangle: ->
     @addElement(new Rectangle)

@@ -26,8 +26,6 @@ class TextShadow extends Spine.Controller
       @stage.selection.set('textShadow', @shadow.toString())
       @update()
 
-    @render()
-
   render: ->
     @disabled = not @stage.selection.isAny()
 
@@ -40,10 +38,14 @@ class TextShadow extends Spine.Controller
     @$preview.css('background', @shadow?.color.toString())
 
     @positionPicker.disabled = @disabled
+
     @positionPicker.change(
       left: @shadow.x, top: @shadow.y
     )
+
     @append @positionPicker
+
+    this
 
   update: ->
     @$('input').attr('disabled', @disabled)

@@ -16,10 +16,6 @@ class BorderController extends Spine.Controller
 
   current: 'border'
 
-  constructor: ->
-    super
-    @render()
-
   render: =>
     @disabled = not @stage.selection.isAny()
     @disabled = true if @stage.selection.get('border') is false
@@ -35,6 +31,7 @@ class BorderController extends Spine.Controller
 
     @el.toggleClass('disabled', @disabled)
     @$inputs.attr('disabled', @disabled)
+    this
 
   change: (@current) ->
     return if @disabled

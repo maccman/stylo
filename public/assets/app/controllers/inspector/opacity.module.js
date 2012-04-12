@@ -70,6 +70,11 @@ this.require.define({"app/controllers/inspector/opacity":function(exports, requi
 
     Opacity.name = 'Opacity';
 
+    function Opacity() {
+      this.render = __bind(this.render, this);
+      return Opacity.__super__.constructor.apply(this, arguments);
+    }
+
     Opacity.prototype.className = 'opacity';
 
     Opacity.prototype.events = {
@@ -79,15 +84,6 @@ this.require.define({"app/controllers/inspector/opacity":function(exports, requi
     Opacity.prototype.elements = {
       'input': '$inputs'
     };
-
-    function Opacity() {
-      this.render = __bind(this.render, this);
-      Opacity.__super__.constructor.apply(this, arguments);
-      if (!this.stage) {
-        throw 'stage required';
-      }
-      this.render();
-    }
 
     Opacity.prototype.render = function() {
       var _ref;

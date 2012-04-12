@@ -43,6 +43,7 @@ class Stage extends Spine.Controller
     @selection.bind 'change', =>
       @el.trigger('selection.change', [this])
 
+  render: ->
     # FIXME: Test data
     rectangle1 = new Rectangle(
       left: 200, top: 200,
@@ -52,6 +53,7 @@ class Stage extends Spine.Controller
 
     @add(rectangle1)
     @add(rectangle2)
+    this
 
   add: (element) =>
     @elements.push(element)

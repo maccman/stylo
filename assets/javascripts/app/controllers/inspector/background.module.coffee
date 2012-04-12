@@ -51,6 +51,7 @@ class Edit extends Spine.Controller
     # Multiple gradient picker
     # Single color picker
     # Url picker (repeat)
+    this
 
   inputChange: ->
     if @background instanceof Background.URL
@@ -69,7 +70,6 @@ class List extends Spine.Controller
     super
     throw 'backgrounds required' unless @backgrounds
     @backgrounds.change @render
-    @render()
 
   render: =>
     @html JST['app/views/inspector/background/list'](@)
@@ -77,6 +77,8 @@ class List extends Spine.Controller
     @$('.item').removeClass('selected')
     selected = @$('.item').get(@backgrounds.indexOf(@current))
     $(selected).addClass('selected')
+
+    this
 
   click: (e) ->
     @current = @backgrounds[$(e.currentTarget).index()]
@@ -105,10 +107,6 @@ class List extends Spine.Controller
 class BackgroundInspector extends Spine.Controller
   className: 'background'
 
-  constructor: ->
-    super
-    @render()
-
   render: =>
     @disabled = not @stage.selection.isAny()
     @el.toggleClass('disabled', @disabled)
@@ -135,12 +133,14 @@ class BackgroundInspector extends Spine.Controller
     @list.bind 'change', (@current) =>
       @edit.change @current
 
-    @append @list
+    @append @list.render()
 
     # Edit
     @edit = new Edit(background: @current)
     @edit.bind 'change', => @backgrounds.change()
     @append @edit
+
+    this
 
   set: =>
     @stage.selection.set('backgroundColor', @backgrounds.getColor())

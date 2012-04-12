@@ -117,8 +117,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
 
       this.add = __bind(this.add, this);
 
-      var rectangle1, rectangle2,
-        _this = this;
+      var _this = this;
       Stage.__super__.constructor.apply(this, arguments);
       this.elements = [];
       this.properties = {};
@@ -134,6 +133,10 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       this.selection.bind('change', function() {
         return _this.el.trigger('selection.change', [_this]);
       });
+    }
+
+    Stage.prototype.render = function() {
+      var rectangle1, rectangle2;
       rectangle1 = new Rectangle({
         left: 200,
         top: 200,
@@ -142,7 +145,8 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       rectangle2 = new Rectangle();
       this.add(rectangle1);
       this.add(rectangle2);
-    }
+      return this;
+    };
 
     Stage.prototype.add = function(element) {
       this.elements.push(element);

@@ -75,6 +75,10 @@ this.require.define({"app/controllers/header":function(exports, require, module)
 
     Header.name = 'Header';
 
+    function Header() {
+      return Header.__super__.constructor.apply(this, arguments);
+    }
+
     Header.prototype.tag = 'header';
 
     Header.prototype.className = 'header';
@@ -85,13 +89,10 @@ this.require.define({"app/controllers/header":function(exports, require, module)
       'click .text': 'addText'
     };
 
-    function Header() {
-      Header.__super__.constructor.apply(this, arguments);
-      if (!this.stage) {
-        throw 'stage required';
-      }
+    Header.prototype.render = function() {
       this.html(JST['app/views/header'](this));
-    }
+      return this;
+    };
 
     Header.prototype.addRectangle = function() {
       return this.addElement(new Rectangle);

@@ -11,29 +11,29 @@ class Inspector extends Spine.Controller
 
   constructor: ->
     super
-    @stage.selection.bind 'change', => setTimeout(@render)
-    @render()
+
+    @dimensions   = new Dimensions(stage: @stage)
+    @background   = new Background(stage: @stage)
+    @border       = new Border(stage: @stage)
+    @borderRadius = new BorderRadius(stage: @stage)
+    @boxShadow    = new BoxShadow(stage: @stage)
+    @opacity      = new Opacity(stage: @stage)
+
+    @stage.selection.bind 'change', @render
 
   render: =>
     @el.hide()
     @el.empty()
-    @sweep()
-    @append(@dimensions   = new Dimensions(stage: @stage))
-    @append(@background   = new Background(stage: @stage))
-    @append(@border       = new Border(stage: @stage))
-    @append(@borderRadius = new BorderRadius(stage: @stage))
-    @append(@boxShadow    = new BoxShadow(stage: @stage))
-    @append(@opacity      = new Opacity(stage: @stage))
-    # @append(@textShadow = new TextShadow(stage: @stage))
-    @el.show()
 
-  sweep: ->
-    @dimensions?.release()
-    @background?.release()
-    @border?.release()
-    @borderRadius?.release()
-    @boxShadow?.release()
-    @opacity?.release()
+    @append(@dimensions.render())
+    @append(@background.render())
+    @append(@border.render())
+    @append(@borderRadius.render())
+    @append(@boxShadow.render())
+    @append(@opacity.render())
+
+    @el.show()
+    this
 
   release: ->
     @stage.selection.unbind 'change', @render

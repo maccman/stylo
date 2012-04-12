@@ -11,11 +11,6 @@ class BorderRadius extends Spine.Controller
 
   current: 'borderRadius'
 
-  constructor: ->
-    super
-    throw 'stage required' unless @stage
-    @render()
-
   render: =>
     # Disable unless elements are selected or if an
     # element, such as an ellipsis, is selected.
@@ -27,6 +22,8 @@ class BorderRadius extends Spine.Controller
 
     @el.toggleClass('disabled', @disabled)
     @$inputs.attr('disabled', @disabled)
+
+    this
 
   change: (@current) ->
     return if @disabled

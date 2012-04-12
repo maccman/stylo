@@ -89,11 +89,7 @@ this.require.define({"app/controllers/inspector/dimensions":function(exports, re
 
       this.render = __bind(this.render, this);
       Dimensions.__super__.constructor.apply(this, arguments);
-      if (!this.stage) {
-        throw 'stage required';
-      }
       $(document).bind('resize.element move.element', this.update);
-      this.render();
     }
 
     Dimensions.prototype.render = function() {
@@ -101,7 +97,8 @@ this.require.define({"app/controllers/inspector/dimensions":function(exports, re
       this.html(JST['app/views/inspector/dimensions'](this));
       this.update();
       this.el.toggleClass('disabled', this.disabled);
-      return this.$inputs.attr('disabled', this.disabled);
+      this.$inputs.attr('disabled', this.disabled);
+      return this;
     };
 
     Dimensions.prototype.update = function() {

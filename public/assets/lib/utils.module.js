@@ -59,7 +59,7 @@
   return this.require;
 }).call(this);
 this.require.define({"lib/utils":function(exports, require, module){(function() {
-  var dasherize;
+  var dasherize, requestAnimationFrame;
 
   dasherize = function(str) {
     return str.replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2').replace(/([a-z\d])([A-Z])/g, '$1-$2').toLowerCase();
@@ -67,9 +67,20 @@ this.require.define({"lib/utils":function(exports, require, module){(function() 
 
   $.browser.chrome = /chrome/.test(navigator.userAgent.toLowerCase());
 
+  requestAnimationFrame = (function() {
+    var request;
+    request = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function(callback) {
+      return window.setTimeout(callback, 1000 / 60);
+    };
+    return function(callback) {
+      return request.call(window, callback);
+    };
+  })();
+
   module.exports = {
     dasherize: dasherize,
-    browser: $.browser
+    browser: $.browser,
+    requestAnimationFrame: requestAnimationFrame
   };
 
 }).call(this);

@@ -12473,7 +12473,7 @@ this.require.define({"lib/position_picker":function(exports, require, module){(f
 }).call(this);
 ;}});
 this.require.define({"lib/utils":function(exports, require, module){(function() {
-  var dasherize;
+  var dasherize, requestAnimationFrame;
 
   dasherize = function(str) {
     return str.replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2').replace(/([a-z\d])([A-Z])/g, '$1-$2').toLowerCase();
@@ -12481,9 +12481,20 @@ this.require.define({"lib/utils":function(exports, require, module){(function() 
 
   $.browser.chrome = /chrome/.test(navigator.userAgent.toLowerCase());
 
+  requestAnimationFrame = (function() {
+    var request;
+    request = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function(callback) {
+      return window.setTimeout(callback, 1000 / 60);
+    };
+    return function(callback) {
+      return request.call(window, callback);
+    };
+  })();
+
   module.exports = {
     dasherize: dasherize,
-    browser: $.browser
+    browser: $.browser,
+    requestAnimationFrame: requestAnimationFrame
   };
 
 }).call(this);
@@ -13290,7 +13301,7 @@ this.require.define({"app/controllers/header":function(exports, require, module)
 }).call(this);
 ;}});
 this.require.define({"app/controllers/inspector":function(exports, require, module){(function() {
-  var Background, Border, BorderRadius, BoxShadow, Dimensions, Inspector, Opacity, TextShadow,
+  var Background, Border, BorderRadius, BoxShadow, Dimensions, Inspector, Opacity, TextShadow, Utils,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -13309,6 +13320,8 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
 
   Dimensions = require('./inspector/dimensions');
 
+  Utils = require('lib/utils');
+
   Inspector = (function(_super) {
 
     __extends(Inspector, _super);
@@ -13319,6 +13332,10 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
 
     function Inspector() {
       this.render = __bind(this.render, this);
+
+      this.frame = __bind(this.frame, this);
+
+      var _this = this;
       Inspector.__super__.constructor.apply(this, arguments);
       this.dimensions = new Dimensions({
         stage: this.stage
@@ -13338,8 +13355,18 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
       this.opacity = new Opacity({
         stage: this.stage
       });
-      this.stage.selection.bind('change', this.render);
+      this.stage.selection.bind('change', function() {
+        return _this.dirty = true;
+      });
+      this.frame();
     }
+
+    Inspector.prototype.frame = function() {
+      if (this.dirty) {
+        this.render();
+      }
+      return Utils.requestAnimationFrame(this.frame);
+    };
 
     Inspector.prototype.render = function() {
       this.el.hide();
@@ -13351,6 +13378,7 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
       this.append(this.boxShadow.render());
       this.append(this.opacity.render());
       this.el.show();
+      this.dirty = false;
       return this;
     };
 

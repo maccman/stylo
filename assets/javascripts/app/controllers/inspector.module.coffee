@@ -5,6 +5,7 @@ Opacity       = require('./inspector/opacity')
 BoxShadow     = require('./inspector/box_shadow')
 TextShadow    = require('./inspector/text_shadow')
 Dimensions    = require('./inspector/dimensions')
+Utils         = require('lib/utils')
 
 class Inspector extends Spine.Controller
   className: 'inspector'
@@ -19,7 +20,14 @@ class Inspector extends Spine.Controller
     @boxShadow    = new BoxShadow(stage: @stage)
     @opacity      = new Opacity(stage: @stage)
 
-    @stage.selection.bind 'change', @render
+    # We can increase performance dramatically by using
+    # requestAnimationFrame and rendering async
+    @stage.selection.bind 'change', => @dirty = true
+    @frame()
+
+  frame: =>
+    @render() if @dirty
+    Utils.requestAnimationFrame(@frame)
 
   render: =>
     @el.hide()
@@ -33,6 +41,7 @@ class Inspector extends Spine.Controller
     @append(@opacity.render())
 
     @el.show()
+    @dirty = false
     this
 
   release: ->

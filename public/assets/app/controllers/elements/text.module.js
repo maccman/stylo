@@ -92,10 +92,14 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
     };
 
     Text.prototype.selected = function(bool) {
-      Text.__super__.selected.apply(this, arguments);
-      if (bool === false) {
-        return this.stopEditing();
+      if (bool != null) {
+        this._selected = bool;
+        this.el.toggleClass('selected', bool);
+        if (!bool) {
+          this.stopEditing();
+        }
       }
+      return this._selected;
     };
 
     Text.prototype.text = function(text) {

@@ -13174,10 +13174,14 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
     };
 
     Text.prototype.selected = function(bool) {
-      Text.__super__.selected.apply(this, arguments);
-      if (bool === false) {
-        return this.stopEditing();
+      if (bool != null) {
+        this._selected = bool;
+        this.el.toggleClass('selected', bool);
+        if (!bool) {
+          this.stopEditing();
+        }
       }
+      return this._selected;
     };
 
     Text.prototype.text = function(text) {
@@ -14310,7 +14314,7 @@ this.require.define({"app/controllers/inspector/text_shadow":function(exports, r
 }).call(this);
 ;}});
 this.require.define({"app/controllers/stage":function(exports, require, module){(function() {
-  var Clipboard, Context, Dragging, Ellipsis, KeyBindings, Properties, Rectangle, Resizing, SelectArea, Selection, Serialize, Snapping, Stage, ZIndex,
+  var Clipboard, ContextMenu, Dragging, Ellipsis, KeyBindings, Properties, Rectangle, Resizing, SelectArea, Selection, Serialize, Snapping, Stage, ZIndex,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -14333,7 +14337,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
 
   Clipboard = require('./stage/clipboard');
 
-  Context = require('./stage/context');
+  ContextMenu = require('./stage/context_menu');
 
   Rectangle = require('./elements/rectangle');
 
@@ -14380,7 +14384,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       this.keyBindings = new KeyBindings(this);
       this.zindex = new ZIndex(this);
       this.clipboard = new Clipboard(this);
-      this.context = new Context(this);
+      this.contextMenu = new ContextMenu(this);
       this.selection.bind('change', function() {
         return _this.el.trigger('selection.change', [_this]);
       });
@@ -14738,35 +14742,35 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
 
 }).call(this);
 ;}});
-this.require.define({"app/controllers/stage/context":function(exports, require, module){(function() {
-  var Context, ContextMenu,
+this.require.define({"app/controllers/stage/context_menu":function(exports, require, module){(function() {
+  var ContextMenu, Menu,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-  ContextMenu = (function(_super) {
+  Menu = (function(_super) {
 
-    __extends(ContextMenu, _super);
+    __extends(Menu, _super);
 
-    ContextMenu.name = 'ContextMenu';
+    Menu.name = 'Menu';
 
-    ContextMenu.prototype.className = 'contextMenu';
+    Menu.prototype.className = 'contextMenu';
 
-    ContextMenu.prototype.events = {
+    Menu.prototype.events = {
       'mousedown': 'cancel',
       'click [data-type]': 'click'
     };
 
-    function ContextMenu(stage, position) {
+    function Menu(stage, position) {
       this.stage = stage;
-      ContextMenu.__super__.constructor.call(this);
+      Menu.__super__.constructor.call(this);
       this.el.css(position);
       this.html(JST['app/views/context_menu'](this));
       this.selectDisabled = !this.stage.selection.isAny();
       this.$('[data-require=select]').toggleClass('disabled', this.selectDisabled);
     }
 
-    ContextMenu.prototype.click = function(e) {
+    Menu.prototype.click = function(e) {
       var item, type;
       e.preventDefault();
       this.remove();
@@ -14777,63 +14781,63 @@ this.require.define({"app/controllers/stage/context":function(exports, require, 
       }
     };
 
-    ContextMenu.prototype.remove = function(e) {
+    Menu.prototype.remove = function(e) {
       return this.el.remove();
     };
 
-    ContextMenu.prototype.cancel = function() {
+    Menu.prototype.cancel = function() {
       return false;
     };
 
-    ContextMenu.prototype.copy = function() {
+    Menu.prototype.copy = function() {
       return this.stage.clipboard.copyInternal();
     };
 
-    ContextMenu.prototype.paste = function() {
+    Menu.prototype.paste = function() {
       return this.stage.clipboard.pasteInternal();
     };
 
-    ContextMenu.prototype.bringForward = function() {
+    Menu.prototype.bringForward = function() {
       return this.stage.bringForward();
     };
 
-    ContextMenu.prototype.bringBack = function() {
+    Menu.prototype.bringBack = function() {
       return this.stage.bringBack();
     };
 
-    ContextMenu.prototype.bringToFront = function() {
+    Menu.prototype.bringToFront = function() {
       return this.stage.bringToFront();
     };
 
-    ContextMenu.prototype.bringToBack = function() {
+    Menu.prototype.bringToBack = function() {
       return this.stage.bringToBack();
     };
 
-    return ContextMenu;
+    return Menu;
 
   })(Spine.Controller);
 
-  Context = (function(_super) {
+  ContextMenu = (function(_super) {
 
-    __extends(Context, _super);
+    __extends(ContextMenu, _super);
 
-    Context.name = 'Context';
+    ContextMenu.name = 'ContextMenu';
 
-    Context.prototype.events = {
+    ContextMenu.prototype.events = {
       'contextmenu': 'show'
     };
 
-    function Context(stage) {
+    function ContextMenu(stage) {
       this.stage = stage;
       this.remove = __bind(this.remove, this);
 
-      Context.__super__.constructor.call(this, {
+      ContextMenu.__super__.constructor.call(this, {
         el: this.stage.el
       });
       $('body').bind('mousedown', this.remove);
     }
 
-    Context.prototype.show = function(e) {
+    ContextMenu.prototype.show = function(e) {
       var position;
       e.preventDefault();
       this.remove();
@@ -14841,11 +14845,11 @@ this.require.define({"app/controllers/stage/context":function(exports, require, 
         left: e.pageX + 1,
         top: e.pageY + 1
       };
-      this.menu = new ContextMenu(this.stage, position);
+      this.menu = new Menu(this.stage, position);
       return $('body').append(this.menu.el);
     };
 
-    Context.prototype.remove = function() {
+    ContextMenu.prototype.remove = function() {
       var _ref;
       if ((_ref = this.menu) != null) {
         _ref.remove();
@@ -14853,16 +14857,16 @@ this.require.define({"app/controllers/stage/context":function(exports, require, 
       return this.menu = null;
     };
 
-    Context.prototype.release = function() {
+    ContextMenu.prototype.release = function() {
       $('body').unbind('mousedown', this.remove);
-      return Context.__super__.release.apply(this, arguments);
+      return ContextMenu.__super__.release.apply(this, arguments);
     };
 
-    return Context;
+    return ContextMenu;
 
   })(Spine.Controller);
 
-  module.exports = Context;
+  module.exports = ContextMenu;
 
 }).call(this);
 ;}});

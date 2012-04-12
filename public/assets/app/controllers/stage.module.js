@@ -59,7 +59,7 @@
   return this.require;
 }).call(this);
 this.require.define({"app/controllers/stage":function(exports, require, module){(function() {
-  var Clipboard, Context, Dragging, Ellipsis, KeyBindings, Properties, Rectangle, Resizing, SelectArea, Selection, Serialize, Snapping, Stage, ZIndex,
+  var Clipboard, ContextMenu, Dragging, Ellipsis, KeyBindings, Properties, Rectangle, Resizing, SelectArea, Selection, Serialize, Snapping, Stage, ZIndex,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -82,7 +82,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
 
   Clipboard = require('./stage/clipboard');
 
-  Context = require('./stage/context');
+  ContextMenu = require('./stage/context_menu');
 
   Rectangle = require('./elements/rectangle');
 
@@ -129,7 +129,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       this.keyBindings = new KeyBindings(this);
       this.zindex = new ZIndex(this);
       this.clipboard = new Clipboard(this);
-      this.context = new Context(this);
+      this.contextMenu = new ContextMenu(this);
       this.selection.bind('change', function() {
         return _this.el.trigger('selection.change', [_this]);
       });

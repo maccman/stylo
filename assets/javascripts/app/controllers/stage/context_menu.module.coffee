@@ -1,4 +1,4 @@
-class ContextMenu extends Spine.Controller
+class Menu extends Spine.Controller
   className: 'contextMenu'
 
   events:
@@ -49,7 +49,7 @@ class ContextMenu extends Spine.Controller
   bringToBack: ->
     @stage.bringToBack()
 
-class Context extends Spine.Controller
+class ContextMenu extends Spine.Controller
   events:
     'contextmenu': 'show'
 
@@ -65,7 +65,7 @@ class Context extends Spine.Controller
       left: e.pageX + 1
       top:  e.pageY + 1
 
-    @menu = new ContextMenu(@stage, position)
+    @menu = new Menu(@stage, position)
     $('body').append(@menu.el)
 
   remove: =>
@@ -76,4 +76,4 @@ class Context extends Spine.Controller
     $('body').unbind('mousedown', @remove)
     super
 
-module.exports = Context
+module.exports = ContextMenu

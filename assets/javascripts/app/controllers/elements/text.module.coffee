@@ -14,8 +14,11 @@ class Text extends Rectangle
     @el.removeAttr('contenteditable')
 
   selected: (bool) ->
-    super
-    @stopEditing() if bool is false
+    if bool?
+      @_selected = bool
+      @el.toggleClass('selected', bool)
+      @stopEditing() unless bool
+    @_selected
 
   text: (text) ->
     @el.text(text) if text?

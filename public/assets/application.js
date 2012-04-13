@@ -14850,18 +14850,22 @@ this.require.define({"app/controllers/stage/context_menu":function(exports, requ
     };
 
     Menu.prototype.bringForward = function() {
+      this.stage.history.record();
       return this.stage.bringForward();
     };
 
     Menu.prototype.bringBack = function() {
+      this.stage.history.record();
       return this.stage.bringBack();
     };
 
     Menu.prototype.bringToFront = function() {
+      this.stage.history.record();
       return this.stage.bringToFront();
     };
 
     Menu.prototype.bringToBack = function() {
+      this.stage.history.record();
       return this.stage.bringToBack();
     };
 
@@ -16221,7 +16225,7 @@ this.require.define({"app/models/history":function(exports, require, module){(fu
 
     History.redoStack = [];
 
-    History.max = 30;
+    History.max = 50;
 
     History.add = function(action, isUndo) {
       var stack;
@@ -16231,7 +16235,7 @@ this.require.define({"app/models/history":function(exports, require, module){(fu
         stack = this.redoStack;
       } else {
         stack = this.undoStack;
-        if (stack.length === this.max) {
+        if (stack.length >= this.max) {
           stack.shift();
         }
         this.redoStack = [];
@@ -16242,13 +16246,21 @@ this.require.define({"app/models/history":function(exports, require, module){(fu
     History.undo = function() {
       var action;
       action = this.undoStack.pop();
-      return action != null ? action.call(this, true) : void 0;
+      if (action) {
+        return action.call(this, true);
+      } else {
+        return false;
+      }
     };
 
     History.redo = function() {
       var action;
       action = this.redoStack.pop();
-      return action != null ? action.call(this, false) : void 0;
+      if (action) {
+        return action.call(this, false);
+      } else {
+        return false;
+      }
     };
 
     return History;

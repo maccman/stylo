@@ -38,15 +38,19 @@ class Menu extends Spine.Controller
     @stage.clipboard.pasteInternal()
 
   bringForward: ->
+    @stage.history.record()
     @stage.bringForward()
 
   bringBack: ->
+    @stage.history.record()
     @stage.bringBack()
 
   bringToFront: ->
+    @stage.history.record()
     @stage.bringToFront()
 
   bringToBack: ->
+    @stage.history.record()
     @stage.bringToBack()
 
 class ContextMenu extends Spine.Controller

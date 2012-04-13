@@ -114,18 +114,22 @@ this.require.define({"app/controllers/stage/context_menu":function(exports, requ
     };
 
     Menu.prototype.bringForward = function() {
+      this.stage.history.record();
       return this.stage.bringForward();
     };
 
     Menu.prototype.bringBack = function() {
+      this.stage.history.record();
       return this.stage.bringBack();
     };
 
     Menu.prototype.bringToFront = function() {
+      this.stage.history.record();
       return this.stage.bringToFront();
     };
 
     Menu.prototype.bringToBack = function() {
+      this.stage.history.record();
       return this.stage.bringToBack();
     };
 

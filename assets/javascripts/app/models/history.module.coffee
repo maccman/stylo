@@ -1,7 +1,7 @@
 class History
   @undoStack: []
   @redoStack: []
-  @max: 30
+  @max: 50
 
   @add: (action, isUndo) ->
     if isUndo is true
@@ -18,17 +18,21 @@ class History
       # By default, push onto
       # an undo stack
       stack = @undoStack
-      stack.shift() if stack.length is @max
+      stack.shift() if stack.length >= @max
       @redoStack = []
 
     stack.push(action)
 
   @undo: ->
     action = @undoStack.pop()
-    action?.call(this, true)
+    if action
+      action.call(this, true)
+    else false
 
   @redo: ->
     action = @redoStack.pop()
-    action?.call(this, false)
+    if action
+      action.call(this, false)
+    else false
 
 module.exports = History

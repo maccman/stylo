@@ -78,7 +78,9 @@ this.require.define({"app/controllers/inspector/opacity":function(exports, requi
     Opacity.prototype.className = 'opacity';
 
     Opacity.prototype.events = {
-      'change input': 'change'
+      'change input': 'change',
+      'focus input': 'inputFocus',
+      'mousedown input': 'inputFocus'
     };
 
     Opacity.prototype.elements = {
@@ -98,6 +100,10 @@ this.require.define({"app/controllers/inspector/opacity":function(exports, requi
       val = Math.round(val * 100) / 100;
       this.stage.selection.set('opacity', val);
       return this.$inputs.val(val);
+    };
+
+    Opacity.prototype.inputFocus = function() {
+      return this.stage.history.record();
     };
 
     return Opacity;

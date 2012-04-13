@@ -63,7 +63,8 @@ class Element extends Spine.Controller
     @el.trigger('move.element', [this])
 
   order: (i) ->
-    @set('zIndex', i + 100)
+    unless @get('zIndex') is i + 100
+      @set('zIndex', i + 100)
 
   remove: ->
     @el.remove()

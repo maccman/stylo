@@ -124,6 +124,7 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
         return;
       }
       elements = Serialize.fromJSON(json);
+      this.stage.history.record();
       for (_i = 0, _len = elements.length; _i < _len; _i++) {
         el = elements[_i];
         this.stage.add(el);
@@ -162,6 +163,7 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
       if (!this.data) {
         return;
       }
+      this.stage.history.record();
       _ref = this.data;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         el = _ref[_i];

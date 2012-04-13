@@ -36,7 +36,7 @@ Phase 2:
 * Stage inspector
 * ✓ Z-index
 * ✓ Copy paste
-* ½ Undo/redo
+* ✓ Undo/redo
 * ½ Saving/opening
 
 Phase 3:
@@ -51,11 +51,12 @@ Nice to have:
 * ✓ Keyboard shortcuts
 * Versioning
 * Exporting HTML
+* ✓ Exporting CSS
 * Share (dropbox/email?)
 * Clone HTML components
 * WebFonts
 * Layers
-* Context menu
+* ✓ Context menu
 * Similar distance snapping
 
 Inherit Ellipsis from Rectangle (resizing & lines).

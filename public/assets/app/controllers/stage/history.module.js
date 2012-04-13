@@ -58,73 +58,53 @@
 
   return this.require;
 }).call(this);
-this.require.define({"app/controllers/header":function(exports, require, module){(function() {
-  var Ellipsis, Header, Rectangle, Text,
+this.require.define({"app/controllers/stage/history":function(exports, require, module){(function() {
+  var History, Model, Serialize,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  Rectangle = require('./elements/rectangle');
+  Model = require('app/models/history');
 
-  Ellipsis = require('./elements/ellipsis');
+  Serialize = require('app/models/serialize');
 
-  Text = require('./elements/text');
+  History = (function(_super) {
 
-  Header = (function(_super) {
+    __extends(History, _super);
 
-    __extends(Header, _super);
+    History.name = 'History';
 
-    Header.name = 'Header';
-
-    function Header() {
-      return Header.__super__.constructor.apply(this, arguments);
+    function History(stage) {
+      this.stage = stage;
+      History.__super__.constructor.call(this, {
+        el: this.stage.el
+      });
     }
 
-    Header.prototype.tag = 'header';
-
-    Header.prototype.className = 'header';
-
-    Header.prototype.events = {
-      'click .rectangle': 'addRectangle',
-      'click .ellipsis': 'addEllipsis',
-      'click .text': 'addText'
+    History.prototype.undo = function() {
+      return Model.undo();
     };
 
-    Header.prototype.render = function() {
-      this.html(JST['app/views/header'](this));
-      return this;
+    History.prototype.redo = function() {
+      return Model.redo();
     };
 
-    Header.prototype.addRectangle = function() {
-      return this.addElement(new Rectangle);
+    History.prototype.record = function(isUndo) {
+      var action, elements,
+        _this = this;
+      elements = JSON.stringify(this.stage.elements);
+      action = function(isUndo) {
+        _this.record(!isUndo);
+        elements = Serialize.fromJSON(elements);
+        return _this.stage.refresh(elements);
+      };
+      return Model.add(action, isUndo);
     };
 
-    Header.prototype.addEllipsis = function() {
-      return this.addElement(new Ellipsis);
-    };
-
-    Header.prototype.addText = function() {
-      var element;
-      this.addElement(element = new Text);
-      return element.startEditing();
-    };
-
-    Header.prototype.addElement = function(element) {
-      var position;
-      this.stage.history.record();
-      position = this.stage.center();
-      position.left -= element.get('width') || 50;
-      position.top -= element.get('height') || 50;
-      element.set(position);
-      this.stage.add(element);
-      this.stage.selection.clear();
-      return this.stage.selection.add(element);
-    };
-
-    return Header;
+    return History;
 
   })(Spine.Controller);
 
-  module.exports = Header;
+  module.exports = History;
 
 }).call(this);
 ;}});

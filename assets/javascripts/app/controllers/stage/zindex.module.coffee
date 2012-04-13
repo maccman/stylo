@@ -46,6 +46,6 @@ class ZIndex
 
   set: ->
     for element, index in @order
-      element.set('order', index)
+      element.order(index)
 
 module.exports = ZIndex

@@ -25,6 +25,8 @@ class Dragging extends Spine.Controller
       clones = @stage.cloneSelected()
       @stage.selection.refresh(clones)
 
+    @stage.history.record()
+
     @dragPosition = {left: e.pageX, top: e.pageY}
     @active = false
 

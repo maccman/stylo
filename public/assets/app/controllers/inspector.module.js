@@ -137,7 +137,7 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
     };
 
     Inspector.prototype.release = function() {
-      this.stage.selection.unbind('change', this.render);
+      this.stage.selection.unbind('change', this.paint);
       return Inspector.__super__.release.apply(this, arguments);
     };
 

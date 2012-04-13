@@ -13,6 +13,7 @@ class KeyBindings extends Spine.Module
     68:  'dKey'
     83:  'sKey'
     86:  'vKey'
+    90:  'zKey'
     187: 'plusKey'
     189: 'minusKey'
 
@@ -26,30 +27,35 @@ class KeyBindings extends Spine.Module
 
   backspace: (e) ->
     e.preventDefault()
+    @stage.history.record()
     @stage.removeSelected()
 
   leftArrow: (e) ->
     e.preventDefault()
     amount = -1
     amount *= 5 if e.shiftKey
+    @stage.history.record()
     @stage.selection.moveBy(left: amount, top: 0)
 
   upArrow: (e) ->
     e.preventDefault()
     amount = -1
     amount *= 5 if e.shiftKey
+    @stage.history.record()
     @stage.selection.moveBy(left: 0, top: amount)
 
   rightArrow: (e) ->
     e.preventDefault()
     amount = 1
     amount *= 5 if e.shiftKey
+    @stage.history.record()
     @stage.selection.moveBy(left: amount, top: 0)
 
   downArrow: (e) ->
     e.preventDefault()
     amount = 1
     amount *= 5 if e.shiftKey
+    @stage.history.record()
     @stage.selection.moveBy(left: 0, top: amount)
 
   aKey: (e) ->
@@ -84,6 +90,15 @@ class KeyBindings extends Spine.Module
   vKey: (e) ->
     return unless e.metaKey
     @stage.clipboard.pasteInternal()
+
+  zKey: (e) ->
+    return unless e.metaKey
+    e.preventDefault()
+
+    if e.shiftKey
+      @stage.history.redo()
+    else
+      @stage.history.undo()
 
   release: ->
     $(document).unbind('keydown', @keypress)

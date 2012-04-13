@@ -29,7 +29,7 @@ class Menu extends Spine.Controller
 
   cancel: -> false
 
-  # Type
+  # Types
 
   copy: ->
     @stage.clipboard.copyInternal()
@@ -74,6 +74,5 @@ class ContextMenu extends Spine.Controller
 
   release: ->
     $('body').unbind('mousedown', @remove)
-    super
 
 module.exports = ContextMenu

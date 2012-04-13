@@ -155,7 +155,9 @@ this.require.define({"app/controllers/element":function(exports, require, module
     };
 
     Element.prototype.order = function(i) {
-      return this.set('zIndex', i + 100);
+      if (this.get('zIndex') !== i + 100) {
+        return this.set('zIndex', i + 100);
+      }
     };
 
     Element.prototype.remove = function() {

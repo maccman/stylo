@@ -8,6 +8,7 @@ KeyBindings = require('./stage/key_bindings')
 ZIndex      = require('./stage/zindex')
 Clipboard   = require('./stage/clipboard')
 ContextMenu = require('./stage/context_menu')
+History     = require('./stage/history')
 
 Rectangle  = require('./elements/rectangle')
 Ellipsis   = require('./elements/ellipsis')
@@ -39,6 +40,7 @@ class Stage extends Spine.Controller
     @zindex      = new ZIndex(this)
     @clipboard   = new Clipboard(this)
     @contextMenu = new ContextMenu(this)
+    @history     = new History(this)
 
     @selection.bind 'change', =>
       @el.trigger('selection.change', [this])
@@ -57,12 +59,23 @@ class Stage extends Spine.Controller
 
   add: (element) =>
     @elements.push(element)
+    element.order(@elements.indexOf(element))
     @append(element)
 
   remove: (element) =>
     @selection.remove(element)
     @elements.splice(@elements.indexOf(element), 1)
     element.release()
+
+  clear: ->
+    @selection.clear()
+    for element in @elements
+      element.release()
+    @elements = []
+
+  refresh: (elements) ->
+    @clear()
+    @add(el) for el in elements
 
   # Batch manipulate selected
 

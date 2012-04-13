@@ -3,6 +3,8 @@ class Opacity extends Spine.Controller
 
   events:
     'change input': 'change'
+    'focus input': 'inputFocus'
+    'mousedown input': 'inputFocus'
 
   elements:
     'input': '$inputs'
@@ -19,5 +21,8 @@ class Opacity extends Spine.Controller
 
     @stage.selection.set('opacity', val)
     @$inputs.val(val)
+
+  inputFocus: ->
+    @stage.history.record()
 
 module.exports = Opacity

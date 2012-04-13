@@ -41,6 +41,7 @@ class Clipboard
 
     elements = Serialize.fromJSON(json)
 
+    @stage.history.record()
     @stage.add(el) for el in elements
     @stage.selection.refresh(elements)
     @stage.selection.moveBy(left: 10, top: 10)
@@ -57,6 +58,7 @@ class Clipboard
     return if Utils.browser.chrome
     return unless @data
 
+    @stage.history.record()
     @stage.add(el) for el in @data
     @stage.selection.refresh(@data)
     @stage.selection.moveBy(left: 10, top: 10)

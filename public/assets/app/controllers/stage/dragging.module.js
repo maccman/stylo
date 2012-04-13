@@ -125,6 +125,7 @@ this.require.define({"app/controllers/stage/dragging":function(exports, require,
         clones = this.stage.cloneSelected();
         this.stage.selection.refresh(clones);
       }
+      this.stage.history.record();
       this.dragPosition = {
         left: e.pageX,
         top: e.pageY

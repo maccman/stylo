@@ -26,6 +26,8 @@ class Header extends Spine.Controller
     element.startEditing()
 
   addElement: (element) ->
+    @stage.history.record()
+
     position       = @stage.center()
     position.left -= element.get('width') or 50
     position.top  -= element.get('height') or 50

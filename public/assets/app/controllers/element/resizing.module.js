@@ -96,7 +96,8 @@ this.require.define({"app/controllers/element/resizing":function(exports, requir
         top: e.pageY
       };
       $(document).mousemove(this.drag);
-      return $(document).mouseup(this.drop);
+      $(document).mouseup(this.drop);
+      return this.el.trigger('start.resize', [this.type]);
     };
 
     Thumb.prototype.drag = function(e) {
@@ -109,7 +110,7 @@ this.require.define({"app/controllers/element/resizing":function(exports, requir
         left: e.pageX,
         top: e.pageY
       };
-      return this.el.trigger('start.resize', [this.type, difference, e.shiftKey]);
+      return this.el.trigger('drag.resize', [this.type, difference, e.shiftKey]);
     };
 
     Thumb.prototype.drop = function(e) {
@@ -131,7 +132,7 @@ this.require.define({"app/controllers/element/resizing":function(exports, requir
     Resizing.prototype.className = 'resizing';
 
     Resizing.prototype.events = {
-      'start.resize': 'resize'
+      'drag.resize': 'resize'
     };
 
     function Resizing(element) {

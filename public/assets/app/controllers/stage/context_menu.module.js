@@ -174,8 +174,7 @@ this.require.define({"app/controllers/stage/context_menu":function(exports, requ
     };
 
     ContextMenu.prototype.release = function() {
-      $('body').unbind('mousedown', this.remove);
-      return ContextMenu.__super__.release.apply(this, arguments);
+      return $('body').unbind('mousedown', this.remove);
     };
 
     return ContextMenu;

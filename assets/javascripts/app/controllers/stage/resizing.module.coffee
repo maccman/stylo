@@ -12,11 +12,15 @@ class AreaTitle extends Spine.Controller
 
 class Resizing extends Spine.Controller
   events:
+    'start.resize': 'resizeStart'
     'resize.element': 'resized'
     'end.resize': 'resizeEnd'
 
   constructor: (@stage) ->
     super(el: @stage.el)
+
+  resizeStart: ->
+    @stage.history.record()
 
   resized: (e, element) ->
     area = element.area()

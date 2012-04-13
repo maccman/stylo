@@ -4,19 +4,19 @@ dasherize = (str) ->
      .toLowerCase()
 
 # Differentiate Safari from Chrome
-$.browser.chrome =  /chrome/.test(
+$.browser.chrome = /chrome/.test(
   navigator.userAgent.toLowerCase()
 )
 
 requestAnimationFrame = do ->
   request =
-      window.requestAnimationFrame or
-      window.webkitRequestAnimationFrame or
-      window.mozRequestAnimationFrame or
-      window.oRequestAnimationFrame or
-      window.msRequestAnimationFrame or
-      (callback) ->
-        window.setTimeout(callback, 1000 / 60)
+    window.requestAnimationFrame or
+    window.webkitRequestAnimationFrame or
+    window.mozRequestAnimationFrame or
+    window.oRequestAnimationFrame or
+    window.msRequestAnimationFrame or
+    (callback) ->
+      window.setTimeout(callback, 1000 / 60)
 
   (callback) ->
     request.call(window, callback)

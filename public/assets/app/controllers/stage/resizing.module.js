@@ -101,6 +101,7 @@ this.require.define({"app/controllers/stage/resizing":function(exports, require,
     Resizing.name = 'Resizing';
 
     Resizing.prototype.events = {
+      'start.resize': 'resizeStart',
       'resize.element': 'resized',
       'end.resize': 'resizeEnd'
     };
@@ -111,6 +112,10 @@ this.require.define({"app/controllers/stage/resizing":function(exports, require,
         el: this.stage.el
       });
     }
+
+    Resizing.prototype.resizeStart = function() {
+      return this.stage.history.record();
+    };
 
     Resizing.prototype.resized = function(e, element) {
       var area;

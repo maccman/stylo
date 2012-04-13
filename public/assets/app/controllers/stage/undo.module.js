@@ -58,73 +58,31 @@
 
   return this.require;
 }).call(this);
-this.require.define({"app/controllers/header":function(exports, require, module){(function() {
-  var Ellipsis, Header, Rectangle, Text,
+this.require.define({"app/controllers/stage/undo":function(exports, require, module){(function() {
+  var History,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  Rectangle = require('./elements/rectangle');
+  History = (function(_super) {
 
-  Ellipsis = require('./elements/ellipsis');
+    __extends(History, _super);
 
-  Text = require('./elements/text');
+    History.name = 'History';
 
-  Header = (function(_super) {
-
-    __extends(Header, _super);
-
-    Header.name = 'Header';
-
-    function Header() {
-      return Header.__super__.constructor.apply(this, arguments);
+    function History(stage) {
+      this.stage = stage;
+      History.__super__.constructor.call(this, {
+        el: this.stage.el
+      });
     }
 
-    Header.prototype.tag = 'header';
+    History.prototype.undo = function() {};
 
-    Header.prototype.className = 'header';
-
-    Header.prototype.events = {
-      'click .rectangle': 'addRectangle',
-      'click .ellipsis': 'addEllipsis',
-      'click .text': 'addText'
-    };
-
-    Header.prototype.render = function() {
-      this.html(JST['app/views/header'](this));
-      return this;
-    };
-
-    Header.prototype.addRectangle = function() {
-      return this.addElement(new Rectangle);
-    };
-
-    Header.prototype.addEllipsis = function() {
-      return this.addElement(new Ellipsis);
-    };
-
-    Header.prototype.addText = function() {
-      var element;
-      this.addElement(element = new Text);
-      return element.startEditing();
-    };
-
-    Header.prototype.addElement = function(element) {
-      var position;
-      this.stage.history.record();
-      position = this.stage.center();
-      position.left -= element.get('width') || 50;
-      position.top -= element.get('height') || 50;
-      element.set(position);
-      this.stage.add(element);
-      this.stage.selection.clear();
-      return this.stage.selection.add(element);
-    };
-
-    return Header;
+    return History;
 
   })(Spine.Controller);
 
-  module.exports = Header;
+  module.exports = History;
 
 }).call(this);
 ;}});

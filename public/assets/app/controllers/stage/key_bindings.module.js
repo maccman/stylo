@@ -84,6 +84,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       68: 'dKey',
       83: 'sKey',
       86: 'vKey',
+      90: 'zKey',
       187: 'plusKey',
       189: 'minusKey'
     };
@@ -105,6 +106,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
 
     KeyBindings.prototype.backspace = function(e) {
       e.preventDefault();
+      this.stage.history.record();
       return this.stage.removeSelected();
     };
 
@@ -115,6 +117,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       if (e.shiftKey) {
         amount *= 5;
       }
+      this.stage.history.record();
       return this.stage.selection.moveBy({
         left: amount,
         top: 0
@@ -128,6 +131,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       if (e.shiftKey) {
         amount *= 5;
       }
+      this.stage.history.record();
       return this.stage.selection.moveBy({
         left: 0,
         top: amount
@@ -141,6 +145,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       if (e.shiftKey) {
         amount *= 5;
       }
+      this.stage.history.record();
       return this.stage.selection.moveBy({
         left: amount,
         top: 0
@@ -154,6 +159,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       if (e.shiftKey) {
         amount *= 5;
       }
+      this.stage.history.record();
       return this.stage.selection.moveBy({
         left: 0,
         top: amount
@@ -214,6 +220,18 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
         return;
       }
       return this.stage.clipboard.pasteInternal();
+    };
+
+    KeyBindings.prototype.zKey = function(e) {
+      if (!e.metaKey) {
+        return;
+      }
+      e.preventDefault();
+      if (e.shiftKey) {
+        return this.stage.history.redo();
+      } else {
+        return this.stage.history.undo();
+      }
     };
 
     KeyBindings.prototype.release = function() {

@@ -114,7 +114,7 @@ this.require.define({"app/controllers/stage/zindex":function(exports, require, m
       _results = [];
       for (index = _i = 0, _len = _ref.length; _i < _len; index = ++_i) {
         element = _ref[index];
-        _results.push(element.set('order', index));
+        _results.push(element.order(index));
       }
       return _results;
     };

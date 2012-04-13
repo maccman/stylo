@@ -15,6 +15,7 @@ class Thumb extends Spine.Controller
     @dragPosition = {left: e.pageX, top: e.pageY}
     $(document).mousemove(@drag)
     $(document).mouseup(@drop)
+    @el.trigger('start.resize', [@type])
 
   drag: (e) =>
     difference =
@@ -22,7 +23,7 @@ class Thumb extends Spine.Controller
       top:  e.pageY - @dragPosition.top
 
     @dragPosition = {left: e.pageX, top: e.pageY}
-    @el.trigger('start.resize', [@type, difference, e.shiftKey])
+    @el.trigger('drag.resize', [@type, difference, e.shiftKey])
 
   drop: (e) =>
     @el.trigger('end.resize')
@@ -34,7 +35,7 @@ class Resizing extends Spine.Controller
   className: 'resizing'
 
   events:
-    'start.resize': 'resize'
+    'drag.resize': 'resize'
 
   constructor: (@element) ->
     super(el: @element.el)

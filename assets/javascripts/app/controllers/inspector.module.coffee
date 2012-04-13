@@ -47,7 +47,7 @@ class Inspector extends Spine.Controller
     this
 
   release: ->
-    @stage.selection.unbind 'change', @render
+    @stage.selection.unbind 'change', @paint
     super
 
 module.exports = Inspector

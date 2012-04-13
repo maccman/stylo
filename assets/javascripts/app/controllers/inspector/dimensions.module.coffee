@@ -3,6 +3,7 @@ class Dimensions extends Spine.Controller
 
   events:
     'change input': 'change'
+    'focus input': 'focus'
 
   elements:
     'input': '$inputs'
@@ -39,6 +40,9 @@ class Dimensions extends Spine.Controller
     @stage.selection.set('height', parseInt(@$height.val(), 10))
     @stage.selection.set('left',   parseInt(@$x.val(), 10))
     @stage.selection.set('top',    parseInt(@$y.val(), 10))
+
+  focus: (e) ->
+    @stage.history.record()
 
   release: ->
     $(document).unbind 'resize.element', @update

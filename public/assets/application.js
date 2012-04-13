@@ -12647,7 +12647,9 @@ this.require.define({"app/controllers/element":function(exports, require, module
     };
 
     Element.prototype.order = function(i) {
-      return this.set('zIndex', i + 100);
+      if (this.get('zIndex') !== i + 100) {
+        return this.set('zIndex', i + 100);
+      }
     };
 
     Element.prototype.remove = function() {
@@ -12780,7 +12782,8 @@ this.require.define({"app/controllers/element/resizing":function(exports, requir
         top: e.pageY
       };
       $(document).mousemove(this.drag);
-      return $(document).mouseup(this.drop);
+      $(document).mouseup(this.drop);
+      return this.el.trigger('start.resize', [this.type]);
     };
 
     Thumb.prototype.drag = function(e) {
@@ -12793,7 +12796,7 @@ this.require.define({"app/controllers/element/resizing":function(exports, requir
         left: e.pageX,
         top: e.pageY
       };
-      return this.el.trigger('start.resize', [this.type, difference, e.shiftKey]);
+      return this.el.trigger('drag.resize', [this.type, difference, e.shiftKey]);
     };
 
     Thumb.prototype.drop = function(e) {
@@ -12815,7 +12818,7 @@ this.require.define({"app/controllers/element/resizing":function(exports, requir
     Resizing.prototype.className = 'resizing';
 
     Resizing.prototype.events = {
-      'start.resize': 'resize'
+      'drag.resize': 'resize'
     };
 
     function Resizing(element) {
@@ -13287,6 +13290,7 @@ this.require.define({"app/controllers/header":function(exports, require, module)
 
     Header.prototype.addElement = function(element) {
       var position;
+      this.stage.history.record();
       position = this.stage.center();
       position.left -= element.get('width') || 50;
       position.top -= element.get('height') || 50;
@@ -13383,7 +13387,7 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
     };
 
     Inspector.prototype.release = function() {
-      this.stage.selection.unbind('change', this.render);
+      this.stage.selection.unbind('change', this.paint);
       return Inspector.__super__.release.apply(this, arguments);
     };
 
@@ -13657,6 +13661,8 @@ this.require.define({"app/controllers/inspector/border":function(exports, requir
 
     BorderController.prototype.events = {
       'click [data-border]': 'borderClick',
+      'focus input': 'inputFocus',
+      'mousedown input': 'inputFocus',
       'change': 'inputChange'
     };
 
@@ -13707,6 +13713,10 @@ this.require.define({"app/controllers/inspector/border":function(exports, requir
 
     BorderController.prototype.borderClick = function(e) {
       return this.change($(e.currentTarget).data('border'));
+    };
+
+    BorderController.prototype.inputFocus = function() {
+      return this.stage.history.record();
     };
 
     BorderController.prototype.inputChange = function() {
@@ -13765,7 +13775,9 @@ this.require.define({"app/controllers/inspector/border_radius":function(exports,
 
     BorderRadius.prototype.events = {
       'click [data-border-radius]': 'borderClick',
-      'change input': 'inputChange'
+      'change input': 'inputChange',
+      'focus input': 'inputFocus',
+      'mousedown input': 'inputFocus'
     };
 
     BorderRadius.prototype.elements = {
@@ -13802,6 +13814,10 @@ this.require.define({"app/controllers/inspector/border_radius":function(exports,
 
     BorderRadius.prototype.borderClick = function(e) {
       return this.change($(e.currentTarget).data('border-radius'));
+    };
+
+    BorderRadius.prototype.inputFocus = function() {
+      return this.stage.history.record();
     };
 
     BorderRadius.prototype.inputChange = function(e) {
@@ -14085,7 +14101,8 @@ this.require.define({"app/controllers/inspector/dimensions":function(exports, re
     Dimensions.prototype.className = 'dimensions';
 
     Dimensions.prototype.events = {
-      'change input': 'change'
+      'change input': 'change',
+      'focus input': 'focus'
     };
 
     Dimensions.prototype.elements = {
@@ -14131,6 +14148,10 @@ this.require.define({"app/controllers/inspector/dimensions":function(exports, re
       return this.stage.selection.set('top', parseInt(this.$y.val(), 10));
     };
 
+    Dimensions.prototype.focus = function(e) {
+      return this.stage.history.record();
+    };
+
     Dimensions.prototype.release = function() {
       $(document).unbind('resize.element', this.update);
       $(document).unbind('move.element', this.update);
@@ -14165,7 +14186,9 @@ this.require.define({"app/controllers/inspector/opacity":function(exports, requi
     Opacity.prototype.className = 'opacity';
 
     Opacity.prototype.events = {
-      'change input': 'change'
+      'change input': 'change',
+      'focus input': 'inputFocus',
+      'mousedown input': 'inputFocus'
     };
 
     Opacity.prototype.elements = {
@@ -14185,6 +14208,10 @@ this.require.define({"app/controllers/inspector/opacity":function(exports, requi
       val = Math.round(val * 100) / 100;
       this.stage.selection.set('opacity', val);
       return this.$inputs.val(val);
+    };
+
+    Opacity.prototype.inputFocus = function() {
+      return this.stage.history.record();
     };
 
     return Opacity;
@@ -14311,7 +14338,7 @@ this.require.define({"app/controllers/inspector/text_shadow":function(exports, r
 }).call(this);
 ;}});
 this.require.define({"app/controllers/stage":function(exports, require, module){(function() {
-  var Clipboard, ContextMenu, Dragging, Ellipsis, KeyBindings, Properties, Rectangle, Resizing, SelectArea, Selection, Serialize, Snapping, Stage, ZIndex,
+  var Clipboard, ContextMenu, Dragging, Ellipsis, History, KeyBindings, Properties, Rectangle, Resizing, SelectArea, Selection, Serialize, Snapping, Stage, ZIndex,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -14335,6 +14362,8 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
   Clipboard = require('./stage/clipboard');
 
   ContextMenu = require('./stage/context_menu');
+
+  History = require('./stage/history');
 
   Rectangle = require('./elements/rectangle');
 
@@ -14382,6 +14411,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       this.zindex = new ZIndex(this);
       this.clipboard = new Clipboard(this);
       this.contextMenu = new ContextMenu(this);
+      this.history = new History(this);
       this.selection.bind('change', function() {
         return _this.el.trigger('selection.change', [_this]);
       });
@@ -14402,6 +14432,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
 
     Stage.prototype.add = function(element) {
       this.elements.push(element);
+      element.order(this.elements.indexOf(element));
       return this.append(element);
     };
 
@@ -14409,6 +14440,28 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       this.selection.remove(element);
       this.elements.splice(this.elements.indexOf(element), 1);
       return element.release();
+    };
+
+    Stage.prototype.clear = function() {
+      var element, _i, _len, _ref;
+      this.selection.clear();
+      _ref = this.elements;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        element = _ref[_i];
+        element.release();
+      }
+      return this.elements = [];
+    };
+
+    Stage.prototype.refresh = function(elements) {
+      var el, _i, _len, _results;
+      this.clear();
+      _results = [];
+      for (_i = 0, _len = elements.length; _i < _len; _i++) {
+        el = elements[_i];
+        _results.push(this.add(el));
+      }
+      return _results;
     };
 
     Stage.prototype.removeSelected = function() {
@@ -14672,6 +14725,7 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
         return;
       }
       elements = Serialize.fromJSON(json);
+      this.stage.history.record();
       for (_i = 0, _len = elements.length; _i < _len; _i++) {
         el = elements[_i];
         this.stage.add(el);
@@ -14710,6 +14764,7 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
       if (!this.data) {
         return;
       }
+      this.stage.history.record();
       _ref = this.data;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         el = _ref[_i];
@@ -14855,8 +14910,7 @@ this.require.define({"app/controllers/stage/context_menu":function(exports, requ
     };
 
     ContextMenu.prototype.release = function() {
-      $('body').unbind('mousedown', this.remove);
-      return ContextMenu.__super__.release.apply(this, arguments);
+      return $('body').unbind('mousedown', this.remove);
     };
 
     return ContextMenu;
@@ -14934,6 +14988,7 @@ this.require.define({"app/controllers/stage/dragging":function(exports, require,
         clones = this.stage.cloneSelected();
         this.stage.selection.refresh(clones);
       }
+      this.stage.history.record();
       this.dragPosition = {
         left: e.pageX,
         top: e.pageY
@@ -14998,6 +15053,56 @@ this.require.define({"app/controllers/stage/dragging":function(exports, require,
 
 }).call(this);
 ;}});
+this.require.define({"app/controllers/stage/history":function(exports, require, module){(function() {
+  var History, Model, Serialize,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  Model = require('app/models/history');
+
+  Serialize = require('app/models/serialize');
+
+  History = (function(_super) {
+
+    __extends(History, _super);
+
+    History.name = 'History';
+
+    function History(stage) {
+      this.stage = stage;
+      History.__super__.constructor.call(this, {
+        el: this.stage.el
+      });
+    }
+
+    History.prototype.undo = function() {
+      return Model.undo();
+    };
+
+    History.prototype.redo = function() {
+      return Model.redo();
+    };
+
+    History.prototype.record = function(isUndo) {
+      var action, elements,
+        _this = this;
+      elements = JSON.stringify(this.stage.elements);
+      action = function(isUndo) {
+        _this.record(!isUndo);
+        elements = Serialize.fromJSON(elements);
+        return _this.stage.refresh(elements);
+      };
+      return Model.add(action, isUndo);
+    };
+
+    return History;
+
+  })(Spine.Controller);
+
+  module.exports = History;
+
+}).call(this);
+;}});
 this.require.define({"app/controllers/stage/key_bindings":function(exports, require, module){(function() {
   var KeyBindings,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
@@ -15024,6 +15129,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       68: 'dKey',
       83: 'sKey',
       86: 'vKey',
+      90: 'zKey',
       187: 'plusKey',
       189: 'minusKey'
     };
@@ -15045,6 +15151,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
 
     KeyBindings.prototype.backspace = function(e) {
       e.preventDefault();
+      this.stage.history.record();
       return this.stage.removeSelected();
     };
 
@@ -15055,6 +15162,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       if (e.shiftKey) {
         amount *= 5;
       }
+      this.stage.history.record();
       return this.stage.selection.moveBy({
         left: amount,
         top: 0
@@ -15068,6 +15176,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       if (e.shiftKey) {
         amount *= 5;
       }
+      this.stage.history.record();
       return this.stage.selection.moveBy({
         left: 0,
         top: amount
@@ -15081,6 +15190,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       if (e.shiftKey) {
         amount *= 5;
       }
+      this.stage.history.record();
       return this.stage.selection.moveBy({
         left: amount,
         top: 0
@@ -15094,6 +15204,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       if (e.shiftKey) {
         amount *= 5;
       }
+      this.stage.history.record();
       return this.stage.selection.moveBy({
         left: 0,
         top: amount
@@ -15156,6 +15267,18 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       return this.stage.clipboard.pasteInternal();
     };
 
+    KeyBindings.prototype.zKey = function(e) {
+      if (!e.metaKey) {
+        return;
+      }
+      e.preventDefault();
+      if (e.shiftKey) {
+        return this.stage.history.redo();
+      } else {
+        return this.stage.history.undo();
+      }
+    };
+
     KeyBindings.prototype.release = function() {
       return $(document).unbind('keydown', this.keypress);
     };
@@ -15211,6 +15334,7 @@ this.require.define({"app/controllers/stage/resizing":function(exports, require,
     Resizing.name = 'Resizing';
 
     Resizing.prototype.events = {
+      'start.resize': 'resizeStart',
       'resize.element': 'resized',
       'end.resize': 'resizeEnd'
     };
@@ -15221,6 +15345,10 @@ this.require.define({"app/controllers/stage/resizing":function(exports, require,
         el: this.stage.el
       });
     }
+
+    Resizing.prototype.resizeStart = function() {
+      return this.stage.history.record();
+    };
 
     Resizing.prototype.resized = function(e, element) {
       var area;
@@ -16028,7 +16156,7 @@ this.require.define({"app/controllers/stage/zindex":function(exports, require, m
       _results = [];
       for (index = _i = 0, _len = _ref.length; _i < _len; index = ++_i) {
         element = _ref[index];
-        _results.push(element.set('order', index));
+        _results.push(element.order(index));
       }
       return _results;
     };
@@ -16077,6 +16205,57 @@ this.require.define({"app/index":function(exports, require, module){(function() 
   })(Spine.Controller);
 
   module.exports = App;
+
+}).call(this);
+;}});
+this.require.define({"app/models/history":function(exports, require, module){(function() {
+  var History;
+
+  History = (function() {
+
+    History.name = 'History';
+
+    function History() {}
+
+    History.undoStack = [];
+
+    History.redoStack = [];
+
+    History.max = 30;
+
+    History.add = function(action, isUndo) {
+      var stack;
+      if (isUndo === true) {
+        stack = this.undoStack;
+      } else if (isUndo === false) {
+        stack = this.redoStack;
+      } else {
+        stack = this.undoStack;
+        if (stack.length === this.max) {
+          stack.shift();
+        }
+        this.redoStack = [];
+      }
+      return stack.push(action);
+    };
+
+    History.undo = function() {
+      var action;
+      action = this.undoStack.pop();
+      return action != null ? action.call(this, true) : void 0;
+    };
+
+    History.redo = function() {
+      var action;
+      action = this.redoStack.pop();
+      return action != null ? action.call(this, false) : void 0;
+    };
+
+    return History;
+
+  })();
+
+  module.exports = History;
 
 }).call(this);
 ;}});
@@ -16517,55 +16696,6 @@ this.require.define({"app/models/serialize":function(exports, require, module){(
   module.exports.Serialize = Serialize;
 
   module.exports.fromJSON = fromJSON;
-
-}).call(this);
-;}});
-this.require.define({"app/models/undo":function(exports, require, module){(function() {
-  var Undo;
-
-  Undo = (function() {
-
-    Undo.name = 'Undo';
-
-    function Undo() {}
-
-    Undo.undoStack = [];
-
-    Undo.redoStack = [];
-
-    Undo.add = function(undo, redo) {
-      this.undoStack.push([undo, redo]);
-      this.redoStack = [];
-      return redo();
-    };
-
-    Undo.undo = function() {
-      var action, redo, undo;
-      action = this.undoStack.pop();
-      if (!action) {
-        return;
-      }
-      undo = action[0], redo = action[1];
-      undo();
-      return this.redoStack.push(action);
-    };
-
-    Undo.redo = function() {
-      var action, redo, undo;
-      action = this.redoStack.pop();
-      if (!action) {
-        return;
-      }
-      undo = action[0], redo = action[1];
-      redo();
-      return this.undoStack.push(action);
-    };
-
-    return Undo;
-
-  })();
-
-  module.exports = Undo;
 
 }).call(this);
 ;}});

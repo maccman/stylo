@@ -6,7 +6,7 @@ Background image
 Background gradient rotation
 Color inspector movable window
 Dragging right and up doesn't select elements - offset by the header
-We want the resize to be around the selection
+We want the resize to be around the selection?
 ✓ We want the inspector not to completely re-render on selection
 
 Phase 1:
@@ -108,3 +108,6 @@ https://developers.google.com/webfonts
 https://typekit.com/
 
 Issue with border radius is that properties are being applied in the wrong order.
+Should 'selected' not be a property?
+Only save selection in history.
+We should have a benchmarking testing library.

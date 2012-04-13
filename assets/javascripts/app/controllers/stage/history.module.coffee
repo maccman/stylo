@@ -25,6 +25,10 @@ class History extends Spine.Controller
 
       # Replace stage with previous state
       elements = Serialize.fromJSON(elements)
+
+      # TODO: This is too simple, and should
+      # be replaced with something that's more
+      # performant.
       @stage.refresh(elements)
 
     Model.add(action, isUndo)

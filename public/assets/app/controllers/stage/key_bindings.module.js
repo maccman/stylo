@@ -82,6 +82,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       65: 'aKey',
       67: 'cKey',
       68: 'dKey',
+      79: 'oKey',
       83: 'sKey',
       86: 'vKey',
       90: 'zKey',
@@ -184,12 +185,20 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       }
     };
 
+    KeyBindings.prototype.oKey = function(e) {
+      if (!e.metaKey) {
+        return;
+      }
+      e.preventDefault();
+      return this.stage.load();
+    };
+
     KeyBindings.prototype.sKey = function(e) {
       if (!e.metaKey) {
         return;
       }
       e.preventDefault();
-      return this.log('save');
+      return this.stage.save();
     };
 
     KeyBindings.prototype.plusKey = function(e) {

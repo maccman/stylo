@@ -12065,7 +12065,7 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
     Preview.prototype.render = function() {
       return this.inner.css({
-        background: this.color
+        background: this.color.toString()
       });
     };
 
@@ -12261,7 +12261,7 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
         this.addSlider(new ColorStop(new Color.Black, 100));
       }
       this.el.css({
-        background: "" + this.gradient + ", url(assets/grid.png) repeat"
+        background: "" + (this.gradient.toString()) + ", url(assets/grid.png) repeat"
       });
     }
 
@@ -12280,7 +12280,7 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
 
     GradientPicker.prototype.set = function() {
       this.el.css({
-        background: "" + this.gradient + ", url(assets/grid.png) repeat"
+        background: "" + (this.gradient.toString()) + ", url(assets/grid.png) repeat"
       });
       return this.trigger('change', this.gradient);
     };
@@ -14334,7 +14334,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  Serialize = require('app/models/serialize').Serialize;
+  Serialize = require('app/models/serialize');
 
   Selection = require('./stage/selection');
 
@@ -14409,15 +14409,6 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
     }
 
     Stage.prototype.render = function() {
-      var rectangle1, rectangle2;
-      rectangle1 = new Rectangle({
-        left: 200,
-        top: 200,
-        backgroundImage: [new Properties.Background.URL('assets/blacky.png')]
-      });
-      rectangle2 = new Rectangle();
-      this.add(rectangle1);
-      this.add(rectangle2);
       return this;
     };
 
@@ -14448,14 +14439,14 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
     };
 
     Stage.prototype.refresh = function(elements) {
-      var el, _i, _len, _results;
+      var el, _i, _len;
+      this.el.hide();
       this.clear();
-      _results = [];
       for (_i = 0, _len = elements.length; _i < _len; _i++) {
         el = elements[_i];
-        _results.push(this.add(el));
+        this.add(el);
       }
-      return _results;
+      return this.el.show();
     };
 
     Stage.prototype.removeSelected = function() {
@@ -14584,7 +14575,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
     };
 
     Stage.prototype.get = function(key) {
-      return (typeof this[key] === "function" ? this[key]() : void 0) || this.properties[key];
+      return this.properties[key];
     };
 
     Stage.prototype.set = function(key, value) {
@@ -14604,7 +14595,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       return this.el.css(this.properties);
     };
 
-    Stage.include(Serialize);
+    Stage.include(Serialize.Serialize);
 
     Stage.prototype.id = module.id;
 
@@ -14614,6 +14605,19 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
         elements: this.elements,
         properties: this.properties
       };
+    };
+
+    Stage.prototype.save = function() {
+      return localStorage['stage'] = JSON.stringify(this.elements);
+    };
+
+    Stage.prototype.load = function() {
+      var data;
+      data = localStorage['stage'];
+      if (!data) {
+        return;
+      }
+      return this.refresh(Serialize.fromJSON(data));
     };
 
     Stage.prototype.release = function() {
@@ -14657,12 +14661,10 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
 }).call(this);
 ;}});
 this.require.define({"app/controllers/stage/clipboard":function(exports, require, module){(function() {
-  var Clipboard, Serialize, Utils,
+  var Clipboard, Serialize,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   Serialize = require('app/models/serialize');
-
-  Utils = require('lib/utils');
 
   Clipboard = (function() {
 
@@ -14678,8 +14680,6 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
 
       $(window).bind('beforecopy', this.cancel);
       $(window).bind('copy', this.copy);
-      $(window).bind('beforepaste', this.cancel);
-      $(window).bind('paste', this.paste);
     }
 
     Clipboard.prototype.cancel = function(e) {
@@ -14738,9 +14738,6 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
 
     Clipboard.prototype.copyInternal = function() {
       var el;
-      if (Utils.browser.chrome) {
-        return;
-      }
       return this.data = (function() {
         var _i, _len, _ref, _results;
         _ref = this.stage.selection.elements;
@@ -14755,9 +14752,6 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
 
     Clipboard.prototype.pasteInternal = function(e) {
       var el, _i, _len, _ref;
-      if (Utils.browser.chrome) {
-        return;
-      }
       if (!this.data) {
         return;
       }
@@ -15152,6 +15146,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       65: 'aKey',
       67: 'cKey',
       68: 'dKey',
+      79: 'oKey',
       83: 'sKey',
       86: 'vKey',
       90: 'zKey',
@@ -15254,12 +15249,20 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       }
     };
 
+    KeyBindings.prototype.oKey = function(e) {
+      if (!e.metaKey) {
+        return;
+      }
+      e.preventDefault();
+      return this.stage.load();
+    };
+
     KeyBindings.prototype.sKey = function(e) {
       if (!e.metaKey) {
         return;
       }
       e.preventDefault();
-      return this.log('save');
+      return this.stage.save();
     };
 
     KeyBindings.prototype.plusKey = function(e) {

@@ -59,12 +59,10 @@
   return this.require;
 }).call(this);
 this.require.define({"app/controllers/stage/clipboard":function(exports, require, module){(function() {
-  var Clipboard, Serialize, Utils,
+  var Clipboard, Serialize,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   Serialize = require('app/models/serialize');
-
-  Utils = require('lib/utils');
 
   Clipboard = (function() {
 
@@ -80,8 +78,6 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
 
       $(window).bind('beforecopy', this.cancel);
       $(window).bind('copy', this.copy);
-      $(window).bind('beforepaste', this.cancel);
-      $(window).bind('paste', this.paste);
     }
 
     Clipboard.prototype.cancel = function(e) {
@@ -140,9 +136,6 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
 
     Clipboard.prototype.copyInternal = function() {
       var el;
-      if (Utils.browser.chrome) {
-        return;
-      }
       return this.data = (function() {
         var _i, _len, _ref, _results;
         _ref = this.stage.selection.elements;
@@ -157,9 +150,6 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
 
     Clipboard.prototype.pasteInternal = function(e) {
       var el, _i, _len, _ref;
-      if (Utils.browser.chrome) {
-        return;
-      }
       if (!this.data) {
         return;
       }

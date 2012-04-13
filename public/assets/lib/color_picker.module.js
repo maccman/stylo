@@ -669,7 +669,7 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
     Preview.prototype.render = function() {
       return this.inner.css({
-        background: this.color
+        background: this.color.toString()
       });
     };
 

@@ -416,7 +416,7 @@ class Preview extends Spine.Controller
     @render()
 
   render: ->
-    @inner.css(background: @color)
+    @inner.css(background: @color.toString())
 
   open: =>
     # Picker already open

@@ -1,13 +1,15 @@
 Serialize = require('app/models/serialize')
-Utils     = require('lib/utils')
 
 class Clipboard
   constructor: (@stage) ->
     $(window).bind 'beforecopy', @cancel
     $(window).bind 'copy', @copy
 
-    $(window).bind 'beforepaste', @cancel
-    $(window).bind 'paste', @paste
+    # Remove pasting for the moment, until
+    # it's better supported in browsers
+    #
+    # $(window).bind 'beforepaste', @cancel
+    # $(window).bind 'paste', @paste
 
   cancel: (e) =>
     # We need to cancel the default to get
@@ -49,13 +51,9 @@ class Clipboard
   data: null
 
   copyInternal: ->
-    return if Utils.browser.chrome
     @data = (el.clone() for el in @stage.selection.elements)
 
   pasteInternal: (e) ->
-    # At the moment, only Chrome supports
-    # the non-focused paste event
-    return if Utils.browser.chrome
     return unless @data
 
     @stage.history.record()

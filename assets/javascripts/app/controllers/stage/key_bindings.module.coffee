@@ -11,6 +11,7 @@ class KeyBindings extends Spine.Module
     65:  'aKey'
     67:  'cKey'
     68:  'dKey'
+    79:  'oKey'
     83:  'sKey'
     86:  'vKey'
     90:  'zKey'
@@ -68,10 +69,15 @@ class KeyBindings extends Spine.Module
     e.preventDefault()
     @stage.selection.clear() if e.metaKey
 
+  oKey: (e) ->
+    return unless e.metaKey
+    e.preventDefault()
+    @stage.load()
+
   sKey: (e) ->
     return unless e.metaKey
     e.preventDefault()
-    @log('save')
+    @stage.save()
 
   plusKey: (e) ->
     return unless e.metaKey

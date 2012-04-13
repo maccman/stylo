@@ -1,4 +1,4 @@
-Serialize   = require('app/models/serialize').Serialize
+Serialize   = require('app/models/serialize')
 Selection   = require('./stage/selection')
 Dragging    = require('./stage/dragging')
 Resizing    = require('./stage/resizing')
@@ -44,17 +44,7 @@ class Stage extends Spine.Controller
     @selection.bind 'change', =>
       @el.trigger('selection.change', [this])
 
-  render: ->
-    # FIXME: Test data
-    rectangle1 = new Rectangle(
-      left: 200, top: 200,
-      backgroundImage: [new Properties.Background.URL('assets/blacky.png')]
-    )
-    rectangle2 = new Rectangle()
-
-    @add(rectangle1)
-    @add(rectangle2)
-    this
+  render: -> this
 
   add: (element) =>
     # Push and resolve zIndex
@@ -79,8 +69,10 @@ class Stage extends Spine.Controller
     @elements = []
 
   refresh: (elements) ->
+    @el.hide()
     @clear()
     @add(el) for el in elements
+    @el.show()
 
   # Batch manipulate selected
 
@@ -160,7 +152,7 @@ class Stage extends Spine.Controller
   # Properties
 
   get: (key) ->
-    @[key]?() or @properties[key]
+    @properties[key]
 
   set: (key, value) ->
     if typeof key is 'object'
@@ -175,7 +167,7 @@ class Stage extends Spine.Controller
 
   # Serialization
 
-  @include Serialize
+  @include Serialize.Serialize
 
   id: module.id
 
@@ -183,6 +175,14 @@ class Stage extends Spine.Controller
     result =
       elements:   @elements
       properties: @properties
+
+  save: ->
+    localStorage['stage'] = JSON.stringify(@elements)
+
+  load: ->
+    data = localStorage['stage']
+    return unless data
+    @refresh Serialize.fromJSON(data)
 
   # Release
 

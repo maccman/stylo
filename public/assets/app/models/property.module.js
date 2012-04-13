@@ -97,6 +97,10 @@ this.require.define({"app/models/property":function(exports, require, module){(f
 
     Property.include(Serialize);
 
+    Property.prototype.valueOf = function() {
+      return this.toString();
+    };
+
     return Property;
 
   })(Spine.Module);

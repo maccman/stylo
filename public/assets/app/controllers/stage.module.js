@@ -143,6 +143,9 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
     };
 
     Stage.prototype.add = function(element) {
+      if (!element) {
+        throw 'element required';
+      }
       this.elements.push(element);
       element.order(this.elements.indexOf(element));
       this.append(element);
@@ -152,20 +155,24 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
     };
 
     Stage.prototype.remove = function(element) {
+      if (!element) {
+        throw 'element required';
+      }
       this.selection.remove(element);
       this.elements.splice(this.elements.indexOf(element), 1);
       return element.release();
     };
 
     Stage.prototype.clear = function() {
-      var element, _i, _len, _ref;
+      var element, _i, _len, _ref, _results;
       this.selection.clear();
-      _ref = this.elements;
+      _ref = this.elements.slice(0);
+      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         element = _ref[_i];
-        element.release();
+        _results.push(this.remove(element));
       }
-      return this.elements = [];
+      return _results;
     };
 
     Stage.prototype.refresh = function(elements) {
@@ -249,7 +256,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
 
     Stage.prototype.bringForward = function() {
       var element, elements, _i, _len;
-      elements = this.selection.elements.slice(0).reverse();
+      elements = this.selection.element.slice(0).reverse();
       for (_i = 0, _len = elements.length; _i < _len; _i++) {
         element = elements[_i];
         this.zindex.bringForward(element);
@@ -338,12 +345,12 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
     };
 
     Stage.prototype.save = function() {
-      return localStorage['stage'] = JSON.stringify(this.elements);
+      return localStorage.stage = JSON.stringify(this.elements);
     };
 
     Stage.prototype.load = function() {
       var data;
-      data = localStorage['stage'];
+      data = localStorage.stage;
       if (!data) {
         return;
       }

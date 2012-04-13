@@ -10,9 +10,7 @@ class Property extends Spine.Module
 
   # We override valueOf to properties
   # can be easily compared with each other.
-  # This could be a performance bottleneck.
-  # valueOf: ->
-  #   JSON.stringify(this)
+  valueOf: -> @toString()
 
 module.exports = Property
 module.exports.Values = Values

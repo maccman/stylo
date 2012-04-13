@@ -47,6 +47,8 @@ class Stage extends Spine.Controller
   render: -> this
 
   add: (element) =>
+    throw 'element required' unless element
+
     # Push and resolve zIndex
     @elements.push(element)
     element.order(@elements.indexOf(element))
@@ -58,15 +60,16 @@ class Stage extends Spine.Controller
     @selection.add(element) if element.selected()
 
   remove: (element) =>
+    throw 'element required' unless element
+
     @selection.remove(element)
     @elements.splice(@elements.indexOf(element), 1)
     element.release()
 
   clear: ->
     @selection.clear()
-    for element in @elements
-      element.release()
-    @elements = []
+    for element in @elements[..]
+      @remove(element)
 
   refresh: (elements) ->
     @el.hide()
@@ -116,22 +119,22 @@ class Stage extends Spine.Controller
   # ZIndex
 
   bringForward: ->
-    elements = @selection.elements.slice(0).reverse()
+    elements = @selection.element[..].reverse()
     @zindex.bringForward(element) for element in elements
     true
 
   bringBack: ->
-    elements = @selection.elements.slice(0).reverse()
+    elements = @selection.elements[..].reverse()
     @zindex.bringBack(element) for element in elements
     true
 
   bringToFront: ->
-    elements = @selection.elements.slice(0).reverse()
+    elements = @selection.elements[..].reverse()
     @zindex.bringToFront(element) for element in elements
     true
 
   bringToBack: ->
-    elements = @selection.elements.slice(0).reverse()
+    elements = @selection.elements[..].reverse()
     @zindex.bringToBack(element) for element in elements
     true
 
@@ -177,10 +180,10 @@ class Stage extends Spine.Controller
       properties: @properties
 
   save: ->
-    localStorage['stage'] = JSON.stringify(@elements)
+    localStorage.stage = JSON.stringify(@elements)
 
   load: ->
-    data = localStorage['stage']
+    data = localStorage.stage
     return unless data
     @refresh Serialize.fromJSON(data)
 

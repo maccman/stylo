@@ -155,6 +155,7 @@ class BoxShadow extends Spine.Controller
     if shadow
       @shadows.push(shadow) unless @shadows.include(shadow)
 
+    @stage.history.record('boxShadow')
     @stage.selection.set('boxShadow', @shadows.valueOf())
 
   release: ->

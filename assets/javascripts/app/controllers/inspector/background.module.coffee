@@ -143,6 +143,7 @@ class BackgroundInspector extends Spine.Controller
     this
 
   set: =>
+    @stage.history.record('background')
     @stage.selection.set('backgroundColor', @backgrounds.getColor())
     @stage.selection.set('backgroundImage', @backgrounds.getImages())
 

@@ -22,7 +22,7 @@ class KeyBindings extends Spine.Module
 
   keypress: (e) =>
     # Disable keyboard shortcuts in inputs
-    return if 'value' of e.target
+    return if 'value' of e.target and not e.metaKey
     @[@mapping[e.which]]?(e)
 
   backspace: (e) ->
@@ -34,28 +34,28 @@ class KeyBindings extends Spine.Module
     e.preventDefault()
     amount = -1
     amount *= 5 if e.shiftKey
-    @stage.history.record()
+    @stage.history.record('leftArrow')
     @stage.selection.moveBy(left: amount, top: 0)
 
   upArrow: (e) ->
     e.preventDefault()
     amount = -1
     amount *= 5 if e.shiftKey
-    @stage.history.record()
+    @stage.history.record('upArrow')
     @stage.selection.moveBy(left: 0, top: amount)
 
   rightArrow: (e) ->
     e.preventDefault()
     amount = 1
     amount *= 5 if e.shiftKey
-    @stage.history.record()
+    @stage.history.record('rightArrow')
     @stage.selection.moveBy(left: amount, top: 0)
 
   downArrow: (e) ->
     e.preventDefault()
     amount = 1
     amount *= 5 if e.shiftKey
-    @stage.history.record()
+    @stage.history.record('downArrow')
     @stage.selection.moveBy(left: 0, top: amount)
 
   aKey: (e) ->

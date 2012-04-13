@@ -12606,9 +12606,9 @@ this.require.define({"app/controllers/element":function(exports, require, module
         el: attrs.el
       });
       this.properties = {};
+      this.resizing = new Resizing(this);
       this.set(this.defaults());
       this.set(attrs);
-      this.resizing = new Resizing(this);
     }
 
     Element.prototype.get = function(key) {
@@ -12620,10 +12620,10 @@ this.require.define({"app/controllers/element":function(exports, require, module
       if (typeof key === 'object') {
         for (k in key) {
           v = key[k];
-          (typeof this[k] === "function" ? this[k](v) : void 0) || (this.properties[k] = v);
+          this.properties[k] = v;
         }
       } else {
-        (typeof this[key] === "function" ? this[key](value) : void 0) || (this.properties[key] = value);
+        this.properties[key] = value;
       }
       return this.paint();
     };
@@ -12666,11 +12666,11 @@ this.require.define({"app/controllers/element":function(exports, require, module
 
     Element.prototype.selected = function(bool) {
       if (bool != null) {
-        this._selected = bool;
+        this.properties.selected = bool;
         this.el.toggleClass('selected', bool);
         this.resizing.toggle(bool);
       }
-      return this._selected;
+      return this.properties.selected;
     };
 
     Element.prototype.area = function() {
@@ -12696,7 +12696,7 @@ this.require.define({"app/controllers/element":function(exports, require, module
       return this.el.clone().empty()[0].outerHTML;
     };
 
-    Element.prototype.ignoredStyles = ['left', 'top', 'zIndex', 'position'];
+    Element.prototype.ignoredStyles = ['left', 'top', 'zIndex', 'position', 'selected'];
 
     Element.prototype.outerCSS = function() {
       var k, name, styles, v, value, _ref;
@@ -13613,6 +13613,7 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
     };
 
     BackgroundInspector.prototype.set = function() {
+      this.stage.history.record('background');
       this.stage.selection.set('backgroundColor', this.backgrounds.getColor());
       return this.stage.selection.set('backgroundImage', this.backgrounds.getImages());
     };
@@ -13661,8 +13662,6 @@ this.require.define({"app/controllers/inspector/border":function(exports, requir
 
     BorderController.prototype.events = {
       'click [data-border]': 'borderClick',
-      'focus input': 'inputFocus',
-      'mousedown input': 'inputFocus',
       'change': 'inputChange'
     };
 
@@ -13715,11 +13714,8 @@ this.require.define({"app/controllers/inspector/border":function(exports, requir
       return this.change($(e.currentTarget).data('border'));
     };
 
-    BorderController.prototype.inputFocus = function() {
-      return this.stage.history.record();
-    };
-
     BorderController.prototype.inputChange = function() {
+      this.stage.history.record('border');
       this.currentBorder.width = parseInt(this.$width.val(), 10);
       this.currentBorder.style = this.$style.val();
       this.currentBorder.color = this.$color.val();
@@ -13727,6 +13723,7 @@ this.require.define({"app/controllers/inspector/border":function(exports, requir
     };
 
     BorderController.prototype.set = function() {
+      this.stage.history.record('border');
       if (this.current === 'border') {
         this.stage.selection.set({
           borderTop: null,
@@ -13775,9 +13772,7 @@ this.require.define({"app/controllers/inspector/border_radius":function(exports,
 
     BorderRadius.prototype.events = {
       'click [data-border-radius]': 'borderClick',
-      'change input': 'inputChange',
-      'focus input': 'inputFocus',
-      'mousedown input': 'inputFocus'
+      'change input': 'inputChange'
     };
 
     BorderRadius.prototype.elements = {
@@ -13816,10 +13811,6 @@ this.require.define({"app/controllers/inspector/border_radius":function(exports,
       return this.change($(e.currentTarget).data('border-radius'));
     };
 
-    BorderRadius.prototype.inputFocus = function() {
-      return this.stage.history.record();
-    };
-
     BorderRadius.prototype.inputChange = function(e) {
       var val;
       val = parseInt($(e.currentTarget).val(), 10);
@@ -13828,6 +13819,7 @@ this.require.define({"app/controllers/inspector/border_radius":function(exports,
     };
 
     BorderRadius.prototype.set = function(val) {
+      this.stage.history.record('borderRadius');
       if (this.current === 'borderRadius') {
         this.stage.selection.set({
           borderTopLeftRadius: null,
@@ -14061,6 +14053,7 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
           this.shadows.push(shadow);
         }
       }
+      this.stage.history.record('boxShadow');
       return this.stage.selection.set('boxShadow', this.shadows.valueOf());
     };
 
@@ -14101,8 +14094,7 @@ this.require.define({"app/controllers/inspector/dimensions":function(exports, re
     Dimensions.prototype.className = 'dimensions';
 
     Dimensions.prototype.events = {
-      'change input': 'change',
-      'focus input': 'focus'
+      'change input': 'change'
     };
 
     Dimensions.prototype.elements = {
@@ -14142,14 +14134,11 @@ this.require.define({"app/controllers/inspector/dimensions":function(exports, re
     };
 
     Dimensions.prototype.change = function(e) {
+      this.stage.history.record('dimensions');
       this.stage.selection.set('width', parseInt(this.$width.val(), 10));
       this.stage.selection.set('height', parseInt(this.$height.val(), 10));
       this.stage.selection.set('left', parseInt(this.$x.val(), 10));
       return this.stage.selection.set('top', parseInt(this.$y.val(), 10));
-    };
-
-    Dimensions.prototype.focus = function(e) {
-      return this.stage.history.record();
     };
 
     Dimensions.prototype.release = function() {
@@ -14206,6 +14195,7 @@ this.require.define({"app/controllers/inspector/opacity":function(exports, requi
       var val;
       val = parseFloat($(e.currentTarget).val());
       val = Math.round(val * 100) / 100;
+      this.stage.history.record('opacity');
       this.stage.selection.set('opacity', val);
       return this.$inputs.val(val);
     };
@@ -14318,6 +14308,7 @@ this.require.define({"app/controllers/inspector/text_shadow":function(exports, r
       this.shadow.x = parseFloat(this.$x.val());
       this.shadow.y = parseFloat(this.$y.val());
       this.shadow.blur = parseFloat(this.$blur.val());
+      this.stage.history.record('textShadow');
       return this.stage.selection.set('textShadow', this.shadow);
     };
 
@@ -14454,12 +14445,18 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
     };
 
     Stage.prototype.refresh = function(elements) {
-      var el, _i, _len, _results;
+      var el, _i, _j, _len, _len1, _results;
       this.clear();
-      _results = [];
       for (_i = 0, _len = elements.length; _i < _len; _i++) {
         el = elements[_i];
-        _results.push(this.add(el));
+        this.add(el);
+      }
+      _results = [];
+      for (_j = 0, _len1 = elements.length; _j < _len1; _j++) {
+        el = elements[_j];
+        if (el.selected()) {
+          _results.push(this.selection.add(el));
+        }
       }
       return _results;
     };
@@ -15087,12 +15084,32 @@ this.require.define({"app/controllers/stage/history":function(exports, require, 
       return Model.redo();
     };
 
-    History.prototype.record = function(isUndo) {
+    History.prototype.record = function(type) {
+      if (!this.throttle(type)) {
+        return this.recordState();
+      }
+    };
+
+    History.prototype.throttleLimit = 500;
+
+    History.prototype.throttle = function(type) {
+      var current, throttled;
+      throttled = false;
+      current = new Date;
+      if (type && this.throttleType === type && (current - this.throttleDate) <= this.throttleLimit) {
+        throttled = true;
+      }
+      this.throttleType = type;
+      this.throttleDate = current;
+      return throttled;
+    };
+
+    History.prototype.recordState = function(isUndo) {
       var action, elements,
         _this = this;
       elements = JSON.stringify(this.stage.elements);
       action = function(isUndo) {
-        _this.record(!isUndo);
+        _this.recordState(!isUndo);
         elements = Serialize.fromJSON(elements);
         return _this.stage.refresh(elements);
       };
@@ -15147,7 +15164,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
 
     KeyBindings.prototype.keypress = function(e) {
       var _name;
-      if ('value' in e.target) {
+      if ('value' in e.target && !e.metaKey) {
         return;
       }
       return typeof this[_name = this.mapping[e.which]] === "function" ? this[_name](e) : void 0;
@@ -15166,7 +15183,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       if (e.shiftKey) {
         amount *= 5;
       }
-      this.stage.history.record();
+      this.stage.history.record('leftArrow');
       return this.stage.selection.moveBy({
         left: amount,
         top: 0
@@ -15180,7 +15197,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       if (e.shiftKey) {
         amount *= 5;
       }
-      this.stage.history.record();
+      this.stage.history.record('upArrow');
       return this.stage.selection.moveBy({
         left: 0,
         top: amount
@@ -15194,7 +15211,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       if (e.shiftKey) {
         amount *= 5;
       }
-      this.stage.history.record();
+      this.stage.history.record('rightArrow');
       return this.stage.selection.moveBy({
         left: amount,
         top: 0
@@ -15208,7 +15225,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       if (e.shiftKey) {
         amount *= 5;
       }
-      this.stage.history.record();
+      this.stage.history.record('downArrow');
       return this.stage.selection.moveBy({
         left: 0,
         top: amount
@@ -16298,7 +16315,9 @@ this.require.define({"app/models/properties/background":function(exports, requir
 
   Color = require('./color');
 
-  Position = (function() {
+  Position = (function(_super) {
+
+    __extends(Position, _super);
 
     Position.name = 'Position';
 
@@ -16318,9 +16337,11 @@ this.require.define({"app/models/properties/background":function(exports, requir
 
     return Position;
 
-  })();
+  })(Property);
 
-  ColorStop = (function() {
+  ColorStop = (function(_super) {
+
+    __extends(ColorStop, _super);
 
     ColorStop.name = 'ColorStop';
 
@@ -16346,7 +16367,7 @@ this.require.define({"app/models/properties/background":function(exports, requir
 
     return ColorStop;
 
-  })();
+  })(Property);
 
   BackgroundImage = (function(_super) {
 

@@ -98,6 +98,7 @@ this.require.define({"app/controllers/inspector/opacity":function(exports, requi
       var val;
       val = parseFloat($(e.currentTarget).val());
       val = Math.round(val * 100) / 100;
+      this.stage.history.record('opacity');
       this.stage.selection.set('opacity', val);
       return this.$inputs.val(val);
     };

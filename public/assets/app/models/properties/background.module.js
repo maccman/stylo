@@ -68,7 +68,9 @@ this.require.define({"app/models/properties/background":function(exports, requir
 
   Color = require('./color');
 
-  Position = (function() {
+  Position = (function(_super) {
+
+    __extends(Position, _super);
 
     Position.name = 'Position';
 
@@ -88,9 +90,11 @@ this.require.define({"app/models/properties/background":function(exports, requir
 
     return Position;
 
-  })();
+  })(Property);
 
-  ColorStop = (function() {
+  ColorStop = (function(_super) {
+
+    __extends(ColorStop, _super);
 
     ColorStop.name = 'ColorStop';
 
@@ -116,7 +120,7 @@ this.require.define({"app/models/properties/background":function(exports, requir
 
     return ColorStop;
 
-  })();
+  })(Property);
 
   BackgroundImage = (function(_super) {
 

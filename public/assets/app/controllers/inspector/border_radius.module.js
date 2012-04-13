@@ -79,9 +79,7 @@ this.require.define({"app/controllers/inspector/border_radius":function(exports,
 
     BorderRadius.prototype.events = {
       'click [data-border-radius]': 'borderClick',
-      'change input': 'inputChange',
-      'focus input': 'inputFocus',
-      'mousedown input': 'inputFocus'
+      'change input': 'inputChange'
     };
 
     BorderRadius.prototype.elements = {
@@ -120,10 +118,6 @@ this.require.define({"app/controllers/inspector/border_radius":function(exports,
       return this.change($(e.currentTarget).data('border-radius'));
     };
 
-    BorderRadius.prototype.inputFocus = function() {
-      return this.stage.history.record();
-    };
-
     BorderRadius.prototype.inputChange = function(e) {
       var val;
       val = parseInt($(e.currentTarget).val(), 10);
@@ -132,6 +126,7 @@ this.require.define({"app/controllers/inspector/border_radius":function(exports,
     };
 
     BorderRadius.prototype.set = function(val) {
+      this.stage.history.record('borderRadius');
       if (this.current === 'borderRadius') {
         this.stage.selection.set({
           borderTopLeftRadius: null,

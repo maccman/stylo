@@ -4,11 +4,6 @@ class BorderRadius extends Spine.Controller
   events:
     'click [data-border-radius]': 'borderClick'
     'change input': 'inputChange'
-    'focus input': 'inputFocus'
-
-    # Range inputs don't fire 'focus' events
-    # properly, so we detect mousedown instead
-    'mousedown input': 'inputFocus'
 
   elements:
     '.borders div': '$borders'
@@ -47,15 +42,14 @@ class BorderRadius extends Spine.Controller
   borderClick: (e) ->
     @change($(e.currentTarget).data('border-radius'))
 
-  inputFocus: ->
-    @stage.history.record()
-
   inputChange: (e) ->
     val = parseInt($(e.currentTarget).val(), 10)
     @$inputs.val(val)
     @set(val)
 
   set: (val) ->
+    @stage.history.record('borderRadius')
+
     # borderRadius overrides everything else
     if @current is 'borderRadius'
       @stage.selection.set(

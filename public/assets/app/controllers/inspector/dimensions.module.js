@@ -73,8 +73,7 @@ this.require.define({"app/controllers/inspector/dimensions":function(exports, re
     Dimensions.prototype.className = 'dimensions';
 
     Dimensions.prototype.events = {
-      'change input': 'change',
-      'focus input': 'focus'
+      'change input': 'change'
     };
 
     Dimensions.prototype.elements = {
@@ -114,14 +113,11 @@ this.require.define({"app/controllers/inspector/dimensions":function(exports, re
     };
 
     Dimensions.prototype.change = function(e) {
+      this.stage.history.record('dimensions');
       this.stage.selection.set('width', parseInt(this.$width.val(), 10));
       this.stage.selection.set('height', parseInt(this.$height.val(), 10));
       this.stage.selection.set('left', parseInt(this.$x.val(), 10));
       return this.stage.selection.set('top', parseInt(this.$y.val(), 10));
-    };
-
-    Dimensions.prototype.focus = function(e) {
-      return this.stage.history.record();
     };
 
     Dimensions.prototype.release = function() {

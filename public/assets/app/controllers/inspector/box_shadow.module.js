@@ -272,6 +272,7 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
           this.shadows.push(shadow);
         }
       }
+      this.stage.history.record('boxShadow');
       return this.stage.selection.set('boxShadow', this.shadows.valueOf());
     };
 

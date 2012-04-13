@@ -27,11 +27,10 @@ class Element extends Spine.Controller
     super(el: attrs.el)
 
     @properties = {}
+    @resizing   = new Resizing(this)
 
     @set @defaults()
     @set attrs
-
-    @resizing = new Resizing(this)
 
   get: (key) ->
     @properties[key]
@@ -39,9 +38,9 @@ class Element extends Spine.Controller
   set: (key, value) ->
     if typeof key is 'object'
       for k, v of key
-        @[k]?(v) or @properties[k] = v
+        @properties[k] = v
     else
-      @[key]?(value) or @properties[key] = value
+      @properties[key] = value
 
     @paint()
 
@@ -79,10 +78,10 @@ class Element extends Spine.Controller
 
   selected: (bool) =>
     if bool?
-      @_selected = bool
+      @properties.selected = bool
       @el.toggleClass('selected', bool)
       @resizing.toggle(bool)
-    @_selected
+    @properties.selected
 
   # Position & Area
 
@@ -111,10 +110,11 @@ class Element extends Spine.Controller
     @el.clone().empty()[0].outerHTML
 
   ignoredStyles: [
-    'left'
-    'top'
-    'zIndex'
-    'position'
+    'left',
+    'top',
+    'zIndex',
+    'position',
+    'selected'
   ]
 
   outerCSS: ->

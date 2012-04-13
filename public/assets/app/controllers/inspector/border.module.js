@@ -83,8 +83,6 @@ this.require.define({"app/controllers/inspector/border":function(exports, requir
 
     BorderController.prototype.events = {
       'click [data-border]': 'borderClick',
-      'focus input': 'inputFocus',
-      'mousedown input': 'inputFocus',
       'change': 'inputChange'
     };
 
@@ -137,11 +135,8 @@ this.require.define({"app/controllers/inspector/border":function(exports, requir
       return this.change($(e.currentTarget).data('border'));
     };
 
-    BorderController.prototype.inputFocus = function() {
-      return this.stage.history.record();
-    };
-
     BorderController.prototype.inputChange = function() {
+      this.stage.history.record('border');
       this.currentBorder.width = parseInt(this.$width.val(), 10);
       this.currentBorder.style = this.$style.val();
       this.currentBorder.color = this.$color.val();
@@ -149,6 +144,7 @@ this.require.define({"app/controllers/inspector/border":function(exports, requir
     };
 
     BorderController.prototype.set = function() {
+      this.stage.history.record('border');
       if (this.current === 'border') {
         this.stage.selection.set({
           borderTop: null,

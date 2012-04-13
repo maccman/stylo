@@ -272,6 +272,7 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
     };
 
     BackgroundInspector.prototype.set = function() {
+      this.stage.history.record('background');
       this.stage.selection.set('backgroundColor', this.backgrounds.getColor());
       return this.stage.selection.set('backgroundImage', this.backgrounds.getImages());
     };

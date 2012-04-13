@@ -1,7 +1,7 @@
 Property = require('app/models/property')
 Color    = require('./color')
 
-class Position
+class Position extends Property
   id: "#{module.id}.Position"
 
   constructor: (@angle = 0) ->
@@ -11,7 +11,7 @@ class Position
 
   toValue: -> @angle
 
-class ColorStop
+class ColorStop extends Property
   id: "#{module.id}.ColorStop"
 
   constructor: (@color, @length) ->

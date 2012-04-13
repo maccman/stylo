@@ -6,8 +6,6 @@ class BorderController extends Spine.Controller
 
   events:
     'click [data-border]': 'borderClick'
-    'focus input': 'inputFocus'
-    'mousedown input': 'inputFocus'
     'change': 'inputChange'
 
   elements:
@@ -57,16 +55,17 @@ class BorderController extends Spine.Controller
   borderClick: (e) ->
     @change($(e.currentTarget).data('border'))
 
-  inputFocus: ->
-    @stage.history.record()
-
   inputChange: ->
+    @stage.history.record('border')
+
     @currentBorder.width = parseInt(@$width.val(), 10)
     @currentBorder.style = @$style.val()
     @currentBorder.color = @$color.val()
     @set()
 
   set: ->
+    @stage.history.record('border')
+
     # Border overrides everything else
     if @current is 'border'
       @stage.selection.set(

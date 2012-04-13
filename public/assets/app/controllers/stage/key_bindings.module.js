@@ -98,7 +98,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
 
     KeyBindings.prototype.keypress = function(e) {
       var _name;
-      if ('value' in e.target) {
+      if ('value' in e.target && !e.metaKey) {
         return;
       }
       return typeof this[_name = this.mapping[e.which]] === "function" ? this[_name](e) : void 0;
@@ -117,7 +117,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       if (e.shiftKey) {
         amount *= 5;
       }
-      this.stage.history.record();
+      this.stage.history.record('leftArrow');
       return this.stage.selection.moveBy({
         left: amount,
         top: 0
@@ -131,7 +131,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       if (e.shiftKey) {
         amount *= 5;
       }
-      this.stage.history.record();
+      this.stage.history.record('upArrow');
       return this.stage.selection.moveBy({
         left: 0,
         top: amount
@@ -145,7 +145,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       if (e.shiftKey) {
         amount *= 5;
       }
-      this.stage.history.record();
+      this.stage.history.record('rightArrow');
       return this.stage.selection.moveBy({
         left: amount,
         top: 0
@@ -159,7 +159,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       if (e.shiftKey) {
         amount *= 5;
       }
-      this.stage.history.record();
+      this.stage.history.record('downArrow');
       return this.stage.selection.moveBy({
         left: 0,
         top: amount

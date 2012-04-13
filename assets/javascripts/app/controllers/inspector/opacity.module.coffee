@@ -19,6 +19,7 @@ class Opacity extends Spine.Controller
     val = parseFloat($(e.currentTarget).val())
     val = Math.round(val * 100) / 100
 
+    @stage.history.record('opacity')
     @stage.selection.set('opacity', val)
     @$inputs.val(val)
 

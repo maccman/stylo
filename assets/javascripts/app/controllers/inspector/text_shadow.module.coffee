@@ -78,6 +78,7 @@ class TextShadow extends Spine.Controller
     @shadow.y    = parseFloat(@$y.val())
     @shadow.blur = parseFloat(@$blur.val())
 
+    @stage.history.record('textShadow')
     @stage.selection.set('textShadow', @shadow)
 
   release: ->

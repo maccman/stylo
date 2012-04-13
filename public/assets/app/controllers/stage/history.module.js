@@ -88,12 +88,32 @@ this.require.define({"app/controllers/stage/history":function(exports, require, 
       return Model.redo();
     };
 
-    History.prototype.record = function(isUndo) {
+    History.prototype.record = function(type) {
+      if (!this.throttle(type)) {
+        return this.recordState();
+      }
+    };
+
+    History.prototype.throttleLimit = 500;
+
+    History.prototype.throttle = function(type) {
+      var current, throttled;
+      throttled = false;
+      current = new Date;
+      if (type && this.throttleType === type && (current - this.throttleDate) <= this.throttleLimit) {
+        throttled = true;
+      }
+      this.throttleType = type;
+      this.throttleDate = current;
+      return throttled;
+    };
+
+    History.prototype.recordState = function(isUndo) {
       var action, elements,
         _this = this;
       elements = JSON.stringify(this.stage.elements);
       action = function(isUndo) {
-        _this.record(!isUndo);
+        _this.recordState(!isUndo);
         elements = Serialize.fromJSON(elements);
         return _this.stage.refresh(elements);
       };

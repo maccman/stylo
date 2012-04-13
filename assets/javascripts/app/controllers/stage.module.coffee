@@ -76,6 +76,7 @@ class Stage extends Spine.Controller
   refresh: (elements) ->
     @clear()
     @add(el) for el in elements
+    @selection.add(el) for el in elements when el.selected()
 
   # Batch manipulate selected
 

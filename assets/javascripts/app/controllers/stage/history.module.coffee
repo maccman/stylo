@@ -11,12 +11,32 @@ class History extends Spine.Controller
   redo: ->
     Model.redo()
 
-  record: (isUndo) ->
+  record: (type) ->
+    @recordState() unless @throttle(type)
+
+  # Private
+
+  throttleLimit: 500
+
+  throttle: (type) ->
+    throttled = false
+    current   = new Date
+
+    if type and @throttleType is type and
+      (current - @throttleDate) <= @throttleLimit
+        throttled = true
+
+    @throttleType = type
+    @throttleDate = current
+
+    throttled
+
+  recordState: (isUndo) ->
     elements = JSON.stringify(@stage.elements)
 
     action   = (isUndo) =>
       # Record the opposite action (i.e. redo)
-      @record( !isUndo )
+      @recordState( !isUndo )
 
       elements = Serialize.fromJSON(elements)
       @stage.refresh(elements)

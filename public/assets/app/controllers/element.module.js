@@ -114,9 +114,9 @@ this.require.define({"app/controllers/element":function(exports, require, module
         el: attrs.el
       });
       this.properties = {};
+      this.resizing = new Resizing(this);
       this.set(this.defaults());
       this.set(attrs);
-      this.resizing = new Resizing(this);
     }
 
     Element.prototype.get = function(key) {
@@ -128,10 +128,10 @@ this.require.define({"app/controllers/element":function(exports, require, module
       if (typeof key === 'object') {
         for (k in key) {
           v = key[k];
-          (typeof this[k] === "function" ? this[k](v) : void 0) || (this.properties[k] = v);
+          this.properties[k] = v;
         }
       } else {
-        (typeof this[key] === "function" ? this[key](value) : void 0) || (this.properties[key] = value);
+        this.properties[key] = value;
       }
       return this.paint();
     };
@@ -174,11 +174,11 @@ this.require.define({"app/controllers/element":function(exports, require, module
 
     Element.prototype.selected = function(bool) {
       if (bool != null) {
-        this._selected = bool;
+        this.properties.selected = bool;
         this.el.toggleClass('selected', bool);
         this.resizing.toggle(bool);
       }
-      return this._selected;
+      return this.properties.selected;
     };
 
     Element.prototype.area = function() {
@@ -204,7 +204,7 @@ this.require.define({"app/controllers/element":function(exports, require, module
       return this.el.clone().empty()[0].outerHTML;
     };
 
-    Element.prototype.ignoredStyles = ['left', 'top', 'zIndex', 'position'];
+    Element.prototype.ignoredStyles = ['left', 'top', 'zIndex', 'position', 'selected'];
 
     Element.prototype.outerCSS = function() {
       var k, name, styles, v, value, _ref;

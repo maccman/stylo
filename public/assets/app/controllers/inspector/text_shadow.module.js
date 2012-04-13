@@ -154,6 +154,7 @@ this.require.define({"app/controllers/inspector/text_shadow":function(exports, r
       this.shadow.x = parseFloat(this.$x.val());
       this.shadow.y = parseFloat(this.$y.val());
       this.shadow.blur = parseFloat(this.$blur.val());
+      this.stage.history.record('textShadow');
       return this.stage.selection.set('textShadow', this.shadow);
     };
 

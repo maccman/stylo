@@ -175,12 +175,18 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
     };
 
     Stage.prototype.refresh = function(elements) {
-      var el, _i, _len, _results;
+      var el, _i, _j, _len, _len1, _results;
       this.clear();
-      _results = [];
       for (_i = 0, _len = elements.length; _i < _len; _i++) {
         el = elements[_i];
-        _results.push(this.add(el));
+        this.add(el);
+      }
+      _results = [];
+      for (_j = 0, _len1 = elements.length; _j < _len1; _j++) {
+        el = elements[_j];
+        if (el.selected()) {
+          _results.push(this.selection.add(el));
+        }
       }
       return _results;
     };

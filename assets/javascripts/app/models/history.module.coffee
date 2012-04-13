@@ -35,4 +35,8 @@ class History
       action.call(this, false)
     else false
 
+  @clear: ->
+    @undoStack = []
+    @redoStack = []
+
 module.exports = History

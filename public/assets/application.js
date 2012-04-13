@@ -14617,7 +14617,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
     };
 
     Stage.prototype.release = function() {
-      var _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7;
+      var _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8;
       if ((_ref = this.selection) != null) {
         _ref.release();
       }
@@ -14639,8 +14639,11 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       if ((_ref6 = this.clipboard) != null) {
         _ref6.release();
       }
-      if ((_ref7 = this.context) != null) {
+      if ((_ref7 = this.contextMenu) != null) {
         _ref7.release();
+      }
+      if ((_ref8 = this.history) != null) {
+        _ref8.release();
       }
       return Stage.__super__.release.apply(this, arguments);
     };
@@ -15087,6 +15090,18 @@ this.require.define({"app/controllers/stage/history":function(exports, require, 
       }
     };
 
+    History.prototype.recordState = function(isUndo) {
+      var action, elements,
+        _this = this;
+      elements = JSON.stringify(this.stage.elements);
+      action = function(isUndo) {
+        _this.recordState(!isUndo);
+        elements = Serialize.fromJSON(elements);
+        return _this.stage.refresh(elements);
+      };
+      return Model.add(action, isUndo);
+    };
+
     History.prototype.throttleLimit = 500;
 
     History.prototype.throttle = function(type) {
@@ -15101,16 +15116,8 @@ this.require.define({"app/controllers/stage/history":function(exports, require, 
       return throttled;
     };
 
-    History.prototype.recordState = function(isUndo) {
-      var action, elements,
-        _this = this;
-      elements = JSON.stringify(this.stage.elements);
-      action = function(isUndo) {
-        _this.recordState(!isUndo);
-        elements = Serialize.fromJSON(elements);
-        return _this.stage.refresh(elements);
-      };
-      return Model.add(action, isUndo);
+    History.prototype.release = function() {
+      return Model.clear();
     };
 
     return History;
@@ -16275,6 +16282,11 @@ this.require.define({"app/models/history":function(exports, require, module){(fu
       } else {
         return false;
       }
+    };
+
+    History.clear = function() {
+      this.undoStack = [];
+      return this.redoStack = [];
     };
 
     return History;

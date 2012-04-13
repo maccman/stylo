@@ -94,6 +94,18 @@ this.require.define({"app/controllers/stage/history":function(exports, require, 
       }
     };
 
+    History.prototype.recordState = function(isUndo) {
+      var action, elements,
+        _this = this;
+      elements = JSON.stringify(this.stage.elements);
+      action = function(isUndo) {
+        _this.recordState(!isUndo);
+        elements = Serialize.fromJSON(elements);
+        return _this.stage.refresh(elements);
+      };
+      return Model.add(action, isUndo);
+    };
+
     History.prototype.throttleLimit = 500;
 
     History.prototype.throttle = function(type) {
@@ -108,16 +120,8 @@ this.require.define({"app/controllers/stage/history":function(exports, require, 
       return throttled;
     };
 
-    History.prototype.recordState = function(isUndo) {
-      var action, elements,
-        _this = this;
-      elements = JSON.stringify(this.stage.elements);
-      action = function(isUndo) {
-        _this.recordState(!isUndo);
-        elements = Serialize.fromJSON(elements);
-        return _this.stage.refresh(elements);
-      };
-      return Model.add(action, isUndo);
+    History.prototype.release = function() {
+      return Model.clear();
     };
 
     return History;

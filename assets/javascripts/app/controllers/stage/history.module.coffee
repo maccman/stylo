@@ -16,6 +16,21 @@ class History extends Spine.Controller
 
   # Private
 
+  recordState: (isUndo) ->
+    elements = JSON.stringify(@stage.elements)
+
+    action   = (isUndo) =>
+      # Record the opposite action (i.e. redo)
+      @recordState( !isUndo )
+
+      # Replace stage with previous state
+      elements = Serialize.fromJSON(elements)
+      @stage.refresh(elements)
+
+    Model.add(action, isUndo)
+
+  # Throttling
+
   throttleLimit: 500
 
   throttle: (type) ->
@@ -31,16 +46,7 @@ class History extends Spine.Controller
 
     throttled
 
-  recordState: (isUndo) ->
-    elements = JSON.stringify(@stage.elements)
-
-    action   = (isUndo) =>
-      # Record the opposite action (i.e. redo)
-      @recordState( !isUndo )
-
-      elements = Serialize.fromJSON(elements)
-      @stage.refresh(elements)
-
-    Model.add(action, isUndo)
+  release: ->
+    Model.clear()
 
 module.exports = History

@@ -194,7 +194,8 @@ class Stage extends Spine.Controller
     @snapping?.release()
     @keyBindings?.release()
     @clipboard?.release()
-    @context?.release()
+    @contextMenu?.release()
+    @history?.release()
     super
 
 module.exports = Stage

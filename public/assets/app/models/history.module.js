@@ -109,6 +109,11 @@ this.require.define({"app/models/history":function(exports, require, module){(fu
       }
     };
 
+    History.clear = function() {
+      this.undoStack = [];
+      return this.redoStack = [];
+    };
+
     return History;
 
   })();

@@ -154,7 +154,10 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
     Stage.prototype.add = function(element) {
       this.elements.push(element);
       element.order(this.elements.indexOf(element));
-      return this.append(element);
+      this.append(element);
+      if (element.selected()) {
+        return this.selection.add(element);
+      }
     };
 
     Stage.prototype.remove = function(element) {
@@ -175,18 +178,12 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
     };
 
     Stage.prototype.refresh = function(elements) {
-      var el, _i, _j, _len, _len1, _results;
+      var el, _i, _len, _results;
       this.clear();
+      _results = [];
       for (_i = 0, _len = elements.length; _i < _len; _i++) {
         el = elements[_i];
-        this.add(el);
-      }
-      _results = [];
-      for (_j = 0, _len1 = elements.length; _j < _len1; _j++) {
-        el = elements[_j];
-        if (el.selected()) {
-          _results.push(this.selection.add(el));
-        }
+        _results.push(this.add(el));
       }
       return _results;
     };
@@ -325,10 +322,10 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       if (typeof key === 'object') {
         for (k in key) {
           v = key[k];
-          this.set(k, v);
+          this.properties[k] = v;
         }
       } else {
-        (typeof this[key] === "function" ? this[key](value) : void 0) || (this.properties[key] = value);
+        this.properties[key] = value;
       }
       return this.paint();
     };

@@ -10,10 +10,9 @@ Clipboard   = require('./stage/clipboard')
 ContextMenu = require('./stage/context_menu')
 History     = require('./stage/history')
 
-Rectangle  = require('./elements/rectangle')
-Ellipsis   = require('./elements/ellipsis')
-
-Properties = require('app/models/properties')
+Rectangle   = require('./elements/rectangle')
+Ellipsis    = require('./elements/ellipsis')
+Properties  = require('app/models/properties')
 
 class Stage extends Spine.Controller
   className: 'stage'
@@ -58,9 +57,15 @@ class Stage extends Spine.Controller
     this
 
   add: (element) =>
+    # Push and resolve zIndex
     @elements.push(element)
     element.order(@elements.indexOf(element))
+
+    # Append to stage
     @append(element)
+
+    # Add to selection if element is selected
+    @selection.add(element) if element.selected()
 
   remove: (element) =>
     @selection.remove(element)
@@ -76,7 +81,6 @@ class Stage extends Spine.Controller
   refresh: (elements) ->
     @clear()
     @add(el) for el in elements
-    @selection.add(el) for el in elements when el.selected()
 
   # Batch manipulate selected
 
@@ -160,9 +164,9 @@ class Stage extends Spine.Controller
 
   set: (key, value) ->
     if typeof key is 'object'
-      @set(k, v) for k, v of key
+      @properties[k] = v for k, v of key
     else
-      @[key]?(value) or @properties[key] = value
+      @properties[key] = value
 
     @paint()
 

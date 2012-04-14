@@ -13185,8 +13185,6 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
         attrs = {};
       }
       Text.__super__.constructor.apply(this, arguments);
-      this.inner = $('<div />').addClass('inner');
-      this.append(this.inner);
       this.set(this.textDefaults());
       this.text(attrs.text);
     }
@@ -13199,8 +13197,11 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
       this.resizing.toggle(false);
       this.el.removeClass('selected');
       this.el.addClass('editing');
-      this.inner.attr('contenteditable', true);
-      this.inner.focus();
+      this.el.css({
+        height: 'auto'
+      });
+      this.el.attr('contenteditable', true);
+      this.el.focus();
       return document.execCommand('selectAll', false, null);
     };
 
@@ -13209,11 +13210,14 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
         return;
       }
       this.editing = false;
-      this.inner.blur();
-      this.inner.removeAttr('contenteditable');
-      this.inner.scrollTop(0);
+      this.el.blur();
+      this.el.removeAttr('contenteditable');
+      this.el.scrollTop(0);
       this.el.addClass('selected');
       this.el.removeClass('editing');
+      this.set({
+        height: this.el.height()
+      });
       if (!this.text()) {
         return this.remove();
       }
@@ -13235,9 +13239,9 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
 
     Text.prototype.text = function(text) {
       if (text != null) {
-        this.inner.text(text);
+        this.el.text(text);
       }
-      return this.inner.text();
+      return this.el.text();
     };
 
     Text.prototype.toValue = function() {

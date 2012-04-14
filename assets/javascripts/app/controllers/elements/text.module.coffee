@@ -17,9 +17,6 @@ class Text extends Rectangle
   constructor: (attrs = {}) ->
     super
 
-    @inner = $('<div />').addClass('inner')
-    @append(@inner)
-
     @set(@textDefaults())
     @text(attrs.text)
 
@@ -32,21 +29,23 @@ class Text extends Rectangle
     @resizing.toggle(false)
     @el.removeClass('selected')
     @el.addClass('editing')
+    @el.css(height: 'auto')
 
     # Enable text editing and select text
-    @inner.attr('contenteditable', true)
-    @inner.focus()
+    @el.attr('contenteditable', true)
+    @el.focus()
     document.execCommand('selectAll', false, null)
 
   stopEditing: ->
     return unless @editing
     @editing = false
 
-    @inner.blur()
-    @inner.removeAttr('contenteditable')
-    @inner.scrollTop(0)
+    @el.blur()
+    @el.removeAttr('contenteditable')
+    @el.scrollTop(0)
     @el.addClass('selected')
     @el.removeClass('editing')
+    @set(height: @el.height())
 
     # Remove the element if empty
     @remove() unless @text()
@@ -60,8 +59,8 @@ class Text extends Rectangle
     super
 
   text: (text) ->
-    @inner.text(text) if text?
-    @inner.text()
+    @el.text(text) if text?
+    @el.text()
 
   toValue: ->
     result = super

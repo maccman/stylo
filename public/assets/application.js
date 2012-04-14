@@ -12575,8 +12575,6 @@ this.require.define({"app/controllers/element":function(exports, require, module
 
     Element.include(Serialize);
 
-    Element.prototype.className = 'element';
-
     Element.prototype.id = module.id;
 
     Element.prototype.defaults = function() {
@@ -12592,7 +12590,7 @@ this.require.define({"app/controllers/element":function(exports, require, module
       };
     };
 
-    Element.prototype.events = {
+    Element.prototype.elementEvents = {
       'mousedown': 'select'
     };
 
@@ -12605,6 +12603,8 @@ this.require.define({"app/controllers/element":function(exports, require, module
       Element.__super__.constructor.call(this, {
         el: attrs.el
       });
+      this.el.addClass('element');
+      this.delegateEvents(this.elementEvents);
       this.properties = {};
       this.resizing = new Resizing(this);
       this.set(this.defaults());
@@ -13169,22 +13169,28 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
     };
 
     Text.prototype.startEditing = function() {
-      return this.el.attr('contenteditable', true);
+      if (this.editing) {
+        return;
+      }
+      this.editing = true;
+      this.log('startEditing');
+      this.resizing.toggle(false);
+      this.el.attr('contenteditable', true);
+      return this.el[0].focus();
     };
 
     Text.prototype.stopEditing = function() {
+      this.editing = false;
+      this.log('stopEditing');
+      this.el[0].blur();
       return this.el.removeAttr('contenteditable');
     };
 
     Text.prototype.selected = function(bool) {
-      if (bool != null) {
-        this._selected = bool;
-        this.el.toggleClass('selected', bool);
-        if (!bool) {
-          this.stopEditing();
-        }
+      if (!bool) {
+        this.stopEditing();
       }
-      return this._selected;
+      return Text.__super__.selected.apply(this, arguments);
     };
 
     Text.prototype.text = function(text) {
@@ -15170,7 +15176,10 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
 
     KeyBindings.prototype.keypress = function(e) {
       var _name;
-      if ('value' in e.target && !e.metaKey) {
+      if ('value' in e.target) {
+        return;
+      }
+      if ($(e.target).attr('contenteditable')) {
         return;
       }
       return typeof this[_name = this.mapping[e.which]] === "function" ? this[_name](e) : void 0;

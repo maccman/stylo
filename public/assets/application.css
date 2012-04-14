@@ -793,8 +793,8 @@ body {
   background: #fff;
   overflow: auto;
 }
-#app .stage .element {
-  outline: none;
+#app .stage .element[contenteditable] {
+  overflow: hidden;
 }
 #app .stage .resizing .thumb {
   position: absolute;

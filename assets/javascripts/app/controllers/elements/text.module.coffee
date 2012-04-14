@@ -8,17 +8,22 @@ class Text extends Rectangle
     'dblclick': 'startEditing'
 
   startEditing: ->
+    return if @editing
+    @editing = true
+    @log 'startEditing'
+    @resizing.toggle(false)
     @el.attr('contenteditable', true)
+    @el[0].focus()
 
   stopEditing: ->
+    @editing = false
+    @log 'stopEditing'
+    @el[0].blur()
     @el.removeAttr('contenteditable')
 
   selected: (bool) ->
-    if bool?
-      @_selected = bool
-      @el.toggleClass('selected', bool)
-      @stopEditing() unless bool
-    @_selected
+    @stopEditing() unless bool
+    super
 
   text: (text) ->
     @el.text(text) if text?

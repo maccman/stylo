@@ -2,12 +2,14 @@ A Photoshop replacement. Inspired by Keynote. Democratizing design.
 
 ##TODO
 
-Background image
-Background gradient rotation
-Color inspector movable window
-Dragging right and up doesn't select elements - offset by the header
-We want the resize to be around the selection?
-✓ We want the inspector not to completely re-render on selection
+Fixes:
+
+* Background image
+* Background gradient rotation
+* Color inspector movable window
+* Dragging right and up doesn't select elements - offset by the header
+* We want the resize to be around the selection?
+* ✓ We want the inspector not to completely re-render on selection
 
 Phase 1:
 
@@ -50,16 +52,14 @@ Nice to have:
 
 * ✓ Keyboard shortcuts
 * Versioning
-* Exporting HTML
+* Exporting HTML?
 * ✓ Exporting CSS
 * Share (dropbox/email?)
 * Clone HTML components
 * WebFonts
-* Layers
+* Layers?
 * ✓ Context menu
 * Similar distance snapping
-
-Inherit Ellipsis from Rectangle (resizing & lines).
 
 ##Elements
 
@@ -71,6 +71,8 @@ Inherit Ellipsis from Rectangle (resizing & lines).
 * Image
 * Line tool?
 * Link?
+
+-------------------------------------------------------------------------------------------------------------------------------------
 
 ##Rulers & Snap
 

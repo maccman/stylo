@@ -6,8 +6,6 @@ Utils      = require('lib/utils')
 
 class Element extends Spine.Controller
   @include Serialize
-
-  className: 'element'
   id: module.id
 
   defaults: ->
@@ -20,11 +18,14 @@ class Element extends Spine.Controller
       backgroundColor: new Color.Black(0.2)
       order: -1
 
-  events:
+  elementEvents:
     'mousedown': 'select'
 
   constructor: (attrs = {}) ->
     super(el: attrs.el)
+
+    @el.addClass('element')
+    @delegateEvents(@elementEvents)
 
     @properties = {}
     @resizing   = new Resizing(this)

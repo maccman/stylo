@@ -99,7 +99,10 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
 
     KeyBindings.prototype.keypress = function(e) {
       var _name;
-      if ('value' in e.target && !e.metaKey) {
+      if ('value' in e.target) {
+        return;
+      }
+      if ($(e.target).attr('contenteditable')) {
         return;
       }
       return typeof this[_name = this.mapping[e.which]] === "function" ? this[_name](e) : void 0;

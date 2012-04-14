@@ -23,7 +23,8 @@ class KeyBindings extends Spine.Module
 
   keypress: (e) =>
     # Disable keyboard shortcuts in inputs
-    return if 'value' of e.target and not e.metaKey
+    return if 'value' of e.target
+    return if $(e.target).attr('contenteditable')
     @[@mapping[e.which]]?(e)
 
   backspace: (e) ->

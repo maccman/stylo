@@ -83,8 +83,6 @@ this.require.define({"app/controllers/element":function(exports, require, module
 
     Element.include(Serialize);
 
-    Element.prototype.className = 'element';
-
     Element.prototype.id = module.id;
 
     Element.prototype.defaults = function() {
@@ -100,7 +98,7 @@ this.require.define({"app/controllers/element":function(exports, require, module
       };
     };
 
-    Element.prototype.events = {
+    Element.prototype.elementEvents = {
       'mousedown': 'select'
     };
 
@@ -113,6 +111,8 @@ this.require.define({"app/controllers/element":function(exports, require, module
       Element.__super__.constructor.call(this, {
         el: attrs.el
       });
+      this.el.addClass('element');
+      this.delegateEvents(this.elementEvents);
       this.properties = {};
       this.resizing = new Resizing(this);
       this.set(this.defaults());

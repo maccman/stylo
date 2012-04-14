@@ -84,22 +84,28 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
     };
 
     Text.prototype.startEditing = function() {
-      return this.el.attr('contenteditable', true);
+      if (this.editing) {
+        return;
+      }
+      this.editing = true;
+      this.log('startEditing');
+      this.resizing.toggle(false);
+      this.el.attr('contenteditable', true);
+      return this.el[0].focus();
     };
 
     Text.prototype.stopEditing = function() {
+      this.editing = false;
+      this.log('stopEditing');
+      this.el[0].blur();
       return this.el.removeAttr('contenteditable');
     };
 
     Text.prototype.selected = function(bool) {
-      if (bool != null) {
-        this._selected = bool;
-        this.el.toggleClass('selected', bool);
-        if (!bool) {
-          this.stopEditing();
-        }
+      if (!bool) {
+        this.stopEditing();
       }
-      return this._selected;
+      return Text.__super__.selected.apply(this, arguments);
     };
 
     Text.prototype.text = function(text) {

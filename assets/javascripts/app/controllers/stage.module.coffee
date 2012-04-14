@@ -94,7 +94,7 @@ class Stage extends Spine.Controller
 
   select: (e, element, modifier) =>
     # Clear selection unless multiple items are
-    # selected, or the shift key is pressed
+    # selected and the shift key is pressed
     if !@selection.isMultiple() and !modifier
       @selection.clear()
 

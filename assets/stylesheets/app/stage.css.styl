@@ -13,7 +13,10 @@
   // -webkit-user-select: text
 
   .element {
-    outline: none
+  }
+
+  .element[contenteditable] {
+    overflow: hidden
   }
 
   .element.selected {

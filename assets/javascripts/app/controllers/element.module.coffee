@@ -16,7 +16,6 @@ class Element extends Spine.Controller
       left: 0
       top: 0
       backgroundColor: new Color.Black(0.2)
-      order: -1
 
   elementEvents:
     'mousedown': 'toggleSelect'

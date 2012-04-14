@@ -107,10 +107,6 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
       return this.el.css(dimensions);
     };
 
-    Area.prototype.remove = function() {
-      return this.el.remove();
-    };
-
     return Area;
 
   })(Spine.Controller);
@@ -148,7 +144,7 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
       this.offset.left -= this.el.scrollLeft();
       this.offset.top -= this.el.scrollTop();
       if ((_ref = this.selectArea) != null) {
-        _ref.remove();
+        _ref.release();
       }
       $(document).mousemove(this.drag);
       return $(document).mouseup(this.drop);
@@ -178,7 +174,7 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
     SelectArea.prototype.drop = function(e) {
       var _ref;
       if ((_ref = this.selectArea) != null) {
-        _ref.remove();
+        _ref.release();
       }
       this.selectArea = null;
       $(document).unbind('mousemove', this.drag);

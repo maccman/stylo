@@ -18,11 +18,12 @@ class Stage extends Spine.Controller
   className: 'stage'
 
   events:
-    'select.element': 'select'
-    'deselect.element': 'deselect'
-    'mousedown': 'deselectAll'
-    'start.resize': 'resizeStart'
-    'end.resize': 'resizeEnd'
+    'select.element':   'selectEvent'
+    'deselect.element': 'deselectEvent'
+    'mousedown':        'deselectAllEvent'
+    'release.element':  'releaseEvent'
+    'start.resize':     'resizeStart'
+    'end.resize':       'resizeEnd'
 
   constructor: ->
     super
@@ -42,7 +43,7 @@ class Stage extends Spine.Controller
     @history     = new History(this)
 
     @selection.bind 'change', =>
-      @el.trigger('selection.change', [this])
+      @el.trigger('change.selection', [this])
 
   render: -> this
 
@@ -57,7 +58,7 @@ class Stage extends Spine.Controller
     @append(element)
 
     # Add to selection if element is selected
-    @selection.add(element) if element.selected()
+    @selection.add(element) if element.selected
 
   remove: (element) =>
     throw 'element required' unless element
@@ -92,19 +93,18 @@ class Stage extends Spine.Controller
 
   # Selecting elements
 
-  select: (e, element, modifier) =>
+  selectEvent: (e, element, modifier) =>
     # Clear selection unless multiple items are
     # selected and the shift key is pressed
-    if !@selection.isMultiple() and !modifier
-      @selection.clear()
+    @selection.clear() unless modifier
 
     @selection.add(element)
 
-  deselect: (e, element, modifier) =>
+  deselectEvent: (e, element, modifier) =>
     if modifier
       @selection.remove(element)
 
-  deselectAll: (e) =>
+  deselectAllEvent: (e) =>
     if (e.target is e.currentTarget)
       @selection.clear()
 
@@ -188,6 +188,9 @@ class Stage extends Spine.Controller
     @refresh Serialize.fromJSON(data)
 
   # Release
+
+  releaseEvent: (e, element) ->
+    @remove(element)
 
   release: ->
     @selection?.release()

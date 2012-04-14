@@ -19,7 +19,7 @@ class Element extends Spine.Controller
       order: -1
 
   elementEvents:
-    'mousedown': 'select'
+    'mousedown': 'toggleSelect'
 
   constructor: (attrs = {}) ->
     super(el: attrs.el)
@@ -28,10 +28,11 @@ class Element extends Spine.Controller
     @delegateEvents(@elementEvents)
 
     @properties = {}
+    @selected   = !!attrs.selected
     @resizing   = new Resizing(this)
 
     @set @defaults()
-    @set attrs
+    @set attrs.properties or attrs
 
   get: (key) ->
     @properties[key]
@@ -67,22 +68,22 @@ class Element extends Spine.Controller
       @set('zIndex', i + 100)
 
   remove: ->
-    @el.remove()
+    @el.trigger('release.element', [this])
 
   # Selecting elements
 
-  select: (e) ->
-    if @selected()
+  toggleSelect: (e) ->
+    if @selected
       @el.trigger('deselect.element', [this, e?.shiftKey])
     else
       @el.trigger('select.element', [this, e?.shiftKey])
 
-  selected: (bool) =>
+  setSelected: (bool) =>
     if bool?
-      @properties.selected = bool
+      @selected = bool
       @el.toggleClass('selected', bool)
       @resizing.toggle(bool)
-    @properties.selected
+    @selected
 
   # Position & Area
 
@@ -114,8 +115,7 @@ class Element extends Spine.Controller
     'left',
     'top',
     'zIndex',
-    'position',
-    'selected'
+    'position'
   ]
 
   outerCSS: ->
@@ -143,6 +143,8 @@ class Element extends Spine.Controller
     ".#{@className} {\n#{styles}\n}"
 
   toValue: ->
-    @properties
+    result =
+      selected:   @selected
+      properties: @properties
 
 module.exports = Element

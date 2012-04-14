@@ -15,12 +15,20 @@
   .element {
   }
 
-  .element[contenteditable] {
-    overflow: hidden
+  .element.text.editing, .element.text.selected {
+    outline: 1px solid rgba(0, 0, 0, 0.2)
   }
 
-  .element.selected {
-    // outline: 1px dotted rgba(0, 0, 0, 1)
+  .element.text .inner {
+    position: absolute
+    top: 0
+    right: 0
+    bottom: 0
+    left: 0
+    overflow: hidden
+    outline: none
+    white-space: nowrap
+    padding: 5px
   }
 
   .resizing .thumb {

@@ -793,8 +793,20 @@ body {
   background: #fff;
   overflow: auto;
 }
-#app .stage .element[contenteditable] {
+#app .stage .element.text.editing,
+#app .stage .element.text.selected {
+  outline: 1px solid rgba(0,0,0,0.20);
+}
+#app .stage .element.text .inner {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   overflow: hidden;
+  outline: none;
+  white-space: nowrap;
+  padding: 5px;
 }
 #app .stage .resizing .thumb {
   position: absolute;

@@ -86,10 +86,6 @@ this.require.define({"app/controllers/stage/resizing":function(exports, require,
       });
     };
 
-    AreaTitle.prototype.remove = function() {
-      return this.el.remove();
-    };
-
     return AreaTitle;
 
   })(Spine.Controller);
@@ -133,7 +129,7 @@ this.require.define({"app/controllers/stage/resizing":function(exports, require,
     Resizing.prototype.resizeEnd = function() {
       var _ref;
       if ((_ref = this.areaTitle) != null) {
-        _ref.remove();
+        _ref.release();
       }
       return this.areaTitle = null;
     };

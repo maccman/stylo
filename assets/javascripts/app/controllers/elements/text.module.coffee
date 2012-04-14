@@ -1,3 +1,4 @@
+Color     = require('app/models/properties/color')
 Rectangle = require('./rectangle')
 
 class Text extends Rectangle
@@ -7,30 +8,63 @@ class Text extends Rectangle
   events:
     'dblclick': 'startEditing'
 
+  textDefaults: ->
+    result =
+      height: 30
+      fontSize: 18
+      backgroundColor: new Color.Transparent
+
+  constructor: (attrs = {}) ->
+    super
+
+    @inner = $('<div />').addClass('inner')
+    @append(@inner)
+
+    @set(@textDefaults())
+    @text(attrs.text)
+
   startEditing: ->
     return if @editing
     @editing = true
-    @log 'startEditing'
+
+    # We don't want the element to be
+    # resizable, or draggable
     @resizing.toggle(false)
-    @el.attr('contenteditable', true)
-    @el[0].focus()
+    @el.removeClass('selected')
+    @el.addClass('editing')
+
+    # Enable text editing and select text
+    @inner.attr('contenteditable', true)
+    @inner.focus()
+    document.execCommand('selectAll', false, null)
 
   stopEditing: ->
+    return unless @editing
     @editing = false
-    @log 'stopEditing'
-    @el[0].blur()
-    @el.removeAttr('contenteditable')
 
-  selected: (bool) ->
+    @inner.blur()
+    @inner.removeAttr('contenteditable')
+    @inner.scrollTop(0)
+    @el.addClass('selected')
+    @el.removeClass('editing')
+
+    # Remove the element if empty
+    @remove() unless @text()
+
+  toggleSelect: ->
+    return if @editing
+    super
+
+  setSelected: (bool) ->
     @stopEditing() unless bool
     super
 
   text: (text) ->
-    @el.text(text) if text?
-    @el.text()
+    @inner.text(text) if text?
+    @inner.text()
 
   toValue: ->
-    result = @properties
+    result = super
     result.text = @text()
     result
 

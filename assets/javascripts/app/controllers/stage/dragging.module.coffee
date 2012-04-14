@@ -7,9 +7,6 @@ class CoordTitle extends Spine.Controller
   move: (position) ->
     @el.css(left: position.left, top: position.top)
 
-  remove: ->
-    @el.remove()
-
 class Dragging extends Spine.Controller
   events:
     'mousedown .selected': 'listen'
@@ -45,7 +42,7 @@ class Dragging extends Spine.Controller
     @selectionArea = @stage.selection.area()
 
     if e.altKey or e.metaKey
-      @stage.snapping.remove()
+      @stage.snapping.release()
     else
       # Check vertical/center stage snapping
       difference = @stage.snapping.snap(@selectionArea, difference)
@@ -62,7 +59,7 @@ class Dragging extends Spine.Controller
     @el.trigger('end.dragging') if @active
 
     # Reset coordTitle
-    @coordTitle?.remove()
+    @coordTitle?.release()
     @coordTitle = null
 
   moveCoordTitle: ->

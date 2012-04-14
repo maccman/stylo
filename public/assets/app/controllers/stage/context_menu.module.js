@@ -89,16 +89,12 @@ this.require.define({"app/controllers/stage/context_menu":function(exports, requ
     Menu.prototype.click = function(e) {
       var item, type;
       e.preventDefault();
-      this.remove();
+      this.release();
       item = $(e.currentTarget);
       type = item.data('type');
       if (!item.hasClass('disabled')) {
         return this[type]();
       }
-    };
-
-    Menu.prototype.remove = function(e) {
-      return this.el.remove();
     };
 
     Menu.prototype.cancel = function() {
@@ -149,18 +145,18 @@ this.require.define({"app/controllers/stage/context_menu":function(exports, requ
 
     function ContextMenu(stage) {
       this.stage = stage;
-      this.remove = __bind(this.remove, this);
+      this.hide = __bind(this.hide, this);
 
       ContextMenu.__super__.constructor.call(this, {
         el: this.stage.el
       });
-      $('body').bind('mousedown', this.remove);
+      $('body').bind('mousedown', this.hide);
     }
 
     ContextMenu.prototype.show = function(e) {
       var position;
       e.preventDefault();
-      this.remove();
+      this.hide();
       position = {
         left: e.pageX + 1,
         top: e.pageY + 1
@@ -169,10 +165,10 @@ this.require.define({"app/controllers/stage/context_menu":function(exports, requ
       return $('body').append(this.menu.el);
     };
 
-    ContextMenu.prototype.remove = function() {
+    ContextMenu.prototype.hide = function() {
       var _ref;
       if ((_ref = this.menu) != null) {
-        _ref.remove();
+        _ref.release();
       }
       return this.menu = null;
     };

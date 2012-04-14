@@ -7,9 +7,6 @@ class AreaTitle extends Spine.Controller
   move: (position) ->
     @el.css(left: position.left, top: position.top)
 
-  remove: ->
-    @el.remove()
-
 class Resizing extends Spine.Controller
   events:
     'start.resize': 'resizeStart'
@@ -36,7 +33,7 @@ class Resizing extends Spine.Controller
     @areaTitle.change(area)
 
   resizeEnd: ->
-    @areaTitle?.remove()
+    @areaTitle?.release()
     @areaTitle = null
 
 module.exports = Resizing

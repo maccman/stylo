@@ -146,7 +146,7 @@ this.require.define({"app/controllers/stage/selection":function(exports, require
         return;
       }
       this.elements.push(element);
-      element.selected(true);
+      element.setSelected(true);
       return this.trigger('change');
     };
 
@@ -155,7 +155,7 @@ this.require.define({"app/controllers/stage/selection":function(exports, require
       if (__indexOf.call(this.elements, element) < 0) {
         return;
       }
-      element.selected(false);
+      element.setSelected(false);
       index = this.elements.indexOf(element);
       elements = this.elements.slice();
       elements.splice(index, 1);

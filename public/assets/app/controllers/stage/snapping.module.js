@@ -101,10 +101,6 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
       }
     };
 
-    SnapLine.prototype.remove = function() {
-      return this.el.remove();
-    };
-
     SnapLine.prototype.set = function(values) {
       return this.el.css(values);
     };
@@ -149,8 +145,8 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
       return this.value = 0;
     };
 
-    Snap.prototype.remove = function() {
-      this.line.remove();
+    Snap.prototype.release = function() {
+      this.line.release();
       return this.active = false;
     };
 
@@ -171,7 +167,7 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
         difference[this.direction] = 0;
       } else {
         difference[this.direction] = this.value + (this.initial || 0);
-        this.remove();
+        this.release();
       }
       return difference;
     };
@@ -418,9 +414,9 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
     Snapping.name = 'Snapping';
 
     Snapping.prototype.events = {
-      'resize.element': 'remove',
-      'selection.change': 'remove',
-      'end.dragging': 'remove'
+      'resize.element': 'release',
+      'change.selection': 'release',
+      'end.dragging': 'release'
     };
 
     function Snapping(stage) {
@@ -451,14 +447,14 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
       return difference;
     };
 
-    Snapping.prototype.remove = function() {
+    Snapping.prototype.release = function() {
       var snap, _i, _len, _ref, _results;
       _ref = this.snaps;
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         snap = _ref[_i];
         if (snap.active) {
-          _results.push(snap.remove());
+          _results.push(snap.release());
         }
       }
       return _results;

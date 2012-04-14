@@ -16,16 +16,13 @@ class Menu extends Spine.Controller
 
   click: (e) ->
     e.preventDefault()
-    @remove()
+    @release()
 
     item = $(e.currentTarget)
     type = item.data('type')
 
     unless item.hasClass('disabled')
       @[type]()
-
-  remove: (e) ->
-    @el.remove()
 
   cancel: -> false
 
@@ -59,11 +56,11 @@ class ContextMenu extends Spine.Controller
 
   constructor: (@stage) ->
     super(el: @stage.el)
-    $('body').bind('mousedown', @remove)
+    $('body').bind('mousedown', @hide)
 
   show: (e) ->
     e.preventDefault()
-    @remove()
+    @hide()
 
     position =
       left: e.pageX + 1
@@ -72,8 +69,8 @@ class ContextMenu extends Spine.Controller
     @menu = new Menu(@stage, position)
     $('body').append(@menu.el)
 
-  remove: =>
-    @menu?.remove()
+  hide: =>
+    @menu?.release()
     @menu = null
 
   release: ->

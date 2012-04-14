@@ -87,10 +87,6 @@ this.require.define({"app/controllers/stage/dragging":function(exports, require,
       });
     };
 
-    CoordTitle.prototype.remove = function() {
-      return this.el.remove();
-    };
-
     return CoordTitle;
 
   })(Spine.Controller);
@@ -149,7 +145,7 @@ this.require.define({"app/controllers/stage/dragging":function(exports, require,
       this.stageArea = this.stage.area();
       this.selectionArea = this.stage.selection.area();
       if (e.altKey || e.metaKey) {
-        this.stage.snapping.remove();
+        this.stage.snapping.release();
       } else {
         difference = this.stage.snapping.snap(this.selectionArea, difference);
       }
@@ -166,7 +162,7 @@ this.require.define({"app/controllers/stage/dragging":function(exports, require,
         this.el.trigger('end.dragging');
       }
       if ((_ref = this.coordTitle) != null) {
-        _ref.remove();
+        _ref.release();
       }
       return this.coordTitle = null;
     };

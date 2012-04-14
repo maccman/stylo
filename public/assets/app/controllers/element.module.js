@@ -99,14 +99,14 @@ this.require.define({"app/controllers/element":function(exports, require, module
     };
 
     Element.prototype.elementEvents = {
-      'mousedown': 'select'
+      'mousedown': 'toggleSelect'
     };
 
     function Element(attrs) {
       if (attrs == null) {
         attrs = {};
       }
-      this.selected = __bind(this.selected, this);
+      this.setSelected = __bind(this.setSelected, this);
 
       Element.__super__.constructor.call(this, {
         el: attrs.el
@@ -114,9 +114,10 @@ this.require.define({"app/controllers/element":function(exports, require, module
       this.el.addClass('element');
       this.delegateEvents(this.elementEvents);
       this.properties = {};
+      this.selected = !!attrs.selected;
       this.resizing = new Resizing(this);
       this.set(this.defaults());
-      this.set(attrs);
+      this.set(attrs.properties || attrs);
     }
 
     Element.prototype.get = function(key) {
@@ -161,24 +162,24 @@ this.require.define({"app/controllers/element":function(exports, require, module
     };
 
     Element.prototype.remove = function() {
-      return this.el.remove();
+      return this.el.trigger('release.element', [this]);
     };
 
-    Element.prototype.select = function(e) {
-      if (this.selected()) {
+    Element.prototype.toggleSelect = function(e) {
+      if (this.selected) {
         return this.el.trigger('deselect.element', [this, e != null ? e.shiftKey : void 0]);
       } else {
         return this.el.trigger('select.element', [this, e != null ? e.shiftKey : void 0]);
       }
     };
 
-    Element.prototype.selected = function(bool) {
+    Element.prototype.setSelected = function(bool) {
       if (bool != null) {
-        this.properties.selected = bool;
+        this.selected = bool;
         this.el.toggleClass('selected', bool);
         this.resizing.toggle(bool);
       }
-      return this.properties.selected;
+      return this.selected;
     };
 
     Element.prototype.area = function() {
@@ -204,7 +205,7 @@ this.require.define({"app/controllers/element":function(exports, require, module
       return this.el.clone().empty()[0].outerHTML;
     };
 
-    Element.prototype.ignoredStyles = ['left', 'top', 'zIndex', 'position', 'selected'];
+    Element.prototype.ignoredStyles = ['left', 'top', 'zIndex', 'position'];
 
     Element.prototype.outerCSS = function() {
       var k, name, styles, v, value, _ref;
@@ -241,7 +242,11 @@ this.require.define({"app/controllers/element":function(exports, require, module
     };
 
     Element.prototype.toValue = function() {
-      return this.properties;
+      var result;
+      return result = {
+        selected: this.selected,
+        properties: this.properties
+      };
     };
 
     return Element;

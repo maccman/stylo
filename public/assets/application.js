@@ -12591,14 +12591,14 @@ this.require.define({"app/controllers/element":function(exports, require, module
     };
 
     Element.prototype.elementEvents = {
-      'mousedown': 'select'
+      'mousedown': 'toggleSelect'
     };
 
     function Element(attrs) {
       if (attrs == null) {
         attrs = {};
       }
-      this.selected = __bind(this.selected, this);
+      this.setSelected = __bind(this.setSelected, this);
 
       Element.__super__.constructor.call(this, {
         el: attrs.el
@@ -12606,9 +12606,10 @@ this.require.define({"app/controllers/element":function(exports, require, module
       this.el.addClass('element');
       this.delegateEvents(this.elementEvents);
       this.properties = {};
+      this.selected = !!attrs.selected;
       this.resizing = new Resizing(this);
       this.set(this.defaults());
-      this.set(attrs);
+      this.set(attrs.properties || attrs);
     }
 
     Element.prototype.get = function(key) {
@@ -12653,24 +12654,24 @@ this.require.define({"app/controllers/element":function(exports, require, module
     };
 
     Element.prototype.remove = function() {
-      return this.el.remove();
+      return this.el.trigger('release.element', [this]);
     };
 
-    Element.prototype.select = function(e) {
-      if (this.selected()) {
+    Element.prototype.toggleSelect = function(e) {
+      if (this.selected) {
         return this.el.trigger('deselect.element', [this, e != null ? e.shiftKey : void 0]);
       } else {
         return this.el.trigger('select.element', [this, e != null ? e.shiftKey : void 0]);
       }
     };
 
-    Element.prototype.selected = function(bool) {
+    Element.prototype.setSelected = function(bool) {
       if (bool != null) {
-        this.properties.selected = bool;
+        this.selected = bool;
         this.el.toggleClass('selected', bool);
         this.resizing.toggle(bool);
       }
-      return this.properties.selected;
+      return this.selected;
     };
 
     Element.prototype.area = function() {
@@ -12696,7 +12697,7 @@ this.require.define({"app/controllers/element":function(exports, require, module
       return this.el.clone().empty()[0].outerHTML;
     };
 
-    Element.prototype.ignoredStyles = ['left', 'top', 'zIndex', 'position', 'selected'];
+    Element.prototype.ignoredStyles = ['left', 'top', 'zIndex', 'position'];
 
     Element.prototype.outerCSS = function() {
       var k, name, styles, v, value, _ref;
@@ -12733,7 +12734,11 @@ this.require.define({"app/controllers/element":function(exports, require, module
     };
 
     Element.prototype.toValue = function() {
-      return this.properties;
+      var result;
+      return result = {
+        selected: this.selected,
+        properties: this.properties
+      };
     };
 
     return Element;
@@ -13144,9 +13149,11 @@ this.require.define({"app/controllers/elements/rectangle":function(exports, requ
 }).call(this);
 ;}});
 this.require.define({"app/controllers/elements/text":function(exports, require, module){(function() {
-  var Rectangle, Text,
+  var Color, Rectangle, Text,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  Color = require('app/models/properties/color');
 
   Rectangle = require('./rectangle');
 
@@ -13156,10 +13163,6 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
 
     Text.name = 'Text';
 
-    function Text() {
-      return Text.__super__.constructor.apply(this, arguments);
-    }
-
     Text.prototype.className = 'text';
 
     Text.prototype.id = module.id;
@@ -13168,41 +13171,78 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
       'dblclick': 'startEditing'
     };
 
+    Text.prototype.textDefaults = function() {
+      var result;
+      return result = {
+        height: 30,
+        fontSize: 18,
+        backgroundColor: new Color.Transparent
+      };
+    };
+
+    function Text(attrs) {
+      if (attrs == null) {
+        attrs = {};
+      }
+      Text.__super__.constructor.apply(this, arguments);
+      this.inner = $('<div />').addClass('inner');
+      this.append(this.inner);
+      this.set(this.textDefaults());
+      this.text(attrs.text);
+    }
+
     Text.prototype.startEditing = function() {
       if (this.editing) {
         return;
       }
       this.editing = true;
-      this.log('startEditing');
       this.resizing.toggle(false);
-      this.el.attr('contenteditable', true);
-      return this.el[0].focus();
+      this.el.removeClass('selected');
+      this.el.addClass('editing');
+      this.inner.attr('contenteditable', true);
+      this.inner.focus();
+      return document.execCommand('selectAll', false, null);
     };
 
     Text.prototype.stopEditing = function() {
+      if (!this.editing) {
+        return;
+      }
       this.editing = false;
-      this.log('stopEditing');
-      this.el[0].blur();
-      return this.el.removeAttr('contenteditable');
+      this.inner.blur();
+      this.inner.removeAttr('contenteditable');
+      this.inner.scrollTop(0);
+      this.el.addClass('selected');
+      this.el.removeClass('editing');
+      if (!this.text()) {
+        return this.remove();
+      }
     };
 
-    Text.prototype.selected = function(bool) {
+    Text.prototype.toggleSelect = function() {
+      if (this.editing) {
+        return;
+      }
+      return Text.__super__.toggleSelect.apply(this, arguments);
+    };
+
+    Text.prototype.setSelected = function(bool) {
       if (!bool) {
         this.stopEditing();
       }
-      return Text.__super__.selected.apply(this, arguments);
+      return Text.__super__.setSelected.apply(this, arguments);
     };
 
     Text.prototype.text = function(text) {
       if (text != null) {
-        this.el.text(text);
+        this.inner.text(text);
       }
-      return this.el.text();
+      return this.inner.text();
     };
 
     Text.prototype.toValue = function() {
       var result;
-      result = this.properties;
+      result = Text.__super__.toValue.apply(this, arguments);
       result.text = this.text();
       return result;
     };
@@ -14377,19 +14417,20 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
     Stage.prototype.className = 'stage';
 
     Stage.prototype.events = {
-      'select.element': 'select',
-      'deselect.element': 'deselect',
-      'mousedown': 'deselectAll',
+      'select.element': 'selectEvent',
+      'deselect.element': 'deselectEvent',
+      'mousedown': 'deselectAllEvent',
+      'release.element': 'releaseEvent',
       'start.resize': 'resizeStart',
       'end.resize': 'resizeEnd'
     };
 
     function Stage() {
-      this.deselectAll = __bind(this.deselectAll, this);
+      this.deselectAllEvent = __bind(this.deselectAllEvent, this);
 
-      this.deselect = __bind(this.deselect, this);
+      this.deselectEvent = __bind(this.deselectEvent, this);
 
-      this.select = __bind(this.select, this);
+      this.selectEvent = __bind(this.selectEvent, this);
 
       this.remove = __bind(this.remove, this);
 
@@ -14410,7 +14451,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       this.contextMenu = new ContextMenu(this);
       this.history = new History(this);
       this.selection.bind('change', function() {
-        return _this.el.trigger('selection.change', [_this]);
+        return _this.el.trigger('change.selection', [_this]);
       });
     }
 
@@ -14425,7 +14466,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       this.elements.push(element);
       element.order(this.elements.indexOf(element));
       this.append(element);
-      if (element.selected()) {
+      if (element.selected) {
         return this.selection.add(element);
       }
     };
@@ -14503,20 +14544,20 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       return clones;
     };
 
-    Stage.prototype.select = function(e, element, modifier) {
-      if (!this.selection.isMultiple() && !modifier) {
+    Stage.prototype.selectEvent = function(e, element, modifier) {
+      if (!modifier) {
         this.selection.clear();
       }
       return this.selection.add(element);
     };
 
-    Stage.prototype.deselect = function(e, element, modifier) {
+    Stage.prototype.deselectEvent = function(e, element, modifier) {
       if (modifier) {
         return this.selection.remove(element);
       }
     };
 
-    Stage.prototype.deselectAll = function(e) {
+    Stage.prototype.deselectAllEvent = function(e) {
       if (e.target === e.currentTarget) {
         return this.selection.clear();
       }
@@ -14631,6 +14672,10 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
         return;
       }
       return this.refresh(Serialize.fromJSON(data));
+    };
+
+    Stage.prototype.releaseEvent = function(e, element) {
+      return this.remove(element);
     };
 
     Stage.prototype.release = function() {
@@ -14829,16 +14874,12 @@ this.require.define({"app/controllers/stage/context_menu":function(exports, requ
     Menu.prototype.click = function(e) {
       var item, type;
       e.preventDefault();
-      this.remove();
+      this.release();
       item = $(e.currentTarget);
       type = item.data('type');
       if (!item.hasClass('disabled')) {
         return this[type]();
       }
-    };
-
-    Menu.prototype.remove = function(e) {
-      return this.el.remove();
     };
 
     Menu.prototype.cancel = function() {
@@ -14889,18 +14930,18 @@ this.require.define({"app/controllers/stage/context_menu":function(exports, requ
 
     function ContextMenu(stage) {
       this.stage = stage;
-      this.remove = __bind(this.remove, this);
+      this.hide = __bind(this.hide, this);
 
       ContextMenu.__super__.constructor.call(this, {
         el: this.stage.el
       });
-      $('body').bind('mousedown', this.remove);
+      $('body').bind('mousedown', this.hide);
     }
 
     ContextMenu.prototype.show = function(e) {
       var position;
       e.preventDefault();
-      this.remove();
+      this.hide();
       position = {
         left: e.pageX + 1,
         top: e.pageY + 1
@@ -14909,10 +14950,10 @@ this.require.define({"app/controllers/stage/context_menu":function(exports, requ
       return $('body').append(this.menu.el);
     };
 
-    ContextMenu.prototype.remove = function() {
+    ContextMenu.prototype.hide = function() {
       var _ref;
       if ((_ref = this.menu) != null) {
-        _ref.remove();
+        _ref.release();
       }
       return this.menu = null;
     };
@@ -14956,10 +14997,6 @@ this.require.define({"app/controllers/stage/dragging":function(exports, require,
         left: position.left,
         top: position.top
       });
-    };
-
-    CoordTitle.prototype.remove = function() {
-      return this.el.remove();
     };
 
     return CoordTitle;
@@ -15020,7 +15057,7 @@ this.require.define({"app/controllers/stage/dragging":function(exports, require,
       this.stageArea = this.stage.area();
       this.selectionArea = this.stage.selection.area();
       if (e.altKey || e.metaKey) {
-        this.stage.snapping.remove();
+        this.stage.snapping.release();
       } else {
         difference = this.stage.snapping.snap(this.selectionArea, difference);
       }
@@ -15037,7 +15074,7 @@ this.require.define({"app/controllers/stage/dragging":function(exports, require,
         this.el.trigger('end.dragging');
       }
       if ((_ref = this.coordTitle) != null) {
-        _ref.remove();
+        _ref.release();
       }
       return this.coordTitle = null;
     };
@@ -15363,10 +15400,6 @@ this.require.define({"app/controllers/stage/resizing":function(exports, require,
       });
     };
 
-    AreaTitle.prototype.remove = function() {
-      return this.el.remove();
-    };
-
     return AreaTitle;
 
   })(Spine.Controller);
@@ -15410,7 +15443,7 @@ this.require.define({"app/controllers/stage/resizing":function(exports, require,
     Resizing.prototype.resizeEnd = function() {
       var _ref;
       if ((_ref = this.areaTitle) != null) {
-        _ref.remove();
+        _ref.release();
       }
       return this.areaTitle = null;
     };
@@ -15472,10 +15505,6 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
       return this.el.css(dimensions);
     };
 
-    Area.prototype.remove = function() {
-      return this.el.remove();
-    };
-
     return Area;
 
   })(Spine.Controller);
@@ -15513,7 +15542,7 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
       this.offset.left -= this.el.scrollLeft();
       this.offset.top -= this.el.scrollTop();
       if ((_ref = this.selectArea) != null) {
-        _ref.remove();
+        _ref.release();
       }
       $(document).mousemove(this.drag);
       return $(document).mouseup(this.drop);
@@ -15543,7 +15572,7 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
     SelectArea.prototype.drop = function(e) {
       var _ref;
       if ((_ref = this.selectArea) != null) {
-        _ref.remove();
+        _ref.release();
       }
       this.selectArea = null;
       $(document).unbind('mousemove', this.drag);
@@ -15646,7 +15675,7 @@ this.require.define({"app/controllers/stage/selection":function(exports, require
         return;
       }
       this.elements.push(element);
-      element.selected(true);
+      element.setSelected(true);
       return this.trigger('change');
     };
 
@@ -15655,7 +15684,7 @@ this.require.define({"app/controllers/stage/selection":function(exports, require
       if (__indexOf.call(this.elements, element) < 0) {
         return;
       }
-      element.selected(false);
+      element.setSelected(false);
       index = this.elements.indexOf(element);
       elements = this.elements.slice();
       elements.splice(index, 1);
@@ -15773,10 +15802,6 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
       }
     };
 
-    SnapLine.prototype.remove = function() {
-      return this.el.remove();
-    };
-
     SnapLine.prototype.set = function(values) {
       return this.el.css(values);
     };
@@ -15821,8 +15846,8 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
       return this.value = 0;
     };
 
-    Snap.prototype.remove = function() {
-      this.line.remove();
+    Snap.prototype.release = function() {
+      this.line.release();
       return this.active = false;
     };
 
@@ -15843,7 +15868,7 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
         difference[this.direction] = 0;
       } else {
         difference[this.direction] = this.value + (this.initial || 0);
-        this.remove();
+        this.release();
       }
       return difference;
     };
@@ -16090,9 +16115,9 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
     Snapping.name = 'Snapping';
 
     Snapping.prototype.events = {
-      'resize.element': 'remove',
-      'selection.change': 'remove',
-      'end.dragging': 'remove'
+      'resize.element': 'release',
+      'change.selection': 'release',
+      'end.dragging': 'release'
     };
 
     function Snapping(stage) {
@@ -16123,14 +16148,14 @@ this.require.define({"app/controllers/stage/snapping":function(exports, require,
       return difference;
     };
 
-    Snapping.prototype.remove = function() {
+    Snapping.prototype.release = function() {
       var snap, _i, _len, _ref, _results;
       _ref = this.snaps;
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         snap = _ref[_i];
         if (snap.active) {
-          _results.push(snap.remove());
+          _results.push(snap.release());
         }
       }
       return _results;

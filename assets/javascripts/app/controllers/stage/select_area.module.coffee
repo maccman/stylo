@@ -27,9 +27,6 @@ class Area extends Spine.Controller
 
     @el.css(dimensions)
 
-  remove: ->
-    @el.remove()
-
 class SelectArea extends Spine.Controller
   events:
     'mousedown': 'listen'
@@ -47,7 +44,7 @@ class SelectArea extends Spine.Controller
     @offset.left -= @el.scrollLeft()
     @offset.top  -= @el.scrollTop()
 
-    @selectArea?.remove()
+    @selectArea?.release()
 
     $(document).mousemove(@drag)
     $(document).mouseup(@drop)
@@ -77,7 +74,7 @@ class SelectArea extends Spine.Controller
         @stage.selection.remove(element)
 
   drop: (e) =>
-    @selectArea?.remove()
+    @selectArea?.release()
     @selectArea = null
     $(document).unbind('mousemove', @drag)
     $(document).unbind('mouseup', @drop)

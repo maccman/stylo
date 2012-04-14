@@ -101,19 +101,20 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
     Stage.prototype.className = 'stage';
 
     Stage.prototype.events = {
-      'select.element': 'select',
-      'deselect.element': 'deselect',
-      'mousedown': 'deselectAll',
+      'select.element': 'selectEvent',
+      'deselect.element': 'deselectEvent',
+      'mousedown': 'deselectAllEvent',
+      'release.element': 'releaseEvent',
       'start.resize': 'resizeStart',
       'end.resize': 'resizeEnd'
     };
 
     function Stage() {
-      this.deselectAll = __bind(this.deselectAll, this);
+      this.deselectAllEvent = __bind(this.deselectAllEvent, this);
 
-      this.deselect = __bind(this.deselect, this);
+      this.deselectEvent = __bind(this.deselectEvent, this);
 
-      this.select = __bind(this.select, this);
+      this.selectEvent = __bind(this.selectEvent, this);
 
       this.remove = __bind(this.remove, this);
 
@@ -134,7 +135,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       this.contextMenu = new ContextMenu(this);
       this.history = new History(this);
       this.selection.bind('change', function() {
-        return _this.el.trigger('selection.change', [_this]);
+        return _this.el.trigger('change.selection', [_this]);
       });
     }
 
@@ -149,7 +150,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       this.elements.push(element);
       element.order(this.elements.indexOf(element));
       this.append(element);
-      if (element.selected()) {
+      if (element.selected) {
         return this.selection.add(element);
       }
     };
@@ -227,20 +228,20 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       return clones;
     };
 
-    Stage.prototype.select = function(e, element, modifier) {
-      if (!this.selection.isMultiple() && !modifier) {
+    Stage.prototype.selectEvent = function(e, element, modifier) {
+      if (!modifier) {
         this.selection.clear();
       }
       return this.selection.add(element);
     };
 
-    Stage.prototype.deselect = function(e, element, modifier) {
+    Stage.prototype.deselectEvent = function(e, element, modifier) {
       if (modifier) {
         return this.selection.remove(element);
       }
     };
 
-    Stage.prototype.deselectAll = function(e) {
+    Stage.prototype.deselectAllEvent = function(e) {
       if (e.target === e.currentTarget) {
         return this.selection.clear();
       }
@@ -355,6 +356,10 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
         return;
       }
       return this.refresh(Serialize.fromJSON(data));
+    };
+
+    Stage.prototype.releaseEvent = function(e, element) {
+      return this.remove(element);
     };
 
     Stage.prototype.release = function() {

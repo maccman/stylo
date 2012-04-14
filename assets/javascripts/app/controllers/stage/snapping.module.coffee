@@ -17,9 +17,6 @@ class SnapLine extends Spine.Controller
     else
       @set(left: value)
 
-  remove: ->
-    @el.remove()
-
   set: (values) ->
     @el.css(values)
 
@@ -46,8 +43,8 @@ class Snap extends Spine.Controller
     @active = true
     @value  = 0
 
-  remove: ->
-    @line.remove()
+  release: ->
+    @line.release()
     @active = false
 
   snap: (area, difference) ->
@@ -72,7 +69,7 @@ class Snap extends Spine.Controller
     else
       # Element has escaped snapping
       difference[@direction] = @value + (@initial or 0)
-      @remove()
+      @release()
 
     difference
 
@@ -219,9 +216,9 @@ class VerticalElementSnap extends Snap
 
 class Snapping extends Spine.Controller
   events:
-    'resize.element':   'remove'
-    'selection.change': 'remove'
-    'end.dragging':     'remove'
+    'resize.element':   'release'
+    'change.selection': 'release'
+    'end.dragging':     'release'
 
   constructor: (@stage) ->
     super(el: @stage.el)
@@ -242,7 +239,7 @@ class Snapping extends Spine.Controller
       difference = snap.snap(area, difference)
     difference
 
-  remove: ->
-    snap.remove() for snap in @snaps when snap.active
+  release: ->
+    snap.release() for snap in @snaps when snap.active
 
 module.exports = Snapping

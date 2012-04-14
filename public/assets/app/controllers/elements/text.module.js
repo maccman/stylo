@@ -59,9 +59,11 @@
   return this.require;
 }).call(this);
 this.require.define({"app/controllers/elements/text":function(exports, require, module){(function() {
-  var Rectangle, Text,
+  var Color, Rectangle, Text,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  Color = require('app/models/properties/color');
 
   Rectangle = require('./rectangle');
 
@@ -71,10 +73,6 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
 
     Text.name = 'Text';
 
-    function Text() {
-      return Text.__super__.constructor.apply(this, arguments);
-    }
-
     Text.prototype.className = 'text';
 
     Text.prototype.id = module.id;
@@ -83,41 +81,78 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
       'dblclick': 'startEditing'
     };
 
+    Text.prototype.textDefaults = function() {
+      var result;
+      return result = {
+        height: 30,
+        fontSize: 18,
+        backgroundColor: new Color.Transparent
+      };
+    };
+
+    function Text(attrs) {
+      if (attrs == null) {
+        attrs = {};
+      }
+      Text.__super__.constructor.apply(this, arguments);
+      this.inner = $('<div />').addClass('inner');
+      this.append(this.inner);
+      this.set(this.textDefaults());
+      this.text(attrs.text);
+    }
+
     Text.prototype.startEditing = function() {
       if (this.editing) {
         return;
       }
       this.editing = true;
-      this.log('startEditing');
       this.resizing.toggle(false);
-      this.el.attr('contenteditable', true);
-      return this.el[0].focus();
+      this.el.removeClass('selected');
+      this.el.addClass('editing');
+      this.inner.attr('contenteditable', true);
+      this.inner.focus();
+      return document.execCommand('selectAll', false, null);
     };
 
     Text.prototype.stopEditing = function() {
+      if (!this.editing) {
+        return;
+      }
       this.editing = false;
-      this.log('stopEditing');
-      this.el[0].blur();
-      return this.el.removeAttr('contenteditable');
+      this.inner.blur();
+      this.inner.removeAttr('contenteditable');
+      this.inner.scrollTop(0);
+      this.el.addClass('selected');
+      this.el.removeClass('editing');
+      if (!this.text()) {
+        return this.remove();
+      }
     };
 
-    Text.prototype.selected = function(bool) {
+    Text.prototype.toggleSelect = function() {
+      if (this.editing) {
+        return;
+      }
+      return Text.__super__.toggleSelect.apply(this, arguments);
+    };
+
+    Text.prototype.setSelected = function(bool) {
       if (!bool) {
         this.stopEditing();
       }
-      return Text.__super__.selected.apply(this, arguments);
+      return Text.__super__.setSelected.apply(this, arguments);
     };
 
     Text.prototype.text = function(text) {
       if (text != null) {
-        this.el.text(text);
+        this.inner.text(text);
       }
-      return this.el.text();
+      return this.inner.text();
     };
 
     Text.prototype.toValue = function() {
       var result;
-      result = this.properties;
+      result = Text.__super__.toValue.apply(this, arguments);
       result.text = this.text();
       return result;
     };

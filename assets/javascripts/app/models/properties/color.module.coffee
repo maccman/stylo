@@ -1,4 +1,6 @@
-class Color
+Property = require('app/models/property')
+
+class Color extends Property
   @regex: /(?:#([0-9a-f]{3,6})|rgba?\(([^)]+)\))/i
 
   @fromHex: (hex) ->
@@ -84,11 +86,6 @@ class Color
       'transparent'
 
   id: module.id
-
-  toJSON: ->
-    result =
-      id:    @id
-      value: @toValue()
 
   toValue: ->
     [@r, @g, @b, @a]

@@ -58,58 +58,76 @@
 
   return this.require;
 }).call(this);
-this.require.define({"app/controllers/elements/image":function(exports, require, module){(function() {
-  var Color, Element, Image,
+this.require.define({"app/controllers/stage/drop_area":function(exports, require, module){(function() {
+  var DropArea, Image,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  Element = require('../element');
+  Image = require('app/controllers/elements/image');
 
-  Color = require('app/models/properties/color');
+  DropArea = (function(_super) {
 
-  Image = (function(_super) {
+    __extends(DropArea, _super);
 
-    __extends(Image, _super);
+    DropArea.name = 'DropArea';
 
-    Image.name = 'Image';
+    DropArea.prototype.events = {
+      'drop': 'drop',
+      'dragenter': 'cancel',
+      'dragover': 'cancel',
+      'dragleave': 'cancel'
+    };
 
-    Image.prototype.className = 'image';
-
-    Image.prototype.id = module.id;
-
-    function Image(attrs) {
-      if (attrs == null) {
-        attrs = {};
-      }
-      Image.__super__.constructor.apply(this, arguments);
-      this.setSrc(attrs.src);
+    function DropArea(stage) {
+      this.stage = stage;
+      DropArea.__super__.constructor.call(this, {
+        el: this.stage.el
+      });
+      $('body').bind('drop', this.cancel);
     }
 
-    Image.prototype.setSrc = function(src) {
-      this.src = src;
-      if (this.src) {
-        return this.set({
-          backgroundColor: new Color.Transparent,
-          backgroundImage: "url(" + this.src + ")",
-          backgroundSize: '100% 100%',
-          backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'center center'
-        });
+    DropArea.prototype.drop = function(e) {
+      var file, reader, _i, _len, _ref, _results,
+        _this = this;
+      e.preventDefault();
+      e = e.originalEvent;
+      _ref = e.dataTransfer.files;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        file = _ref[_i];
+        reader = new FileReader;
+        reader.onload = function(e) {
+          return _this.addImage(e.target.result);
+        };
+        _results.push(reader.readAsDataURL(file));
       }
+      return _results;
     };
 
-    Image.prototype.toValue = function() {
-      var result;
-      result = Image.__super__.toValue.apply(this, arguments);
-      result.src = this.src;
-      return result;
+    DropArea.prototype.addImage = function(src) {
+      var element;
+      this.stage.history.record();
+      element = new Image({
+        src: src
+      });
+      this.stage.add(element);
+      this.stage.selection.clear();
+      return this.stage.selection.add(element);
     };
 
-    return Image;
+    DropArea.prototype.cancel = function(e) {
+      return e.preventDefault();
+    };
 
-  })(Element);
+    DropArea.prototype.release = function() {
+      return $('body').unbind('drop', this.cancel);
+    };
 
-  module.exports = Image;
+    return DropArea;
+
+  })(Spine.Controller);
+
+  module.exports = DropArea;
 
 }).call(this);
 ;}});

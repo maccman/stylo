@@ -12873,11 +12873,13 @@ this.require.define({"app/controllers/elements/ellipsis":function(exports, requi
 }).call(this);
 ;}});
 this.require.define({"app/controllers/elements/image":function(exports, require, module){(function() {
-  var Element, Image,
+  var Color, Element, Image,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Element = require('../element');
+
+  Color = require('app/models/properties/color');
 
   Image = (function(_super) {
 
@@ -12894,20 +12896,26 @@ this.require.define({"app/controllers/elements/image":function(exports, require,
         attrs = {};
       }
       Image.__super__.constructor.apply(this, arguments);
-      this.src(attrs.src);
+      this.setSrc(attrs.src);
     }
 
-    Image.prototype.src = function(value) {
-      if (value != null) {
-        this.set('backgroundImage', "" + value + " no-repeat center center");
+    Image.prototype.setSrc = function(src) {
+      this.src = src;
+      if (this.src) {
+        return this.set({
+          backgroundColor: new Color.Transparent,
+          backgroundImage: "url(" + this.src + ")",
+          backgroundSize: '100% 100%',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center center'
+        });
       }
-      return this.get('backgroundImage');
     };
 
     Image.prototype.toValue = function() {
       var result;
       result = Image.__super__.toValue.apply(this, arguments);
-      result.src = this.src();
+      result.src = this.src;
       return result;
     };
 
@@ -14337,7 +14345,7 @@ this.require.define({"app/controllers/inspector/text_shadow":function(exports, r
 }).call(this);
 ;}});
 this.require.define({"app/controllers/stage":function(exports, require, module){(function() {
-  var Clipboard, ContextMenu, Dragging, Ellipsis, History, KeyBindings, Properties, Rectangle, Resizing, SelectArea, Selection, Serialize, Snapping, Stage, ZIndex,
+  var Clipboard, ContextMenu, Dragging, DropArea, Ellipsis, History, KeyBindings, Properties, Rectangle, Resizing, SelectArea, Selection, Serialize, Snapping, Stage, ZIndex,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -14363,6 +14371,8 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
   ContextMenu = require('./stage/context_menu');
 
   History = require('./stage/history');
+
+  DropArea = require('./stage/drop_area');
 
   Rectangle = require('./elements/rectangle');
 
@@ -14412,6 +14422,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       this.clipboard = new Clipboard(this);
       this.contextMenu = new ContextMenu(this);
       this.history = new History(this);
+      this.dropArea = new DropArea(this);
       this.selection.bind('change', function() {
         return _this.el.trigger('change.selection', [_this]);
       });
@@ -14641,7 +14652,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
     };
 
     Stage.prototype.release = function() {
-      var _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8;
+      var _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9;
       if ((_ref = this.selection) != null) {
         _ref.release();
       }
@@ -14668,6 +14679,9 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       }
       if ((_ref8 = this.history) != null) {
         _ref8.release();
+      }
+      if ((_ref9 = this.dropArea) != null) {
+        _ref9.release();
       }
       return Stage.__super__.release.apply(this, arguments);
     };
@@ -15064,6 +15078,79 @@ this.require.define({"app/controllers/stage/dragging":function(exports, require,
   })(Spine.Controller);
 
   module.exports = Dragging;
+
+}).call(this);
+;}});
+this.require.define({"app/controllers/stage/drop_area":function(exports, require, module){(function() {
+  var DropArea, Image,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  Image = require('app/controllers/elements/image');
+
+  DropArea = (function(_super) {
+
+    __extends(DropArea, _super);
+
+    DropArea.name = 'DropArea';
+
+    DropArea.prototype.events = {
+      'drop': 'drop',
+      'dragenter': 'cancel',
+      'dragover': 'cancel',
+      'dragleave': 'cancel'
+    };
+
+    function DropArea(stage) {
+      this.stage = stage;
+      DropArea.__super__.constructor.call(this, {
+        el: this.stage.el
+      });
+      $('body').bind('drop', this.cancel);
+    }
+
+    DropArea.prototype.drop = function(e) {
+      var file, reader, _i, _len, _ref, _results,
+        _this = this;
+      e.preventDefault();
+      e = e.originalEvent;
+      _ref = e.dataTransfer.files;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        file = _ref[_i];
+        reader = new FileReader;
+        reader.onload = function(e) {
+          return _this.addImage(e.target.result);
+        };
+        _results.push(reader.readAsDataURL(file));
+      }
+      return _results;
+    };
+
+    DropArea.prototype.addImage = function(src) {
+      var element;
+      this.stage.history.record();
+      element = new Image({
+        src: src
+      });
+      this.stage.add(element);
+      this.stage.selection.clear();
+      return this.stage.selection.add(element);
+    };
+
+    DropArea.prototype.cancel = function(e) {
+      return e.preventDefault();
+    };
+
+    DropArea.prototype.release = function() {
+      return $('body').unbind('drop', this.cancel);
+    };
+
+    return DropArea;
+
+  })(Spine.Controller);
+
+  module.exports = DropArea;
 
 }).call(this);
 ;}});
@@ -16555,9 +16642,15 @@ this.require.define({"app/models/properties/border":function(exports, require, m
 }).call(this);
 ;}});
 this.require.define({"app/models/properties/color":function(exports, require, module){(function() {
-  var Color;
+  var Color, Property,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  Color = (function() {
+  Property = require('app/models/property');
+
+  Color = (function(_super) {
+
+    __extends(Color, _super);
 
     Color.name = 'Color';
 
@@ -16679,21 +16772,13 @@ this.require.define({"app/models/properties/color":function(exports, require, mo
 
     Color.prototype.id = module.id;
 
-    Color.prototype.toJSON = function() {
-      var result;
-      return result = {
-        id: this.id,
-        value: this.toValue()
-      };
-    };
-
     Color.prototype.toValue = function() {
       return [this.r, this.g, this.b, this.a];
     };
 
     return Color;
 
-  })();
+  })(Property);
 
   module.exports = Color;
 

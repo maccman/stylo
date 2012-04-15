@@ -9,6 +9,7 @@ ZIndex      = require('./stage/zindex')
 Clipboard   = require('./stage/clipboard')
 ContextMenu = require('./stage/context_menu')
 History     = require('./stage/history')
+DropArea    = require('./stage/drop_area')
 
 Rectangle   = require('./elements/rectangle')
 Ellipsis    = require('./elements/ellipsis')
@@ -41,6 +42,7 @@ class Stage extends Spine.Controller
     @clipboard   = new Clipboard(this)
     @contextMenu = new ContextMenu(this)
     @history     = new History(this)
+    @dropArea    = new DropArea(this)
 
     @selection.bind 'change', =>
       @el.trigger('change.selection', [this])
@@ -202,6 +204,7 @@ class Stage extends Spine.Controller
     @clipboard?.release()
     @contextMenu?.release()
     @history?.release()
+    @dropArea?.release()
     super
 
 module.exports = Stage

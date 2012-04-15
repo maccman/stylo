@@ -59,9 +59,15 @@
   return this.require;
 }).call(this);
 this.require.define({"app/models/properties/color":function(exports, require, module){(function() {
-  var Color;
+  var Color, Property,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  Color = (function() {
+  Property = require('app/models/property');
+
+  Color = (function(_super) {
+
+    __extends(Color, _super);
 
     Color.name = 'Color';
 
@@ -183,21 +189,13 @@ this.require.define({"app/models/properties/color":function(exports, require, mo
 
     Color.prototype.id = module.id;
 
-    Color.prototype.toJSON = function() {
-      var result;
-      return result = {
-        id: this.id,
-        value: this.toValue()
-      };
-    };
-
     Color.prototype.toValue = function() {
       return [this.r, this.g, this.b, this.a];
     };
 
     return Color;
 
-  })();
+  })(Property);
 
   module.exports = Color;
 

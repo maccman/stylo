@@ -59,7 +59,7 @@
   return this.require;
 }).call(this);
 this.require.define({"app/controllers/stage":function(exports, require, module){(function() {
-  var Clipboard, ContextMenu, Dragging, Ellipsis, History, KeyBindings, Properties, Rectangle, Resizing, SelectArea, Selection, Serialize, Snapping, Stage, ZIndex,
+  var Clipboard, ContextMenu, Dragging, DropArea, Ellipsis, History, KeyBindings, Properties, Rectangle, Resizing, SelectArea, Selection, Serialize, Snapping, Stage, ZIndex,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -85,6 +85,8 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
   ContextMenu = require('./stage/context_menu');
 
   History = require('./stage/history');
+
+  DropArea = require('./stage/drop_area');
 
   Rectangle = require('./elements/rectangle');
 
@@ -134,6 +136,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       this.clipboard = new Clipboard(this);
       this.contextMenu = new ContextMenu(this);
       this.history = new History(this);
+      this.dropArea = new DropArea(this);
       this.selection.bind('change', function() {
         return _this.el.trigger('change.selection', [_this]);
       });
@@ -363,7 +366,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
     };
 
     Stage.prototype.release = function() {
-      var _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8;
+      var _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9;
       if ((_ref = this.selection) != null) {
         _ref.release();
       }
@@ -390,6 +393,9 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
       }
       if ((_ref8 = this.history) != null) {
         _ref8.release();
+      }
+      if ((_ref9 = this.dropArea) != null) {
+        _ref9.release();
       }
       return Stage.__super__.release.apply(this, arguments);
     };

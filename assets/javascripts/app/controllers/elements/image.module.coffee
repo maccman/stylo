@@ -1,4 +1,5 @@
 Element = require('../element')
+Color   = require('app/models/properties/color')
 
 class Image extends Element
   className: 'image'
@@ -6,18 +7,20 @@ class Image extends Element
 
   constructor: (attrs = {}) ->
     super
-    @src(attrs.src)
+    @setSrc(attrs.src)
 
-  src: (value) ->
+  setSrc: (@src) ->
     @set(
-      'backgroundImage',
-      "#{value} no-repeat center center"
-    ) if value?
-    @get('backgroundImage')
+      backgroundColor:    new Color.Transparent
+      backgroundImage:    "url(#{@src})"
+      backgroundSize:     '100% 100%'
+      backgroundRepeat:   'no-repeat'
+      backgroundPosition: 'center center'
+    ) if @src
 
   toValue: ->
     result = super
-    result.src = @src()
+    result.src = @src
     result
 
 module.exports = Image

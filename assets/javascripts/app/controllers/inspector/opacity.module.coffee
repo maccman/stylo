@@ -4,7 +4,6 @@ class Opacity extends Spine.Controller
   events:
     'change input': 'change'
     'focus input': 'inputFocus'
-    'mousedown input': 'inputFocus'
 
   elements:
     'input': '$inputs'
@@ -16,14 +15,13 @@ class Opacity extends Spine.Controller
     @html JST['app/views/inspector/opacity'](this)
 
   change: (e) ->
+    @stage.history.record('opacity')
+
     val = parseFloat($(e.currentTarget).val())
     val = Math.round(val * 100) / 100
 
     @stage.history.record('opacity')
     @stage.selection.set('opacity', val)
     @$inputs.val(val)
-
-  inputFocus: ->
-    @stage.history.record()
 
 module.exports = Opacity

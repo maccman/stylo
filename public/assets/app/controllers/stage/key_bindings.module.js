@@ -119,7 +119,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       e.preventDefault();
       amount = -1;
       if (e.shiftKey) {
-        amount *= 5;
+        amount *= 10;
       }
       this.stage.history.record('leftArrow');
       return this.stage.selection.moveBy({
@@ -133,7 +133,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       e.preventDefault();
       amount = -1;
       if (e.shiftKey) {
-        amount *= 5;
+        amount *= 10;
       }
       this.stage.history.record('upArrow');
       return this.stage.selection.moveBy({
@@ -147,7 +147,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       e.preventDefault();
       amount = 1;
       if (e.shiftKey) {
-        amount *= 5;
+        amount *= 10;
       }
       this.stage.history.record('rightArrow');
       return this.stage.selection.moveBy({
@@ -161,7 +161,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       e.preventDefault();
       amount = 1;
       if (e.shiftKey) {
-        amount *= 5;
+        amount *= 10;
       }
       this.stage.history.record('downArrow');
       return this.stage.selection.moveBy({

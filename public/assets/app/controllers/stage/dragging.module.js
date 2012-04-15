@@ -133,6 +133,9 @@ this.require.define({"app/controllers/stage/dragging":function(exports, require,
 
     Dragging.prototype.drag = function(e) {
       var difference;
+      if (this.active === false) {
+        this.trigger('start.dragging');
+      }
       this.active = true;
       difference = {
         left: e.pageX - this.dragPosition.left,

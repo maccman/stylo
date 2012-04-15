@@ -78,7 +78,8 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
     Text.prototype.id = module.id;
 
     Text.prototype.events = {
-      'dblclick': 'startEditing'
+      'dblclick': 'startEditing',
+      'dblclick .thumb.br': 'fitToText'
     };
 
     Text.prototype.textDefaults = function() {
@@ -126,7 +127,7 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
       this.el.addClass('selected');
       this.el.removeClass('editing');
       this.set({
-        height: this.el.height()
+        height: this.el.outerHeight()
       });
       if (!this.text()) {
         return this.remove();
@@ -145,6 +146,17 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
         this.stopEditing();
       }
       return Text.__super__.setSelected.apply(this, arguments);
+    };
+
+    Text.prototype.fitToText = function() {
+      this.el.css({
+        width: 'auto',
+        height: 'auto'
+      });
+      return this.set({
+        width: this.el.outerWidth(),
+        height: this.el.outerHeight()
+      });
     };
 
     Text.prototype.text = function(text) {

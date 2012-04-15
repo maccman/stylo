@@ -58,56 +58,43 @@
 
   return this.require;
 }).call(this);
-this.require.define({"app/controllers/inspector/opacity":function(exports, require, module){(function() {
-  var Opacity,
+this.require.define({"app/controllers/inspector/font":function(exports, require, module){(function() {
+  var Font,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  Opacity = (function(_super) {
+  Font = (function(_super) {
 
-    __extends(Opacity, _super);
+    __extends(Font, _super);
 
-    Opacity.name = 'Opacity';
+    Font.name = 'Font';
 
-    function Opacity() {
+    function Font() {
       this.render = __bind(this.render, this);
-      return Opacity.__super__.constructor.apply(this, arguments);
+      return Font.__super__.constructor.apply(this, arguments);
     }
 
-    Opacity.prototype.className = 'opacity';
+    Font.prototype.className = 'font';
 
-    Opacity.prototype.events = {
-      'change input': 'change',
-      'focus input': 'inputFocus'
-    };
-
-    Opacity.prototype.elements = {
+    Font.prototype.elements = {
       'input': '$inputs'
     };
 
-    Opacity.prototype.render = function() {
+    Font.prototype.render = function() {
       var _ref;
       this.disabled = !this.stage.selection.isAny();
-      this.opacity = (_ref = this.stage.selection.get('opacity')) != null ? _ref : 1;
-      return this.html(JST['app/views/inspector/opacity'](this));
+      this.fontSize = (_ref = this.stage.selection.get('fontSize')) != null ? _ref : 12;
+      return this.html(JST['app/views/inspector/font'](this));
     };
 
-    Opacity.prototype.change = function(e) {
-      var val;
-      this.stage.history.record('opacity');
-      val = parseFloat($(e.currentTarget).val());
-      val = Math.round(val * 100) / 100;
-      this.stage.history.record('opacity');
-      this.stage.selection.set('opacity', val);
-      return this.$inputs.val(val);
-    };
+    Font.prototype.change = function(e) {};
 
-    return Opacity;
+    return Font;
 
   })(Spine.Controller);
 
-  module.exports = Opacity;
+  module.exports = Font;
 
 }).call(this);
 ;}});

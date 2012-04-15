@@ -12,6 +12,9 @@ class Clipboard
     # $(window).bind 'paste', @paste
 
   cancel: (e) =>
+    return if 'value' of e.target
+    return if $(e.target).attr('contenteditable')
+
     # We need to cancel the default to get
     # the 'copy' event to trigger
     e.preventDefault()
@@ -24,7 +27,6 @@ class Clipboard
 
     json = JSON.stringify(@stage.selection.elements)
     e.clipboardData.setData('json/x-stylo', json)
-    e.clipboardData.setData('text/html', json)
 
     styles = (el.outerCSS() for el in @stage.selection.elements)
     e.clipboardData.setData('text/plain', styles.join("\n\n"))
@@ -38,7 +40,6 @@ class Clipboard
     # Some browsers restrict the clipboard data types,
     # so we need to revert back to text/html
     json = e.clipboardData.getData('json/x-stylo')
-    json or= e.clipboardData.getData('text/html')
     return unless json
 
     elements = Serialize.fromJSON(json)

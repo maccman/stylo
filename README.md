@@ -22,14 +22,16 @@ Phase 1:
   * ½ Background (type/direction)
   * ✓ Border
   * ½ Shadow (inset)
-  * Font alignment
-  * Font family/size/style/color
   * ✓ Text-shadow
-  * Text-spacing
   * Rotation
   * ✓ Opacity
-  * content editable
+  * ✓ content editable
   * ✓ context menu
+  * Font alignment
+  * Font family/size/style/color
+  * Text-shadow
+  * Text-spacing (line height)
+
 
 Phase 2:
 

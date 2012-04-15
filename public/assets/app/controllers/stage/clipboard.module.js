@@ -81,6 +81,12 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
     }
 
     Clipboard.prototype.cancel = function(e) {
+      if ('value' in e.target) {
+        return;
+      }
+      if ($(e.target).attr('contenteditable')) {
+        return;
+      }
       return e.preventDefault();
     };
 
@@ -93,7 +99,6 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
       e = e.originalEvent;
       json = JSON.stringify(this.stage.selection.elements);
       e.clipboardData.setData('json/x-stylo', json);
-      e.clipboardData.setData('text/html', json);
       styles = (function() {
         var _i, _len, _ref, _results;
         _ref = this.stage.selection.elements;
@@ -115,7 +120,6 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
       e.preventDefault();
       e = e.originalEvent;
       json = e.clipboardData.getData('json/x-stylo');
-      json || (json = e.clipboardData.getData('text/html'));
       if (!json) {
         return;
       }

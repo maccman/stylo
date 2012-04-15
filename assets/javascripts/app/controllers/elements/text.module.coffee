@@ -7,6 +7,7 @@ class Text extends Rectangle
 
   events:
     'dblclick': 'startEditing'
+    'dblclick .thumb.br': 'fitToText'
 
   textDefaults: ->
     result =
@@ -45,7 +46,7 @@ class Text extends Rectangle
     @el.scrollTop(0)
     @el.addClass('selected')
     @el.removeClass('editing')
-    @set(height: @el.height())
+    @set(height: @el.outerHeight())
 
     # Remove the element if empty
     @remove() unless @text()
@@ -57,6 +58,13 @@ class Text extends Rectangle
   setSelected: (bool) ->
     @stopEditing() unless bool
     super
+
+  fitToText: ->
+    @el.css(width: 'auto', height: 'auto')
+    @set(
+      width:  @el.outerWidth(),
+      height: @el.outerHeight()
+    )
 
   text: (text) ->
     @el.text(text) if text?

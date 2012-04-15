@@ -31,6 +31,9 @@ class Dragging extends Spine.Controller
     $(document).mouseup(@drop)
 
   drag: (e) =>
+    if @active is false
+      @trigger('start.dragging')
+
     @active = true
 
     difference =

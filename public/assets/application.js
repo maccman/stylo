@@ -13167,7 +13167,8 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
     Text.prototype.id = module.id;
 
     Text.prototype.events = {
-      'dblclick': 'startEditing'
+      'dblclick': 'startEditing',
+      'dblclick .thumb.br': 'fitToText'
     };
 
     Text.prototype.textDefaults = function() {
@@ -13215,7 +13216,7 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
       this.el.addClass('selected');
       this.el.removeClass('editing');
       this.set({
-        height: this.el.height()
+        height: this.el.outerHeight()
       });
       if (!this.text()) {
         return this.remove();
@@ -13234,6 +13235,17 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
         this.stopEditing();
       }
       return Text.__super__.setSelected.apply(this, arguments);
+    };
+
+    Text.prototype.fitToText = function() {
+      this.el.css({
+        width: 'auto',
+        height: 'auto'
+      });
+      return this.set({
+        width: this.el.outerWidth(),
+        height: this.el.outerHeight()
+      });
     };
 
     Text.prototype.text = function(text) {
@@ -14204,6 +14216,46 @@ this.require.define({"app/controllers/inspector/dimensions":function(exports, re
 
 }).call(this);
 ;}});
+this.require.define({"app/controllers/inspector/font":function(exports, require, module){(function() {
+  var Font,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  Font = (function(_super) {
+
+    __extends(Font, _super);
+
+    Font.name = 'Font';
+
+    function Font() {
+      this.render = __bind(this.render, this);
+      return Font.__super__.constructor.apply(this, arguments);
+    }
+
+    Font.prototype.className = 'font';
+
+    Font.prototype.elements = {
+      'input': '$inputs'
+    };
+
+    Font.prototype.render = function() {
+      var _ref;
+      this.disabled = !this.stage.selection.isAny();
+      this.fontSize = (_ref = this.stage.selection.get('fontSize')) != null ? _ref : 12;
+      return this.html(JST['app/views/inspector/font'](this));
+    };
+
+    Font.prototype.change = function(e) {};
+
+    return Font;
+
+  })(Spine.Controller);
+
+  module.exports = Font;
+
+}).call(this);
+;}});
 this.require.define({"app/controllers/inspector/opacity":function(exports, require, module){(function() {
   var Opacity,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
@@ -14225,8 +14277,7 @@ this.require.define({"app/controllers/inspector/opacity":function(exports, requi
 
     Opacity.prototype.events = {
       'change input': 'change',
-      'focus input': 'inputFocus',
-      'mousedown input': 'inputFocus'
+      'focus input': 'inputFocus'
     };
 
     Opacity.prototype.elements = {
@@ -14242,15 +14293,12 @@ this.require.define({"app/controllers/inspector/opacity":function(exports, requi
 
     Opacity.prototype.change = function(e) {
       var val;
+      this.stage.history.record('opacity');
       val = parseFloat($(e.currentTarget).val());
       val = Math.round(val * 100) / 100;
       this.stage.history.record('opacity');
       this.stage.selection.set('opacity', val);
       return this.$inputs.val(val);
-    };
-
-    Opacity.prototype.inputFocus = function() {
-      return this.stage.history.record();
     };
 
     return Opacity;
@@ -14744,6 +14792,12 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
     }
 
     Clipboard.prototype.cancel = function(e) {
+      if ('value' in e.target) {
+        return;
+      }
+      if ($(e.target).attr('contenteditable')) {
+        return;
+      }
       return e.preventDefault();
     };
 
@@ -14756,7 +14810,6 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
       e = e.originalEvent;
       json = JSON.stringify(this.stage.selection.elements);
       e.clipboardData.setData('json/x-stylo', json);
-      e.clipboardData.setData('text/html', json);
       styles = (function() {
         var _i, _len, _ref, _results;
         _ref = this.stage.selection.elements;
@@ -14778,7 +14831,6 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
       e.preventDefault();
       e = e.originalEvent;
       json = e.clipboardData.getData('json/x-stylo');
-      json || (json = e.clipboardData.getData('text/html'));
       if (!json) {
         return;
       }
@@ -15048,6 +15100,9 @@ this.require.define({"app/controllers/stage/dragging":function(exports, require,
 
     Dragging.prototype.drag = function(e) {
       var difference;
+      if (this.active === false) {
+        this.trigger('start.dragging');
+      }
       this.active = true;
       difference = {
         left: e.pageX - this.dragPosition.left,
@@ -15236,7 +15291,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       e.preventDefault();
       amount = -1;
       if (e.shiftKey) {
-        amount *= 5;
+        amount *= 10;
       }
       this.stage.history.record('leftArrow');
       return this.stage.selection.moveBy({
@@ -15250,7 +15305,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       e.preventDefault();
       amount = -1;
       if (e.shiftKey) {
-        amount *= 5;
+        amount *= 10;
       }
       this.stage.history.record('upArrow');
       return this.stage.selection.moveBy({
@@ -15264,7 +15319,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       e.preventDefault();
       amount = 1;
       if (e.shiftKey) {
-        amount *= 5;
+        amount *= 10;
       }
       this.stage.history.record('rightArrow');
       return this.stage.selection.moveBy({
@@ -15278,7 +15333,7 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       e.preventDefault();
       amount = 1;
       if (e.shiftKey) {
-        amount *= 5;
+        amount *= 10;
       }
       this.stage.history.record('downArrow');
       return this.stage.selection.moveBy({
@@ -17377,6 +17432,57 @@ this.require.define({"app/models/serialize":function(exports, require, module){(
       (function() {
       
         __out.push('<h3>Dimensions</h3>\n\n<article>\n  <div class="hbox">\n    <label>\n      <span>Width</span>\n      <input type="number" name="width" placeholder="0px">\n    </label>\n\n    <label>\n      <span>X</span>\n      <input type="number" name="x" placeholder="0px">\n    </label>\n  </div>\n\n  <div class="hbox">\n    <label>\n      <span>Height</span>\n      <input type="number" name="height" placeholder="0px">\n    </label>\n\n    <label>\n      <span>Y</span>\n      <input type="number" name="y" placeholder="0px">\n    </label>\n  </div>\n</article>\n');
+      
+      }).call(this);
+      
+    }).call(__obj);
+    __obj.safe = __objSafe, __obj.escape = __escape;
+    return __out.join('');
+  };
+}).call(this);
+(function() {
+  this.JST || (this.JST = {});
+  this.JST["app/views/inspector/font"] = function(__obj) {
+    if (!__obj) __obj = {};
+    var __out = [], __capture = function(callback) {
+      var out = __out, result;
+      __out = [];
+      callback.call(this);
+      result = __out.join('');
+      __out = out;
+      return __safe(result);
+    }, __sanitize = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else if (typeof value !== 'undefined' && value != null) {
+        return __escape(value);
+      } else {
+        return '';
+      }
+    }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+    __safe = __obj.safe = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else {
+        if (!(typeof value !== 'undefined' && value != null)) value = '';
+        var result = new String(value);
+        result.ecoSafe = true;
+        return result;
+      }
+    };
+    if (!__escape) {
+      __escape = __obj.escape = function(value) {
+        return ('' + value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      };
+    }
+    (function() {
+      (function() {
+      
+        __out.push('<h3>Font</h3>\n\n<label>\n  <span>Color</span>\n  <input type="color" name="color">\n</label>\n\n<label>\n  <span>Size</span>\n  <input type="number" name="size">\n</label>\n\n# Color\n# Size\n# Line-height\n# Style\n# Decoration\n# Capitalize\n# Font family\n# Alignment\n# text-indent\n# letter-spacing\n# word-spacing\n');
       
       }).call(this);
       

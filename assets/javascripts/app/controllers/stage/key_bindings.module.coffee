@@ -35,28 +35,28 @@ class KeyBindings extends Spine.Module
   leftArrow: (e) ->
     e.preventDefault()
     amount = -1
-    amount *= 5 if e.shiftKey
+    amount *= 10 if e.shiftKey
     @stage.history.record('leftArrow')
     @stage.selection.moveBy(left: amount, top: 0)
 
   upArrow: (e) ->
     e.preventDefault()
     amount = -1
-    amount *= 5 if e.shiftKey
+    amount *= 10 if e.shiftKey
     @stage.history.record('upArrow')
     @stage.selection.moveBy(left: 0, top: amount)
 
   rightArrow: (e) ->
     e.preventDefault()
     amount = 1
-    amount *= 5 if e.shiftKey
+    amount *= 10 if e.shiftKey
     @stage.history.record('rightArrow')
     @stage.selection.moveBy(left: amount, top: 0)
 
   downArrow: (e) ->
     e.preventDefault()
     amount = 1
-    amount *= 5 if e.shiftKey
+    amount *= 10 if e.shiftKey
     @stage.history.record('downArrow')
     @stage.selection.moveBy(left: 0, top: amount)
 

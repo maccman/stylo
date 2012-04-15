@@ -1,0 +1,23 @@
+<h3>Font</h3>
+
+<label>
+  <span>Color</span>
+  <input type="color" name="color">
+</label>
+
+<label>
+  <span>Size</span>
+  <input type="number" name="size">
+</label>
+
+# Color
+# Size
+# Line-height
+# Style
+# Decoration
+# Capitalize
+# Font family
+# Alignment
+# text-indent
+# letter-spacing
+# word-spacing

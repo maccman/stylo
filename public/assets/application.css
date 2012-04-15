@@ -793,6 +793,11 @@ body {
   background: #fff;
   overflow: auto;
 }
+#app .stage .element {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
 #app .stage .element.text.editing,
 #app .stage .element.text.selected {
   outline: 1px solid rgba(0,0,0,0.20);

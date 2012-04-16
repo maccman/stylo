@@ -95,15 +95,20 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
       this.append(this.textPosition = new TextPosition({
         stage: this.stage
       }));
+      this.append(this.textShadow = new TextShadow({
+        stage: this.stage
+      }));
     }
 
     TextInspector.prototype.render = function() {
       this.textPosition.render();
+      this.textShadow.render();
       return this;
     };
 
     TextInspector.prototype.release = function() {
       this.textPosition.release();
+      this.textShadow.release();
       return TextInspector.__super__.release.apply(this, arguments);
     };
 

@@ -13328,15 +13328,20 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
       this.append(this.textPosition = new TextPosition({
         stage: this.stage
       }));
+      this.append(this.textShadow = new TextShadow({
+        stage: this.stage
+      }));
     }
 
     TextInspector.prototype.render = function() {
       this.textPosition.render();
+      this.textShadow.render();
       return this;
     };
 
     TextInspector.prototype.release = function() {
       this.textPosition.release();
+      this.textShadow.release();
       return TextInspector.__super__.release.apply(this, arguments);
     };
 
@@ -14431,15 +14436,13 @@ this.require.define({"app/controllers/inspector/text_shadow":function(exports, r
     TextShadow.prototype.className = 'textShadow';
 
     TextShadow.prototype.events = {
-      'change input': 'change',
-      'click .preview': 'showColorPicker'
+      'change input': 'change'
     };
 
     TextShadow.prototype.elements = {
       'input[name=x]': '$x',
       'input[name=y]': '$y',
-      'input[name=blur]': '$blur',
-      '.preview .inner': '$preview'
+      'input[name=blur]': '$blur'
     };
 
     function TextShadow() {
@@ -14449,66 +14452,46 @@ this.require.define({"app/controllers/inspector/text_shadow":function(exports, r
       this.positionPicker.bind('change', function(position) {
         _this.shadow.x = position.left;
         _this.shadow.y = position.top;
-        _this.stage.selection.set('textShadow', _this.shadow.toString());
+        _this.stage.selection.set('textShadow', _this.shadow);
         return _this.update();
+      });
+      this.$color = new ColorPicker.Preview;
+      this.$color.bind('change', function() {
+        return _this.change();
       });
     }
 
     TextShadow.prototype.render = function() {
-      var _ref;
       this.disabled = !this.stage.selection.isAny();
       this.shadow = this.stage.selection.get('textShadow');
       this.shadow || (this.shadow = new Shadow);
       this.html(JST['app/views/inspector/text_shadow'](this));
-      this.$('input').attr('disabled', this.disabled);
-      this.$preview.css('background', (_ref = this.shadow) != null ? _ref.color.toString() : void 0);
-      this.positionPicker.disabled = this.disabled;
-      this.positionPicker.change({
-        left: this.shadow.x,
-        top: this.shadow.y
-      });
+      this.$('input[type=color]').replaceWith(this.$color.el);
       this.append(this.positionPicker);
+      this.update();
       return this;
     };
 
     TextShadow.prototype.update = function() {
-      var _ref;
       this.$('input').attr('disabled', this.disabled);
-      this.$preview.css('background', (_ref = this.shadow) != null ? _ref.color.toString() : void 0);
       this.$x.val(this.shadow.x);
       this.$y.val(this.shadow.y);
-      return this.$blur.val(this.shadow.blur);
-    };
-
-    TextShadow.prototype.showColorPicker = function(e) {
-      var color, picker, _ref,
-        _this = this;
-      if (this.disabled) {
-        return;
-      }
-      color = (_ref = this.shadow) != null ? _ref.color : void 0;
-      picker = new ColorPicker({
-        color: color
-      });
-      picker.bind('change', function(color) {
-        _this.shadow.color = color;
-        _this.change();
-        return _this.update();
-      });
-      picker.bind('cancel', function() {
-        _this.shadow.color = color;
-        _this.change();
-        return _this.update();
-      });
-      return picker.open(this.$preview.offset());
+      this.$blur.val(this.shadow.blur);
+      return this.$color.val(this.shadow.color);
     };
 
     TextShadow.prototype.change = function() {
       this.shadow.x = parseFloat(this.$x.val());
       this.shadow.y = parseFloat(this.$y.val());
       this.shadow.blur = parseFloat(this.$blur.val());
+      this.shadow.color = this.$color.val();
+      this.positionPicker.change({
+        left: this.shadow.x,
+        top: this.shadow.y
+      });
       this.stage.history.record('textShadow');
-      return this.stage.selection.set('textShadow', this.shadow);
+      this.stage.selection.set('textShadow', this.shadow);
+      return this.update();
     };
 
     TextShadow.prototype.release = function() {
@@ -18044,21 +18027,8 @@ this.require.define({"app/models/serialize":function(exports, require, module){(
     }
     (function() {
       (function() {
-        var _ref, _ref1, _ref2;
       
-        __out.push('<h3>Text Shadow</h3>\n\n<article>\n  <label>\n    <span>X</span>\n    <input type="number" name="x" value="');
-      
-        __out.push(__sanitize((_ref = this.shadow) != null ? _ref.x : void 0));
-      
-        __out.push('">px\n  </label>\n\n  <label>\n    <span>Y</span>\n    <input type="number" name="y" value="');
-      
-        __out.push(__sanitize((_ref1 = this.shadow) != null ? _ref1.y : void 0));
-      
-        __out.push('">px\n  </label>\n\n  <label>\n    <span>Blur</span>\n    <input type="number" name="blur" value="');
-      
-        __out.push(__sanitize((_ref2 = this.shadow) != null ? _ref2.blur : void 0));
-      
-        __out.push('">px\n  </label>\n\n  <div class="preview"><div class="inner"></div></div>\n</article>\n');
+        __out.push('<h3>Text Shadow</h3>\n\n<article>\n  <label>\n    <span>X</span>\n    <input type="number" name="x" placeholder="0px">\n  </label>\n\n  <label>\n    <span>Y</span>\n    <input type="number" name="y" placeholder="0px">\n  </label>\n\n  <label>\n    <span>Blur</span>\n    <input type="number" name="blur" placeholder="0px">\n  </label>\n\n  <input type="color" name="color">\n</article>\n');
       
       }).call(this);
       

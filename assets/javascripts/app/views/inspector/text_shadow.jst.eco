@@ -3,18 +3,18 @@
 <article>
   <label>
     <span>X</span>
-    <input type="number" name="x" value="<%= @shadow?.x %>">px
+    <input type="number" name="x" placeholder="0px">
   </label>
 
   <label>
     <span>Y</span>
-    <input type="number" name="y" value="<%= @shadow?.y %>">px
+    <input type="number" name="y" placeholder="0px">
   </label>
 
   <label>
     <span>Blur</span>
-    <input type="number" name="blur" value="<%= @shadow?.blur %>">px
+    <input type="number" name="blur" placeholder="0px">
   </label>
 
-  <div class="preview"><div class="inner"></div></div>
+  <input type="color" name="color">
 </article>

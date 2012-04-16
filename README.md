@@ -20,8 +20,8 @@ Phase 1:
   * ✓ context menu
   * Font alignment
   * Font family/size/style/color
-  * Text-shadow
-  * Text-spacing (line height)
+  * ✓ Text-shadow
+  * ✓ Text-spacing (line height)
 
 Phase 2:
 

@@ -78,15 +78,13 @@ this.require.define({"app/controllers/inspector/text_shadow":function(exports, r
     TextShadow.prototype.className = 'textShadow';
 
     TextShadow.prototype.events = {
-      'change input': 'change',
-      'click .preview': 'showColorPicker'
+      'change input': 'change'
     };
 
     TextShadow.prototype.elements = {
       'input[name=x]': '$x',
       'input[name=y]': '$y',
-      'input[name=blur]': '$blur',
-      '.preview .inner': '$preview'
+      'input[name=blur]': '$blur'
     };
 
     function TextShadow() {
@@ -96,66 +94,46 @@ this.require.define({"app/controllers/inspector/text_shadow":function(exports, r
       this.positionPicker.bind('change', function(position) {
         _this.shadow.x = position.left;
         _this.shadow.y = position.top;
-        _this.stage.selection.set('textShadow', _this.shadow.toString());
+        _this.stage.selection.set('textShadow', _this.shadow);
         return _this.update();
+      });
+      this.$color = new ColorPicker.Preview;
+      this.$color.bind('change', function() {
+        return _this.change();
       });
     }
 
     TextShadow.prototype.render = function() {
-      var _ref;
       this.disabled = !this.stage.selection.isAny();
       this.shadow = this.stage.selection.get('textShadow');
       this.shadow || (this.shadow = new Shadow);
       this.html(JST['app/views/inspector/text_shadow'](this));
-      this.$('input').attr('disabled', this.disabled);
-      this.$preview.css('background', (_ref = this.shadow) != null ? _ref.color.toString() : void 0);
-      this.positionPicker.disabled = this.disabled;
-      this.positionPicker.change({
-        left: this.shadow.x,
-        top: this.shadow.y
-      });
+      this.$('input[type=color]').replaceWith(this.$color.el);
       this.append(this.positionPicker);
+      this.update();
       return this;
     };
 
     TextShadow.prototype.update = function() {
-      var _ref;
       this.$('input').attr('disabled', this.disabled);
-      this.$preview.css('background', (_ref = this.shadow) != null ? _ref.color.toString() : void 0);
       this.$x.val(this.shadow.x);
       this.$y.val(this.shadow.y);
-      return this.$blur.val(this.shadow.blur);
-    };
-
-    TextShadow.prototype.showColorPicker = function(e) {
-      var color, picker, _ref,
-        _this = this;
-      if (this.disabled) {
-        return;
-      }
-      color = (_ref = this.shadow) != null ? _ref.color : void 0;
-      picker = new ColorPicker({
-        color: color
-      });
-      picker.bind('change', function(color) {
-        _this.shadow.color = color;
-        _this.change();
-        return _this.update();
-      });
-      picker.bind('cancel', function() {
-        _this.shadow.color = color;
-        _this.change();
-        return _this.update();
-      });
-      return picker.open(this.$preview.offset());
+      this.$blur.val(this.shadow.blur);
+      return this.$color.val(this.shadow.color);
     };
 
     TextShadow.prototype.change = function() {
       this.shadow.x = parseFloat(this.$x.val());
       this.shadow.y = parseFloat(this.$y.val());
       this.shadow.blur = parseFloat(this.$blur.val());
+      this.shadow.color = this.$color.val();
+      this.positionPicker.change({
+        left: this.shadow.x,
+        top: this.shadow.y
+      });
       this.stage.history.record('textShadow');
-      return this.stage.selection.set('textShadow', this.shadow);
+      this.stage.selection.set('textShadow', this.shadow);
+      return this.update();
     };
 
     TextShadow.prototype.release = function() {

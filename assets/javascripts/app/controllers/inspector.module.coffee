@@ -14,13 +14,16 @@ class TextInspector extends Spine.Controller
   constructor: ->
     super
     @append(@textPosition = new TextPosition(stage: @stage))
+    @append(@textShadow   = new TextShadow(stage: @stage))
 
   render: ->
     @textPosition.render()
+    @textShadow.render()
     this
 
   release: ->
     @textPosition.release()
+    @textShadow.release()
     super
 
 class DisplayInspector extends Spine.Controller

@@ -13442,8 +13442,8 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
       this.manager.add(this.textInspector, this.displayInspector);
       this.manager.bind('change', function(controller) {
         var name;
-        _this.$headers.removeClass('active');
         name = controller.constructor.name;
+        _this.$headers.removeClass('active');
         return _this.$headers.filter("[data-type=" + name + "]").addClass('active');
       });
       this.displayInspector.active();
@@ -13460,8 +13460,11 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
     };
 
     Inspector.prototype.render = function() {
+      var _ref;
       this.el.hide();
-      this.manager.current.render();
+      if ((_ref = this.manager.current) != null) {
+        _ref.render();
+      }
       this.el.show();
       this.rendering = false;
       return this;

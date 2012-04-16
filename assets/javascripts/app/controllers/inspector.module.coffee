@@ -73,8 +73,8 @@ class Inspector extends Spine.Controller
     @manager = new Spine.Manager
     @manager.add(@textInspector, @displayInspector)
     @manager.bind 'change', (controller) =>
-      @$headers.removeClass('active')
       name = controller.constructor.name
+      @$headers.removeClass('active')
       @$headers.filter("[data-type=#{name}]").addClass('active')
 
     # Display the display inspector by default
@@ -97,7 +97,7 @@ class Inspector extends Spine.Controller
     @el.hide()
 
     # Render the currently active inspector
-    @manager.current.render()
+    @manager.current?.render()
 
     @el.show()
     @rendering = false

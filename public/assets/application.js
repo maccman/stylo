@@ -15330,7 +15330,7 @@ this.require.define({"app/controllers/stage/drop_area":function(exports, require
         reader.onload = function(e) {
           return _this.addImage(e.target.result);
         };
-        _results.push(reader.readAsBinaryString(file));
+        _results.push(reader.readAsDataURL(file));
       }
       return _results;
     };

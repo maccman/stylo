@@ -19,7 +19,7 @@ class DropArea extends Spine.Controller
       reader = new FileReader
       reader.onload = (e) =>
         @addImage(e.target.result)
-      reader.readAsBinaryString(file)
+      reader.readAsDataURL(file)
 
   addImage: (src) ->
     @stage.history.record()

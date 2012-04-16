@@ -1,15 +1,15 @@
+module.exports = DropArea
+
 Image = require('app/controllers/elements/image')
 
 class DropArea extends Spine.Controller
   events:
-    'drop': 'drop'
-    'dragenter': 'cancel'
     'dragover':  'cancel'
-    'dragleave': 'cancel'
+    'drop':      'drop'
 
   constructor: (@stage) ->
     super(el: @stage.el)
-    $('body').bind('drop', @cancel)
+    $('body').bind('dragover', @cancel)
 
   drop: (e) ->
     e.preventDefault()
@@ -19,7 +19,7 @@ class DropArea extends Spine.Controller
       reader = new FileReader
       reader.onload = (e) =>
         @addImage(e.target.result)
-      reader.readAsDataURL(file)
+      reader.readAsBinaryString(file)
 
   addImage: (src) ->
     @stage.history.record()
@@ -31,9 +31,10 @@ class DropArea extends Spine.Controller
     @stage.selection.add(element)
 
   cancel: (e) ->
+    e.stopPropagation()
     e.preventDefault()
 
   release: ->
-    $('body').unbind('drop', @cancel)
+    $('body').unbind('dragover', @cancel)
 
 module.exports = DropArea

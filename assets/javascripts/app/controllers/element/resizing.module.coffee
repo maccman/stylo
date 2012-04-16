@@ -102,6 +102,10 @@ class Resizing extends Spine.Controller
       area.width  = Math.max(area.width, area.height)
       area.height = area.width
 
+    # Make sure we can't have negative widths/heights
+    area.width  = Math.max(0, area.width)
+    area.height = Math.max(0, area.height)
+
     @element.resize(area)
 
 module.exports = Resizing

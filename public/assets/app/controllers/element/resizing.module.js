@@ -211,6 +211,8 @@ this.require.define({"app/controllers/element/resizing":function(exports, requir
         area.width = Math.max(area.width, area.height);
         area.height = area.width;
       }
+      area.width = Math.max(0, area.width);
+      area.height = Math.max(0, area.height);
       return this.element.resize(area);
     };
 

@@ -2,15 +2,6 @@ A Photoshop replacement. Inspired by Keynote. Democratizing design.
 
 ##TODO
 
-Fixes:
-
-* Background image
-* Background gradient rotation
-* Color inspector movable window
-* Dragging right and up doesn't select elements - offset by the header
-* We want the resize to be around the selection?
-* ✓ We want the inspector not to completely re-render on selection
-
 Phase 1:
 
 * ✓ Move
@@ -31,7 +22,6 @@ Phase 1:
   * Font family/size/style/color
   * Text-shadow
   * Text-spacing (line height)
-
 
 Phase 2:
 
@@ -72,6 +62,16 @@ Nice to have:
 * ✓ Text
 * ✓ Image
 * Line
+
+##Fixes:
+
+* Background image
+* Background gradient rotation
+* Color inspector movable window
+* Dragging right and up doesn't select elements - offset by the header
+* We want the resize to be around the selection?
+* ✓ We want the inspector not to completely re-render on selection
+* ✓ You can have negative widths
 
 -------------------------------------------------------------------------------------------------------------------------------------
 

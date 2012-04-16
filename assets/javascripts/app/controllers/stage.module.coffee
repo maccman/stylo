@@ -121,7 +121,7 @@ class Stage extends Spine.Controller
   # ZIndex
 
   bringForward: ->
-    elements = @selection.element[..].reverse()
+    elements = @selection.elements[..].reverse()
     @zindex.bringForward(element) for element in elements
     true
 

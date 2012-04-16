@@ -260,7 +260,7 @@ this.require.define({"app/controllers/stage":function(exports, require, module){
 
     Stage.prototype.bringForward = function() {
       var element, elements, _i, _len;
-      elements = this.selection.element.slice(0).reverse();
+      elements = this.selection.elements.slice(0).reverse();
       for (_i = 0, _len = elements.length; _i < _len; _i++) {
         element = elements[_i];
         this.zindex.bringForward(element);

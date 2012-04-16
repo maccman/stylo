@@ -63,6 +63,8 @@ this.require.define({"app/controllers/stage/drop_area":function(exports, require
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
+  module.exports = DropArea;
+
   Image = require('app/controllers/elements/image');
 
   DropArea = (function(_super) {
@@ -72,10 +74,8 @@ this.require.define({"app/controllers/stage/drop_area":function(exports, require
     DropArea.name = 'DropArea';
 
     DropArea.prototype.events = {
-      'drop': 'drop',
-      'dragenter': 'cancel',
       'dragover': 'cancel',
-      'dragleave': 'cancel'
+      'drop': 'drop'
     };
 
     function DropArea(stage) {
@@ -83,7 +83,7 @@ this.require.define({"app/controllers/stage/drop_area":function(exports, require
       DropArea.__super__.constructor.call(this, {
         el: this.stage.el
       });
-      $('body').bind('drop', this.cancel);
+      $('body').bind('dragover', this.cancel);
     }
 
     DropArea.prototype.drop = function(e) {
@@ -99,7 +99,7 @@ this.require.define({"app/controllers/stage/drop_area":function(exports, require
         reader.onload = function(e) {
           return _this.addImage(e.target.result);
         };
-        _results.push(reader.readAsDataURL(file));
+        _results.push(reader.readAsBinaryString(file));
       }
       return _results;
     };
@@ -116,11 +116,12 @@ this.require.define({"app/controllers/stage/drop_area":function(exports, require
     };
 
     DropArea.prototype.cancel = function(e) {
+      e.stopPropagation();
       return e.preventDefault();
     };
 
     DropArea.prototype.release = function() {
-      return $('body').unbind('drop', this.cancel);
+      return $('body').unbind('dragover', this.cancel);
     };
 
     return DropArea;

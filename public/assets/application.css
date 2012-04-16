@@ -313,6 +313,7 @@ body {
   border-left: 1px solid #c6c6c6;
   border-bottom: 1px solid #c7c7c7;
   text-shadow: 0px 1px 0px rgba(255,255,255,0.80);
+  font-size: 13px;
 }
 #app .inspector header div {
   -webkit-box-flex: 1;

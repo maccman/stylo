@@ -1,0 +1,23 @@
+<h3>Text Position</h3>
+
+<article>
+  <label>
+    <span>Text Indent</span>
+    <input type="number" name="textIndent" placeholder="0px">
+  </label>
+
+  <label>
+    <span>Line Height</span>
+    <input type="number" name="lineHeight" placeholder="0px">
+  </label>
+
+  <label>
+    <span>Letter Spacing</span>
+    <input type="number" name="letterSpacing" placeholder="0px">
+  </label>
+
+  <label>
+    <span>Word Spacing</span>
+    <input type="number" name="wordSpacing" placeholder="0px">
+  </label>
+</article>

@@ -25,9 +25,9 @@ class Spine.Manager extends Spine.Module
 
   # Private
 
-  change: (current, args...) ->
+  change: (@current, args...) ->
     for cont in @controllers
-      if cont is current
+      if cont is @current
         cont.activate(args...)
       else
         cont.deactivate(args...)
@@ -39,18 +39,18 @@ Spine.Controller.include
     else
       args.unshift('active')
       @trigger(args...)
-    @
+    this
 
   isActive: ->
     @el.hasClass('active')
 
   activate: ->
     @el.addClass('active')
-    @
+    this
 
   deactivate: ->
     @el.removeClass('active')
-    @
+    this
 
 class Spine.Stack extends Spine.Controller
   controllers: {}

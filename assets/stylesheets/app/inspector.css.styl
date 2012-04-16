@@ -12,7 +12,41 @@
   background: #F5F5F5
   color: #000
   -webkit-user-select: none
-  overflow-x: auto
+  vbox()
+
+  header {
+    hbox()
+    -webkit-box-pack: center
+    vbg-gradient(#FFF, rgba(238, 238, 238, 0.9))
+    border-left: 1px solid #C6C6C6
+    border-bottom: 1px solid darken(#DDDDDD, 10%)
+    text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.8)
+
+    div {
+      box-flex(1)
+      padding: 8px 15px
+      cursor: pointer
+      border-right: 1px solid rgba(0, 0, 0, 0.1)
+      text-align: center
+
+      &:last-child {
+        border-right: none
+      }
+
+      &:active, &.active {
+        vbg-gradient(darken(rgba(238, 238, 238, 0.9), 10%), rgba(238, 238, 238, 0.9))
+      }
+    }
+  }
+
+  .textInspector, .displayInspector {
+    box-flex(1)
+    overflow-x: auto
+
+    &:not(.active) {
+      display: none
+    }
+  }
 
   h3 {
     line-height: 20px

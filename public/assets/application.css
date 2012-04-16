@@ -288,7 +288,62 @@ body {
   background: #f5f5f5;
   color: #000;
   -webkit-user-select: none;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  -moz-box-align: stretch;
+}
+#app .inspector header {
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-align: stretch;
+  -webkit-box-pack: start;
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  -moz-box-align: stretch;
+  -moz-box-pack: start;
+  -webkit-box-pack: center;
+  background: #fff;
+  background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(rgba(238,238,238,0.90)));
+  background: -webkit-linear-gradient(top, #fff, rgba(238,238,238,0.90));
+  background: -moz-linear-gradient(top, #fff, rgba(238,238,238,0.90));
+  background: linear-gradient(top, #fff, rgba(238,238,238,0.90));
+  border-left: 1px solid #c6c6c6;
+  border-bottom: 1px solid #c7c7c7;
+  text-shadow: 0px 1px 0px rgba(255,255,255,0.80);
+}
+#app .inspector header div {
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  box-flex: 1;
+  padding: 8px 15px;
+  cursor: pointer;
+  border-right: 1px solid rgba(0,0,0,0.10);
+  text-align: center;
+}
+#app .inspector header div:last-child {
+  border-right: none;
+}
+#app .inspector header div:active,
+#app .inspector header div.active {
+  background: rgba(214,214,214,0.90);
+  background: -webkit-gradient(linear, left top, left bottom, from(rgba(214,214,214,0.90)), to(rgba(238,238,238,0.90)));
+  background: -webkit-linear-gradient(top, rgba(214,214,214,0.90), rgba(238,238,238,0.90));
+  background: -moz-linear-gradient(top, rgba(214,214,214,0.90), rgba(238,238,238,0.90));
+  background: linear-gradient(top, rgba(214,214,214,0.90), rgba(238,238,238,0.90));
+}
+#app .inspector .textInspector,
+#app .inspector .displayInspector {
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  box-flex: 1;
   overflow-x: auto;
+}
+#app .inspector .textInspector:not(.active),
+#app .inspector .displayInspector:not(.active) {
+  display: none;
 }
 #app .inspector h3 {
   line-height: 20px;
@@ -493,25 +548,25 @@ body {
 #app .inspector .background.disabled .list {
   opacity: 0.6;
 }
-#app .inspector > .border label {
+#app .inspector .border label {
   margin-bottom: 3px;
 }
-#app .inspector > .border label span {
+#app .inspector .border label span {
   width: 35px;
 }
-#app .inspector > .border label input {
+#app .inspector .border label input {
   margin-right: 10px;
 }
-#app .inspector > .border label .colorPreview {
+#app .inspector .border label .colorPreview {
   margin: 3px 0 -5px 0;
 }
-#app .inspector > .border label select {
+#app .inspector .border label select {
   width: 130px;
 }
-#app .inspector > .border .hbox label {
+#app .inspector .border .hbox label {
   margin-bottom: 0px;
 }
-#app .inspector > .border .borders {
+#app .inspector .border .borders {
   display: -webkit-box;
   -webkit-box-orient: horizontal;
   -webkit-box-align: stretch;
@@ -536,20 +591,20 @@ body {
   -webkit-box-pack: center;
   width: 185px;
 }
-#app .inspector > .border .borders div {
+#app .inspector .border .borders div {
   overflow: hidden;
   border-right: 1px solid #ccc;
 }
-#app .inspector > .border .borders div:last-child {
+#app .inspector .border .borders div:last-child {
   border-right: none;
 }
-#app .inspector > .border .borders div:active,
-#app .inspector > .border .borders div.active {
+#app .inspector .border .borders div:active,
+#app .inspector .border .borders div.active {
   -moz-box-shadow: inset 0 0 10px rgba(0,0,0,0.20);
   -webkit-box-shadow: inset 0 0 10px rgba(0,0,0,0.20);
   box-shadow: inset 0 0 10px rgba(0,0,0,0.20);
 }
-#app .inspector > .border .borders span {
+#app .inspector .border .borders span {
   display: block;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -560,24 +615,24 @@ body {
   border: 1px solid #777;
   cursor: pointer;
 }
-#app .inspector > .border .borders .borderTop span {
+#app .inspector .border .borders .borderTop span {
   border-top-width: 3px;
 }
-#app .inspector > .border .borders .borderRight span {
+#app .inspector .border .borders .borderRight span {
   border-right-width: 3px;
 }
-#app .inspector > .border .borders .borderBottom span {
+#app .inspector .border .borders .borderBottom span {
   border-bottom-width: 3px;
 }
-#app .inspector > .border .borders .borderLeft span {
+#app .inspector .border .borders .borderLeft span {
   border-left-width: 3px;
 }
-#app .inspector > .border.disabled .borders,
-#app .inspector > .border.disabled input,
-#app .inspector > .border.disabled select {
+#app .inspector .border.disabled .borders,
+#app .inspector .border.disabled input,
+#app .inspector .border.disabled select {
   opacity: 0.6;
 }
-#app .inspector > .borderRadius .borders {
+#app .inspector .borderRadius .borders {
   display: -webkit-box;
   -webkit-box-orient: horizontal;
   -webkit-box-align: stretch;
@@ -602,20 +657,20 @@ body {
   -webkit-box-pack: center;
   width: 185px;
 }
-#app .inspector > .borderRadius .borders div {
+#app .inspector .borderRadius .borders div {
   overflow: hidden;
   border-right: 1px solid #ccc;
 }
-#app .inspector > .borderRadius .borders div:last-child {
+#app .inspector .borderRadius .borders div:last-child {
   border-right: none;
 }
-#app .inspector > .borderRadius .borders div:active,
-#app .inspector > .borderRadius .borders div.active {
+#app .inspector .borderRadius .borders div:active,
+#app .inspector .borderRadius .borders div.active {
   -moz-box-shadow: inset 0 0 10px rgba(0,0,0,0.20);
   -webkit-box-shadow: inset 0 0 10px rgba(0,0,0,0.20);
   box-shadow: inset 0 0 10px rgba(0,0,0,0.20);
 }
-#app .inspector > .borderRadius .borders span {
+#app .inspector .borderRadius .borders span {
   display: block;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -626,24 +681,24 @@ body {
   border: 1px solid #777;
   cursor: pointer;
 }
-#app .inspector > .borderRadius .borders .borderRadius span {
+#app .inspector .borderRadius .borders .borderRadius span {
   -moz-border-radius: 4px;
   -webkit-border-radius: 4px;
   border-radius: 4px;
 }
-#app .inspector > .borderRadius .borders .borderRadiusTopLeft span {
+#app .inspector .borderRadius .borders .borderRadiusTopLeft span {
   border-top-left-radius: 4px;
 }
-#app .inspector > .borderRadius .borders .borderRadiusTopRight span {
+#app .inspector .borderRadius .borders .borderRadiusTopRight span {
   border-top-right-radius: 4px;
 }
-#app .inspector > .borderRadius .borders .borderRadiusBottomRight span {
+#app .inspector .borderRadius .borders .borderRadiusBottomRight span {
   border-bottom-right-radius: 4px;
 }
-#app .inspector > .borderRadius .borders .borderRadiusBottomLeft span {
+#app .inspector .borderRadius .borders .borderRadiusBottomLeft span {
   border-bottom-left-radius: 4px;
 }
-#app .inspector > .borderRadius label {
+#app .inspector .borderRadius label {
   display: -webkit-box;
   -webkit-box-orient: horizontal;
   -webkit-box-align: stretch;
@@ -653,20 +708,20 @@ body {
   -moz-box-align: stretch;
   -moz-box-pack: start;
 }
-#app .inspector > .borderRadius label input {
+#app .inspector .borderRadius label input {
   display: block;
 }
-#app .inspector > .borderRadius label input[type=range] {
+#app .inspector .borderRadius label input[type=range] {
   margin: 5px;
   -webkit-box-flex: 1;
   -moz-box-flex: 1;
   box-flex: 1;
 }
-#app .inspector > .borderRadius label input[type=number] {
+#app .inspector .borderRadius label input[type=number] {
   width: 40px;
 }
-#app .inspector > .borderRadius.disabled .borders,
-#app .inspector > .borderRadius.disabled input {
+#app .inspector .borderRadius.disabled .borders,
+#app .inspector .borderRadius.disabled input {
   opacity: 0.6;
 }
 #app .inspector .boxShadow .positionPicker {
@@ -721,6 +776,9 @@ body {
 }
 #app .inspector .opacity label input[type=number] {
   width: 40px;
+}
+#app .inspector .textPosition label span {
+  width: 85px;
 }
 .popup {
   -moz-border-radius: 4px;

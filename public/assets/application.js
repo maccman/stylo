@@ -10304,13 +10304,14 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     };
 
     Manager.prototype.change = function() {
-      var args, cont, current, _i, _len, _ref, _results;
+      var args, cont, _i, _len, _ref, _results;
       current = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      this.current = current;
       _ref = this.controllers;
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         cont = _ref[_i];
-        if (cont === current) {
+        if (cont === this.current) {
           _results.push(cont.activate.apply(cont, args));
         } else {
           _results.push(cont.deactivate.apply(cont, args));
@@ -13291,10 +13292,10 @@ this.require.define({"app/controllers/header":function(exports, require, module)
 }).call(this);
 ;}});
 this.require.define({"app/controllers/inspector":function(exports, require, module){(function() {
-  var Background, Border, BorderRadius, BoxShadow, Dimensions, Inspector, Opacity, TextShadow, Utils,
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+  var Background, Border, BorderRadius, BoxShadow, Dimensions, DisplayInspector, Inspector, Opacity, TextInspector, TextPosition, TextShadow, Utils,
     __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   Background = require('./inspector/background');
 
@@ -13310,21 +13311,49 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
 
   Dimensions = require('./inspector/dimensions');
 
+  TextPosition = require('./inspector/text_position');
+
   Utils = require('lib/utils');
 
-  Inspector = (function(_super) {
+  TextInspector = (function(_super) {
 
-    __extends(Inspector, _super);
+    __extends(TextInspector, _super);
 
-    Inspector.name = 'Inspector';
+    TextInspector.name = 'TextInspector';
 
-    Inspector.prototype.className = 'inspector';
+    TextInspector.prototype.className = 'textInspector';
 
-    function Inspector() {
-      this.render = __bind(this.render, this);
+    function TextInspector() {
+      TextInspector.__super__.constructor.apply(this, arguments);
+      this.append(this.textPosition = new TextPosition({
+        stage: this.stage
+      }));
+    }
 
-      this.paint = __bind(this.paint, this);
-      Inspector.__super__.constructor.apply(this, arguments);
+    TextInspector.prototype.render = function() {
+      this.textPosition.render();
+      return this;
+    };
+
+    TextInspector.prototype.release = function() {
+      this.textPosition.release();
+      return TextInspector.__super__.release.apply(this, arguments);
+    };
+
+    return TextInspector;
+
+  })(Spine.Controller);
+
+  DisplayInspector = (function(_super) {
+
+    __extends(DisplayInspector, _super);
+
+    DisplayInspector.name = 'DisplayInspector';
+
+    DisplayInspector.prototype.className = 'displayInspector';
+
+    function DisplayInspector() {
+      DisplayInspector.__super__.constructor.apply(this, arguments);
       this.append(this.dimensions = new Dimensions({
         stage: this.stage
       }));
@@ -13343,6 +13372,81 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
       this.append(this.opacity = new Opacity({
         stage: this.stage
       }));
+    }
+
+    DisplayInspector.prototype.render = function() {
+      this.dimensions.render();
+      this.background.render();
+      this.border.render();
+      this.borderRadius.render();
+      this.boxShadow.render();
+      this.opacity.render();
+      return this;
+    };
+
+    DisplayInspector.prototype.release = function() {
+      var _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
+      if ((_ref = this.dimensions) != null) {
+        _ref.release();
+      }
+      if ((_ref1 = this.background) != null) {
+        _ref1.release();
+      }
+      if ((_ref2 = this.border) != null) {
+        _ref2.release();
+      }
+      if ((_ref3 = this.borderRadius) != null) {
+        _ref3.release();
+      }
+      if ((_ref4 = this.boxShadow) != null) {
+        _ref4.release();
+      }
+      return (_ref5 = this.opacity) != null ? _ref5.release() : void 0;
+    };
+
+    return DisplayInspector;
+
+  })(Spine.Controller);
+
+  Inspector = (function(_super) {
+
+    __extends(Inspector, _super);
+
+    Inspector.name = 'Inspector';
+
+    Inspector.prototype.className = 'inspector';
+
+    Inspector.prototype.events = {
+      'click header [data-type]': 'changeInspector'
+    };
+
+    Inspector.prototype.elements = {
+      'header div': '$headers'
+    };
+
+    function Inspector() {
+      this.render = __bind(this.render, this);
+
+      this.paint = __bind(this.paint, this);
+
+      var _this = this;
+      Inspector.__super__.constructor.apply(this, arguments);
+      this.append(JST['app/views/inspector']());
+      this.append(this.textInspector = new TextInspector({
+        stage: this.stage
+      }));
+      this.append(this.displayInspector = new DisplayInspector({
+        stage: this.stage
+      }));
+      this.manager = new Spine.Manager;
+      this.manager.add(this.textInspector, this.displayInspector);
+      this.manager.bind('change', function(controller) {
+        var name;
+        _this.$headers.removeClass('active');
+        name = controller.constructor.name;
+        return _this.$headers.filter("[data-type=" + name + "]").addClass('active');
+      });
+      this.displayInspector.active();
       this.stage.selection.bind('change', this.paint);
       this.render();
     }
@@ -13357,18 +13461,27 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
 
     Inspector.prototype.render = function() {
       this.el.hide();
-      this.dimensions.render();
-      this.background.render();
-      this.border.render();
-      this.borderRadius.render();
-      this.boxShadow.render();
-      this.opacity.render();
+      this.manager.current.render();
       this.el.show();
       this.rendering = false;
       return this;
     };
 
+    Inspector.prototype.changeInspector = function(e) {
+      var name;
+      name = $(e.target).data('type');
+      if (name === 'DisplayInspector') {
+        this.displayInspector.render();
+        return this.displayInspector.active();
+      } else if (name === 'TextInspector') {
+        this.textInspector.render();
+        return this.textInspector.active();
+      }
+    };
+
     Inspector.prototype.release = function() {
+      this.textInspector.release();
+      this.displayInspector.release();
       this.stage.selection.unbind('change', this.paint);
       return Inspector.__super__.release.apply(this, arguments);
     };
@@ -14230,6 +14343,71 @@ this.require.define({"app/controllers/inspector/opacity":function(exports, requi
 
 }).call(this);
 ;}});
+this.require.define({"app/controllers/inspector/text_position":function(exports, require, module){(function() {
+  var TextPosition,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  TextPosition = (function(_super) {
+
+    __extends(TextPosition, _super);
+
+    TextPosition.name = 'TextPosition';
+
+    TextPosition.prototype.className = 'textPosition';
+
+    TextPosition.prototype.types = ['textIndent', 'lineHeight', 'letterSpacing', 'wordSpacing'];
+
+    TextPosition.prototype.elements = {
+      'input[name=textIndent]': '$textIndent',
+      'input[name=lineHeight]': '$lineHeight',
+      'input[name=letterSpacing]': '$letterSpacing',
+      'input[name=wordSpacing]': '$wordSpacing'
+    };
+
+    TextPosition.prototype.events = {
+      'change input': 'change'
+    };
+
+    function TextPosition() {
+      TextPosition.__super__.constructor.apply(this, arguments);
+      this.html(JST['app/views/inspector/text_position'](this));
+    }
+
+    TextPosition.prototype.render = function() {
+      var type, value, _i, _len, _ref, _results;
+      this.disabled = !this.stage.selection.isAny();
+      this.current = {};
+      _ref = this.types;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        type = _ref[_i];
+        value = this.stage.selection.get(type);
+        _results.push(this['$' + type].val(value));
+      }
+      return _results;
+    };
+
+    TextPosition.prototype.change = function() {
+      var type, value, _i, _len, _ref, _results;
+      _ref = this.types;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        type = _ref[_i];
+        value = parseInt(this['$' + type].val(), 10);
+        _results.push(this.stage.selection.set(type, value));
+      }
+      return _results;
+    };
+
+    return TextPosition;
+
+  })(Spine.Controller);
+
+  module.exports = TextPosition;
+
+}).call(this);
+;}});
 this.require.define({"app/controllers/inspector/text_shadow":function(exports, require, module){(function() {
   var ColorPicker, PositionPicker, Shadow, TextShadow,
     __hasProp = {}.hasOwnProperty,
@@ -14343,6 +14521,31 @@ this.require.define({"app/controllers/inspector/text_shadow":function(exports, r
   })(Spine.Controller);
 
   module.exports = TextShadow;
+
+}).call(this);
+;}});
+this.require.define({"app/controllers/inspector/text_style":function(exports, require, module){(function() {
+  var TextStyle,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  TextStyle = (function(_super) {
+
+    __extends(TextStyle, _super);
+
+    TextStyle.name = 'TextStyle';
+
+    function TextStyle() {
+      return TextStyle.__super__.constructor.apply(this, arguments);
+    }
+
+    TextStyle.prototype.className = 'textStyle';
+
+    return TextStyle;
+
+  })(Spine.Controller);
+
+  module.exports = TextStyle;
 
 }).call(this);
 ;}});
@@ -17084,6 +17287,57 @@ this.require.define({"app/models/serialize":function(exports, require, module){(
 }).call(this);
 (function() {
   this.JST || (this.JST = {});
+  this.JST["app/views/inspector"] = function(__obj) {
+    if (!__obj) __obj = {};
+    var __out = [], __capture = function(callback) {
+      var out = __out, result;
+      __out = [];
+      callback.call(this);
+      result = __out.join('');
+      __out = out;
+      return __safe(result);
+    }, __sanitize = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else if (typeof value !== 'undefined' && value != null) {
+        return __escape(value);
+      } else {
+        return '';
+      }
+    }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+    __safe = __obj.safe = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else {
+        if (!(typeof value !== 'undefined' && value != null)) value = '';
+        var result = new String(value);
+        result.ecoSafe = true;
+        return result;
+      }
+    };
+    if (!__escape) {
+      __escape = __obj.escape = function(value) {
+        return ('' + value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      };
+    }
+    (function() {
+      (function() {
+      
+        __out.push('<header class="inspectorHeader">\n  <div data-type="DisplayInspector" class="display">Display</div>\n  <div data-type="TextInspector" class="text">Text</div>\n</header>\n');
+      
+      }).call(this);
+      
+    }).call(__obj);
+    __obj.safe = __objSafe, __obj.escape = __escape;
+    return __out.join('');
+  };
+}).call(this);
+(function() {
+  this.JST || (this.JST = {});
   this.JST["app/views/inspector/background"] = function(__obj) {
     if (!__obj) __obj = {};
     var __out = [], __capture = function(callback) {
@@ -17687,6 +17941,57 @@ this.require.define({"app/models/serialize":function(exports, require, module){(
         }
       
         __out.push('>\n  </label>\n</article>\n');
+      
+      }).call(this);
+      
+    }).call(__obj);
+    __obj.safe = __objSafe, __obj.escape = __escape;
+    return __out.join('');
+  };
+}).call(this);
+(function() {
+  this.JST || (this.JST = {});
+  this.JST["app/views/inspector/text_position"] = function(__obj) {
+    if (!__obj) __obj = {};
+    var __out = [], __capture = function(callback) {
+      var out = __out, result;
+      __out = [];
+      callback.call(this);
+      result = __out.join('');
+      __out = out;
+      return __safe(result);
+    }, __sanitize = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else if (typeof value !== 'undefined' && value != null) {
+        return __escape(value);
+      } else {
+        return '';
+      }
+    }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+    __safe = __obj.safe = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else {
+        if (!(typeof value !== 'undefined' && value != null)) value = '';
+        var result = new String(value);
+        result.ecoSafe = true;
+        return result;
+      }
+    };
+    if (!__escape) {
+      __escape = __obj.escape = function(value) {
+        return ('' + value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      };
+    }
+    (function() {
+      (function() {
+      
+        __out.push('<h3>Text Position</h3>\n\n<article>\n  <label>\n    <span>Text Indent</span>\n    <input type="number" name="textIndent" placeholder="0px">\n  </label>\n\n  <label>\n    <span>Line Height</span>\n    <input type="number" name="lineHeight" placeholder="0px">\n  </label>\n\n  <label>\n    <span>Letter Spacing</span>\n    <input type="number" name="letterSpacing" placeholder="0px">\n  </label>\n\n  <label>\n    <span>Word Spacing</span>\n    <input type="number" name="wordSpacing" placeholder="0px">\n  </label>\n</article>\n');
       
       }).call(this);
       

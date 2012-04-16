@@ -14,17 +14,6 @@ class Font extends Spine.Controller
     # Size
     # Font family
 
-    # Style
-    # Decoration
-    # Capitalize
-    # Alignment
-
-    # text-indent
-    # Line-height
-    # letter-spacing
-    # word-spacing
-
-
   change: (e) ->
     # val = parseFloat($(e.currentTarget).val())
     # val = Math.round(val * 100) / 100

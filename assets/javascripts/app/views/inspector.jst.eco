@@ -1,0 +1,4 @@
+<header class="inspectorHeader">
+  <div data-type="DisplayInspector" class="display">Display</div>
+  <div data-type="TextInspector" class="text">Text</div>
+</header>

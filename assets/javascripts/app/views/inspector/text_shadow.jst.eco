@@ -1,20 +1,31 @@
 <h3>Text Shadow</h3>
 
 <article>
-  <label>
-    <span>X</span>
-    <input type="number" name="x" placeholder="0px">
-  </label>
+  <div class="hbox">
+    <input type="position" name="position">
 
-  <label>
-    <span>Y</span>
-    <input type="number" name="y" placeholder="0px">
-  </label>
+    <div class="vbox">
+      <label>
+        <span>X</span>
+        <input type="number" name="x" placeholder="0px">
+      </label>
 
-  <label>
-    <span>Blur</span>
-    <input type="number" name="blur" placeholder="0px">
-  </label>
+      <label>
+        <span>Y</span>
+        <input type="number" name="y" placeholder="0px">
+      </label>
+    </div>
 
-  <input type="color" name="color">
+    <div class="vbox">
+      <label class="blur">
+        <span>Blur</span>
+        <input type="number" name="blur" placeholder="0px">
+      </label>
+
+      <label class="color">
+        <span>Color</span>
+        <input type="color" name="color">
+      </label>
+    </div>
+  </div>
 </article>

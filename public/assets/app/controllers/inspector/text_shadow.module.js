@@ -90,26 +90,26 @@ this.require.define({"app/controllers/inspector/text_shadow":function(exports, r
     function TextShadow() {
       var _this = this;
       TextShadow.__super__.constructor.apply(this, arguments);
-      this.positionPicker = new PositionPicker;
-      this.positionPicker.bind('change', function(position) {
+      this.$position = new PositionPicker;
+      this.$position.bind('change', function(position) {
         _this.shadow.x = position.left;
         _this.shadow.y = position.top;
-        _this.stage.selection.set('textShadow', _this.shadow);
+        _this.set();
         return _this.update();
       });
       this.$color = new ColorPicker.Preview;
       this.$color.bind('change', function() {
         return _this.change();
       });
+      this.html(JST['app/views/inspector/text_shadow'](this));
+      this.$('input[type=color]').replaceWith(this.$color.el);
+      this.$('input[type=position]').replaceWith(this.$position.el);
     }
 
     TextShadow.prototype.render = function() {
       this.disabled = !this.stage.selection.isAny();
       this.shadow = this.stage.selection.get('textShadow');
       this.shadow || (this.shadow = new Shadow);
-      this.html(JST['app/views/inspector/text_shadow'](this));
-      this.$('input[type=color]').replaceWith(this.$color.el);
-      this.append(this.positionPicker);
       this.update();
       return this;
     };
@@ -127,19 +127,30 @@ this.require.define({"app/controllers/inspector/text_shadow":function(exports, r
       this.shadow.y = parseFloat(this.$y.val());
       this.shadow.blur = parseFloat(this.$blur.val());
       this.shadow.color = this.$color.val();
-      this.positionPicker.change({
+      this.$position.change({
         left: this.shadow.x,
         top: this.shadow.y
       });
-      this.stage.history.record('textShadow');
-      this.stage.selection.set('textShadow', this.shadow);
+      this.set();
       return this.update();
     };
 
+    TextShadow.prototype.set = function() {
+      var _base;
+      if ((_base = this.shadow).blur == null) {
+        _base.blur = 0;
+      }
+      this.stage.history.record('textShadow');
+      return this.stage.selection.set('textShadow', this.shadow);
+    };
+
     TextShadow.prototype.release = function() {
-      var _ref;
-      if ((_ref = this.positionPicker) != null) {
+      var _ref, _ref1;
+      if ((_ref = this.$position) != null) {
         _ref.release();
+      }
+      if ((_ref1 = this.$color) != null) {
+        _ref1.release();
       }
       return TextShadow.__super__.release.apply(this, arguments);
     };

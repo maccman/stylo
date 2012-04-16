@@ -75,10 +75,7 @@ class Inspector extends Spine.Controller
     # Make sure only one inspector is active
     @manager = new Spine.Manager
     @manager.add(@textInspector, @displayInspector)
-    @manager.bind 'change', (controller) =>
-      name = controller.constructor.name
-      @$headers.removeClass('active')
-      @$headers.filter("[data-type=#{name}]").addClass('active')
+    @manager.bind 'change', @changeHeader
 
     # Display the display inspector by default
     @displayInspector.active()
@@ -116,6 +113,11 @@ class Inspector extends Spine.Controller
     else if name is 'TextInspector'
       @textInspector.render()
       @textInspector.active()
+
+  changeHeader: =>
+    name = @manager.current.constructor.name
+    @$headers.removeClass('active')
+    @$headers.filter("[data-type=#{name}]").addClass('active')
 
   release: ->
     @textInspector.release()

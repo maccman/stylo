@@ -16,9 +16,8 @@ class BorderController extends Spine.Controller
 
   current: 'border'
 
-  render: =>
-    @disabled = not @stage.selection.isAny()
-    @disabled = true if @stage.selection.get('border') is false
+  constructor: ->
+    super
 
     @html JST['app/views/inspector/border'](this)
 
@@ -27,11 +26,18 @@ class BorderController extends Spine.Controller
     @$color.bind 'change', => @inputChange()
 
     @$('input[type=color]').replaceWith(@$color.el)
+
+  render: =>
+    @disabled = not @stage.selection.isAny()
+    @disabled = true if @stage.selection.get('border') is false
+
     @change(@current)
 
     @el.toggleClass('disabled', @disabled)
     @$inputs.attr('disabled', @disabled)
     this
+
+  # Private
 
   change: (@current) ->
     return if @disabled

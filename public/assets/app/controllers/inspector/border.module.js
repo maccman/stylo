@@ -74,11 +74,6 @@ this.require.define({"app/controllers/inspector/border":function(exports, requir
 
     BorderController.name = 'BorderController';
 
-    function BorderController() {
-      this.render = __bind(this.render, this);
-      return BorderController.__super__.constructor.apply(this, arguments);
-    }
-
     BorderController.prototype.className = 'border';
 
     BorderController.prototype.events = {
@@ -95,18 +90,24 @@ this.require.define({"app/controllers/inspector/border":function(exports, requir
 
     BorderController.prototype.current = 'border';
 
-    BorderController.prototype.render = function() {
+    function BorderController() {
+      this.render = __bind(this.render, this);
+
       var _this = this;
-      this.disabled = !this.stage.selection.isAny();
-      if (this.stage.selection.get('border') === false) {
-        this.disabled = true;
-      }
+      BorderController.__super__.constructor.apply(this, arguments);
       this.html(JST['app/views/inspector/border'](this));
       this.$color = new ColorPicker.Preview;
       this.$color.bind('change', function() {
         return _this.inputChange();
       });
       this.$('input[type=color]').replaceWith(this.$color.el);
+    }
+
+    BorderController.prototype.render = function() {
+      this.disabled = !this.stage.selection.isAny();
+      if (this.stage.selection.get('border') === false) {
+        this.disabled = true;
+      }
       this.change(this.current);
       this.el.toggleClass('disabled', this.disabled);
       this.$inputs.attr('disabled', this.disabled);

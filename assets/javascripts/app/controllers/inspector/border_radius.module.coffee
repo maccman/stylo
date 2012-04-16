@@ -11,19 +11,24 @@ class BorderRadius extends Spine.Controller
 
   current: 'borderRadius'
 
+  constructor: ->
+    super
+    @html JST['app/views/inspector/border_radius'](this)
+
   render: =>
     # Disable unless elements are selected or if an
     # element, such as an ellipsis, is selected.
     @disabled = not @stage.selection.isAny()
     @disabled = true if @stage.selection.get('borderRadius') is false
 
-    @html JST['app/views/inspector/border_radius'](this)
     @change(@current)
 
     @el.toggleClass('disabled', @disabled)
     @$inputs.attr('disabled', @disabled)
 
     this
+
+  # Private
 
   change: (@current) ->
     return if @disabled

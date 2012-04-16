@@ -197,11 +197,11 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
     };
 
     function Inspector() {
+      this.changeHeader = __bind(this.changeHeader, this);
+
       this.render = __bind(this.render, this);
 
       this.paint = __bind(this.paint, this);
-
-      var _this = this;
       Inspector.__super__.constructor.apply(this, arguments);
       this.append(JST['app/views/inspector']());
       this.append(this.textInspector = new TextInspector({
@@ -212,12 +212,7 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
       }));
       this.manager = new Spine.Manager;
       this.manager.add(this.textInspector, this.displayInspector);
-      this.manager.bind('change', function(controller) {
-        var name;
-        name = controller.constructor.name;
-        _this.$headers.removeClass('active');
-        return _this.$headers.filter("[data-type=" + name + "]").addClass('active');
-      });
+      this.manager.bind('change', this.changeHeader);
       this.displayInspector.active();
       this.stage.selection.bind('change', this.paint);
       this.render();
@@ -252,6 +247,13 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
         this.textInspector.render();
         return this.textInspector.active();
       }
+    };
+
+    Inspector.prototype.changeHeader = function() {
+      var name;
+      name = this.manager.current.constructor.name;
+      this.$headers.removeClass('active');
+      return this.$headers.filter("[data-type=" + name + "]").addClass('active');
     };
 
     Inspector.prototype.release = function() {

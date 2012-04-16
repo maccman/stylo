@@ -16,26 +16,26 @@ class TextShadow extends Spine.Controller
   constructor: ->
     super
 
-    @positionPicker = new PositionPicker
+    @$position = new PositionPicker
 
-    @positionPicker.bind 'change', (position) =>
+    @$position.bind 'change', (position) =>
       @shadow.x = position.left
       @shadow.y = position.top
-      @stage.selection.set('textShadow', @shadow)
+      @set()
       @update()
 
     @$color = new ColorPicker.Preview
     @$color.bind 'change', => @change()
+
+    @html JST['app/views/inspector/text_shadow'](@)
+    @$('input[type=color]').replaceWith(@$color.el)
+    @$('input[type=position]').replaceWith(@$position.el)
 
   render: ->
     @disabled = not @stage.selection.isAny()
 
     @shadow = @stage.selection.get('textShadow')
     @shadow or= new Shadow
-
-    @html JST['app/views/inspector/text_shadow'](@)
-    @$('input[type=color]').replaceWith(@$color.el)
-    @append @positionPicker
 
     @update()
 
@@ -55,17 +55,25 @@ class TextShadow extends Spine.Controller
     @shadow.blur  = parseFloat(@$blur.val())
     @shadow.color = @$color.val()
 
-    @positionPicker.change(
+    @$position.change(
       left: @shadow.x,
       top: @shadow.y
     )
 
-    @stage.history.record('textShadow')
-    @stage.selection.set('textShadow', @shadow)
+    @set()
     @update()
 
+  set: ->
+    # Text shadows need a blur
+    # to be formatted correctly
+    @shadow.blur ?= 0
+
+    @stage.history.record('textShadow')
+    @stage.selection.set('textShadow', @shadow)
+
   release: ->
-    @positionPicker?.release()
+    @$position?.release()
+    @$color?.release()
     super
 
 module.exports =  TextShadow

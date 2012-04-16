@@ -781,6 +781,21 @@ body {
 #app .inspector .textPosition label span {
   width: 85px;
 }
+#app .inspector .textShadow .positionPicker {
+  margin: 3px 5px 3px 0;
+}
+#app .inspector .textShadow label span {
+  margin-left: 3px;
+  width: auto;
+}
+#app .inspector .textShadow .blur span,
+#app .inspector .textShadow .color span {
+  width: 33px;
+}
+#app .inspector .textShadow .color span {
+  position: relative;
+  top: -6px;
+}
 .popup {
   -moz-border-radius: 4px;
   -webkit-border-radius: 4px;

@@ -90,11 +90,11 @@ this.require.define({"app/controllers/inspector/dimensions":function(exports, re
       this.render = __bind(this.render, this);
       Dimensions.__super__.constructor.apply(this, arguments);
       $(document).bind('resize.element move.element', this.update);
+      this.html(JST['app/views/inspector/dimensions'](this));
     }
 
     Dimensions.prototype.render = function() {
       this.disabled = !this.stage.selection.isSingle();
-      this.html(JST['app/views/inspector/dimensions'](this));
       this.update();
       this.el.toggleClass('disabled', this.disabled);
       this.$inputs.attr('disabled', this.disabled);

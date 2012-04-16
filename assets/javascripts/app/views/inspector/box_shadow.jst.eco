@@ -1,6 +1,6 @@
 <article>
   <div class="hbox">
-    <div class="positionInput"></div>
+    <input type="position" name="position">
 
     <div class="vbox">
       <label>
@@ -22,7 +22,7 @@
 
       <label class="color">
         <span>Color</span>
-        <div class="colorInput"></div>
+        <input type="color" name="color">
       </label>
     </div>
   </div>

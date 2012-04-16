@@ -105,55 +105,53 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
 
     BoxShadowEdit.prototype.render = function() {
       var _this = this;
-      this.html(JST['app/views/inspector/box_shadow'](this));
-      this.colorInput = new ColorPicker.Preview({
-        color: this.shadow.color,
-        el: this.$('.colorInput')
+      this.$color = new ColorPicker.Preview({
+        color: this.shadow.color
       });
-      this.colorInput.bind('change', function(color) {
-        _this.shadow.color.set(color);
-        _this.trigger('change', _this.shadow);
-        return _this.update();
+      this.$color.bind('change', function(color) {
+        return _this.inputChange();
       });
-      this.positionPicker = new PositionPicker({
-        el: this.$('.positionInput')
-      });
-      this.positionPicker.bind('change', function(position) {
+      this.$position = new PositionPicker;
+      this.$position.bind('change', function(position) {
         _this.shadow.x = position.left;
         _this.shadow.y = position.top;
         _this.trigger('change', _this.shadow);
         return _this.update();
       });
+      this.html(JST['app/views/inspector/box_shadow'](this));
+      this.$('input[type=color]').replaceWith(this.$color.el);
+      this.$('input[type=position]').replaceWith(this.$position.el);
       this.update();
       return this;
     };
 
     BoxShadowEdit.prototype.update = function() {
       this.$inputs.attr('disabled', this.disabled);
-      this.positionPicker.disabled = this.disabled;
-      this.positionPicker.change({
+      this.$position.change({
         left: this.shadow.x,
         top: this.shadow.y
       });
       this.$x.val(this.shadow.x);
       this.$y.val(this.shadow.y);
-      return this.$blur.val(this.shadow.blur);
+      this.$blur.val(this.shadow.blur);
+      return this.$color.val(this.shadow.color);
     };
 
     BoxShadowEdit.prototype.inputChange = function(e) {
       this.shadow.x = parseFloat(this.$x.val());
       this.shadow.y = parseFloat(this.$y.val());
       this.shadow.blur = parseFloat(this.$blur.val()) || 0;
+      this.shadow.color = this.$color.val();
       this.trigger('change', this.shadow);
       return this.update();
     };
 
     BoxShadowEdit.prototype.release = function() {
       var _ref, _ref1;
-      if ((_ref = this.colorInput) != null) {
+      if ((_ref = this.$color) != null) {
         _ref.release();
       }
-      if ((_ref1 = this.positionPicker) != null) {
+      if ((_ref1 = this.$position) != null) {
         _ref1.release();
       }
       return BoxShadowEdit.__super__.release.apply(this, arguments);

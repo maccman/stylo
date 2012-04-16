@@ -24,54 +24,51 @@ class BoxShadowEdit extends Spine.Controller
     @render()
 
   render: ->
-    @html JST['app/views/inspector/box_shadow'](@)
-
-    @colorInput = new ColorPicker.Preview(
+    @$color = new ColorPicker.Preview(
       color: @shadow.color
-      el: @$('.colorInput')
     )
 
-    @colorInput.bind 'change', (color) =>
-      @shadow.color.set color
-      @trigger 'change', @shadow
-      @update()
+    @$color.bind 'change', (color) => @inputChange()
 
-    @positionPicker = new PositionPicker(
-      el: @$('.positionInput')
-    )
+    @$position = new PositionPicker
 
-    @positionPicker.bind 'change', (position) =>
+    @$position.bind 'change', (position) =>
       @shadow.x = position.left
       @shadow.y = position.top
       @trigger 'change', @shadow
       @update()
+
+    @html JST['app/views/inspector/box_shadow'](@)
+    @$('input[type=color]').replaceWith(@$color.el)
+    @$('input[type=position]').replaceWith(@$position.el)
 
     @update()
     this
 
   update: ->
     @$inputs.attr('disabled', @disabled)
-    @positionPicker.disabled = @disabled
 
-    @positionPicker.change(
+    @$position.change(
       left: @shadow.x, top: @shadow.y
     )
 
     @$x.val @shadow.x
     @$y.val @shadow.y
     @$blur.val @shadow.blur
+    @$color.val @shadow.color
 
   inputChange: (e) ->
-    @shadow.x    = parseFloat(@$x.val())
-    @shadow.y    = parseFloat(@$y.val())
-    @shadow.blur = parseFloat(@$blur.val()) or 0
+    @shadow.x     = parseFloat(@$x.val())
+    @shadow.y     = parseFloat(@$y.val())
+    @shadow.blur  = parseFloat(@$blur.val()) or 0
+    @shadow.color = @$color.val()
 
     @trigger 'change', @shadow
     @update()
 
   release: ->
-    @colorInput?.release()
-    @positionPicker?.release()
+    @$color?.release()
+    @$position?.release()
     super
 
 class BoxShadowList extends Spine.Controller

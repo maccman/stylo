@@ -13430,11 +13430,11 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
     };
 
     function Inspector() {
+      this.changeHeader = __bind(this.changeHeader, this);
+
       this.render = __bind(this.render, this);
 
       this.paint = __bind(this.paint, this);
-
-      var _this = this;
       Inspector.__super__.constructor.apply(this, arguments);
       this.append(JST['app/views/inspector']());
       this.append(this.textInspector = new TextInspector({
@@ -13445,12 +13445,7 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
       }));
       this.manager = new Spine.Manager;
       this.manager.add(this.textInspector, this.displayInspector);
-      this.manager.bind('change', function(controller) {
-        var name;
-        name = controller.constructor.name;
-        _this.$headers.removeClass('active');
-        return _this.$headers.filter("[data-type=" + name + "]").addClass('active');
-      });
+      this.manager.bind('change', this.changeHeader);
       this.displayInspector.active();
       this.stage.selection.bind('change', this.paint);
       this.render();
@@ -13485,6 +13480,13 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
         this.textInspector.render();
         return this.textInspector.active();
       }
+    };
+
+    Inspector.prototype.changeHeader = function() {
+      var name;
+      name = this.manager.current.constructor.name;
+      this.$headers.removeClass('active');
+      return this.$headers.filter("[data-type=" + name + "]").addClass('active');
     };
 
     Inspector.prototype.release = function() {
@@ -13756,11 +13758,6 @@ this.require.define({"app/controllers/inspector/border":function(exports, requir
 
     BorderController.name = 'BorderController';
 
-    function BorderController() {
-      this.render = __bind(this.render, this);
-      return BorderController.__super__.constructor.apply(this, arguments);
-    }
-
     BorderController.prototype.className = 'border';
 
     BorderController.prototype.events = {
@@ -13777,18 +13774,24 @@ this.require.define({"app/controllers/inspector/border":function(exports, requir
 
     BorderController.prototype.current = 'border';
 
-    BorderController.prototype.render = function() {
+    function BorderController() {
+      this.render = __bind(this.render, this);
+
       var _this = this;
-      this.disabled = !this.stage.selection.isAny();
-      if (this.stage.selection.get('border') === false) {
-        this.disabled = true;
-      }
+      BorderController.__super__.constructor.apply(this, arguments);
       this.html(JST['app/views/inspector/border'](this));
       this.$color = new ColorPicker.Preview;
       this.$color.bind('change', function() {
         return _this.inputChange();
       });
       this.$('input[type=color]').replaceWith(this.$color.el);
+    }
+
+    BorderController.prototype.render = function() {
+      this.disabled = !this.stage.selection.isAny();
+      if (this.stage.selection.get('border') === false) {
+        this.disabled = true;
+      }
       this.change(this.current);
       this.el.toggleClass('disabled', this.disabled);
       this.$inputs.attr('disabled', this.disabled);
@@ -13866,11 +13869,6 @@ this.require.define({"app/controllers/inspector/border_radius":function(exports,
 
     BorderRadius.name = 'BorderRadius';
 
-    function BorderRadius() {
-      this.render = __bind(this.render, this);
-      return BorderRadius.__super__.constructor.apply(this, arguments);
-    }
-
     BorderRadius.prototype.className = 'borderRadius';
 
     BorderRadius.prototype.events = {
@@ -13885,12 +13883,17 @@ this.require.define({"app/controllers/inspector/border_radius":function(exports,
 
     BorderRadius.prototype.current = 'borderRadius';
 
+    function BorderRadius() {
+      this.render = __bind(this.render, this);
+      BorderRadius.__super__.constructor.apply(this, arguments);
+      this.html(JST['app/views/inspector/border_radius'](this));
+    }
+
     BorderRadius.prototype.render = function() {
       this.disabled = !this.stage.selection.isAny();
       if (this.stage.selection.get('borderRadius') === false) {
         this.disabled = true;
       }
-      this.html(JST['app/views/inspector/border_radius'](this));
       this.change(this.current);
       this.el.toggleClass('disabled', this.disabled);
       this.$inputs.attr('disabled', this.disabled);
@@ -13989,55 +13992,53 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
 
     BoxShadowEdit.prototype.render = function() {
       var _this = this;
-      this.html(JST['app/views/inspector/box_shadow'](this));
-      this.colorInput = new ColorPicker.Preview({
-        color: this.shadow.color,
-        el: this.$('.colorInput')
+      this.$color = new ColorPicker.Preview({
+        color: this.shadow.color
       });
-      this.colorInput.bind('change', function(color) {
-        _this.shadow.color.set(color);
-        _this.trigger('change', _this.shadow);
-        return _this.update();
+      this.$color.bind('change', function(color) {
+        return _this.inputChange();
       });
-      this.positionPicker = new PositionPicker({
-        el: this.$('.positionInput')
-      });
-      this.positionPicker.bind('change', function(position) {
+      this.$position = new PositionPicker;
+      this.$position.bind('change', function(position) {
         _this.shadow.x = position.left;
         _this.shadow.y = position.top;
         _this.trigger('change', _this.shadow);
         return _this.update();
       });
+      this.html(JST['app/views/inspector/box_shadow'](this));
+      this.$('input[type=color]').replaceWith(this.$color.el);
+      this.$('input[type=position]').replaceWith(this.$position.el);
       this.update();
       return this;
     };
 
     BoxShadowEdit.prototype.update = function() {
       this.$inputs.attr('disabled', this.disabled);
-      this.positionPicker.disabled = this.disabled;
-      this.positionPicker.change({
+      this.$position.change({
         left: this.shadow.x,
         top: this.shadow.y
       });
       this.$x.val(this.shadow.x);
       this.$y.val(this.shadow.y);
-      return this.$blur.val(this.shadow.blur);
+      this.$blur.val(this.shadow.blur);
+      return this.$color.val(this.shadow.color);
     };
 
     BoxShadowEdit.prototype.inputChange = function(e) {
       this.shadow.x = parseFloat(this.$x.val());
       this.shadow.y = parseFloat(this.$y.val());
       this.shadow.blur = parseFloat(this.$blur.val()) || 0;
+      this.shadow.color = this.$color.val();
       this.trigger('change', this.shadow);
       return this.update();
     };
 
     BoxShadowEdit.prototype.release = function() {
       var _ref, _ref1;
-      if ((_ref = this.colorInput) != null) {
+      if ((_ref = this.$color) != null) {
         _ref.release();
       }
-      if ((_ref1 = this.positionPicker) != null) {
+      if ((_ref1 = this.$position) != null) {
         _ref1.release();
       }
       return BoxShadowEdit.__super__.release.apply(this, arguments);
@@ -14214,11 +14215,11 @@ this.require.define({"app/controllers/inspector/dimensions":function(exports, re
       this.render = __bind(this.render, this);
       Dimensions.__super__.constructor.apply(this, arguments);
       $(document).bind('resize.element move.element', this.update);
+      this.html(JST['app/views/inspector/dimensions'](this));
     }
 
     Dimensions.prototype.render = function() {
       this.disabled = !this.stage.selection.isSingle();
-      this.html(JST['app/views/inspector/dimensions'](this));
       this.update();
       this.el.toggleClass('disabled', this.disabled);
       this.$inputs.attr('disabled', this.disabled);
@@ -14448,26 +14449,26 @@ this.require.define({"app/controllers/inspector/text_shadow":function(exports, r
     function TextShadow() {
       var _this = this;
       TextShadow.__super__.constructor.apply(this, arguments);
-      this.positionPicker = new PositionPicker;
-      this.positionPicker.bind('change', function(position) {
+      this.$position = new PositionPicker;
+      this.$position.bind('change', function(position) {
         _this.shadow.x = position.left;
         _this.shadow.y = position.top;
-        _this.stage.selection.set('textShadow', _this.shadow);
+        _this.set();
         return _this.update();
       });
       this.$color = new ColorPicker.Preview;
       this.$color.bind('change', function() {
         return _this.change();
       });
+      this.html(JST['app/views/inspector/text_shadow'](this));
+      this.$('input[type=color]').replaceWith(this.$color.el);
+      this.$('input[type=position]').replaceWith(this.$position.el);
     }
 
     TextShadow.prototype.render = function() {
       this.disabled = !this.stage.selection.isAny();
       this.shadow = this.stage.selection.get('textShadow');
       this.shadow || (this.shadow = new Shadow);
-      this.html(JST['app/views/inspector/text_shadow'](this));
-      this.$('input[type=color]').replaceWith(this.$color.el);
-      this.append(this.positionPicker);
       this.update();
       return this;
     };
@@ -14485,19 +14486,30 @@ this.require.define({"app/controllers/inspector/text_shadow":function(exports, r
       this.shadow.y = parseFloat(this.$y.val());
       this.shadow.blur = parseFloat(this.$blur.val());
       this.shadow.color = this.$color.val();
-      this.positionPicker.change({
+      this.$position.change({
         left: this.shadow.x,
         top: this.shadow.y
       });
-      this.stage.history.record('textShadow');
-      this.stage.selection.set('textShadow', this.shadow);
+      this.set();
       return this.update();
     };
 
+    TextShadow.prototype.set = function() {
+      var _base;
+      if ((_base = this.shadow).blur == null) {
+        _base.blur = 0;
+      }
+      this.stage.history.record('textShadow');
+      return this.stage.selection.set('textShadow', this.shadow);
+    };
+
     TextShadow.prototype.release = function() {
-      var _ref;
-      if ((_ref = this.positionPicker) != null) {
+      var _ref, _ref1;
+      if ((_ref = this.$position) != null) {
         _ref.release();
+      }
+      if ((_ref1 = this.$color) != null) {
+        _ref1.release();
       }
       return TextShadow.__super__.release.apply(this, arguments);
     };
@@ -17689,7 +17701,7 @@ this.require.define({"app/models/serialize":function(exports, require, module){(
     (function() {
       (function() {
       
-        __out.push('<article>\n  <div class="hbox">\n    <div class="positionInput"></div>\n\n    <div class="vbox">\n      <label>\n        <span>X</span>\n        <input type="number" name="x" placeholder="0px">\n      </label>\n\n      <label>\n        <span>Y</span>\n        <input type="number" name="y" placeholder="0px">\n      </label>\n    </div>\n\n    <div class="vbox">\n      <label class="blur">\n        <span>Blur</span>\n        <input type="number" name="blur" placeholder="0px">\n      </label>\n\n      <label class="color">\n        <span>Color</span>\n        <div class="colorInput"></div>\n      </label>\n    </div>\n  </div>\n</article>\n');
+        __out.push('<article>\n  <div class="hbox">\n    <input type="position" name="position">\n\n    <div class="vbox">\n      <label>\n        <span>X</span>\n        <input type="number" name="x" placeholder="0px">\n      </label>\n\n      <label>\n        <span>Y</span>\n        <input type="number" name="y" placeholder="0px">\n      </label>\n    </div>\n\n    <div class="vbox">\n      <label class="blur">\n        <span>Blur</span>\n        <input type="number" name="blur" placeholder="0px">\n      </label>\n\n      <label class="color">\n        <span>Color</span>\n        <input type="color" name="color">\n      </label>\n    </div>\n  </div>\n</article>\n');
       
       }).call(this);
       
@@ -18028,7 +18040,7 @@ this.require.define({"app/models/serialize":function(exports, require, module){(
     (function() {
       (function() {
       
-        __out.push('<h3>Text Shadow</h3>\n\n<article>\n  <label>\n    <span>X</span>\n    <input type="number" name="x" placeholder="0px">\n  </label>\n\n  <label>\n    <span>Y</span>\n    <input type="number" name="y" placeholder="0px">\n  </label>\n\n  <label>\n    <span>Blur</span>\n    <input type="number" name="blur" placeholder="0px">\n  </label>\n\n  <input type="color" name="color">\n</article>\n');
+        __out.push('<h3>Text Shadow</h3>\n\n<article>\n  <div class="hbox">\n    <input type="position" name="position">\n\n    <div class="vbox">\n      <label>\n        <span>X</span>\n        <input type="number" name="x" placeholder="0px">\n      </label>\n\n      <label>\n        <span>Y</span>\n        <input type="number" name="y" placeholder="0px">\n      </label>\n    </div>\n\n    <div class="vbox">\n      <label class="blur">\n        <span>Blur</span>\n        <input type="number" name="blur" placeholder="0px">\n      </label>\n\n      <label class="color">\n        <span>Color</span>\n        <input type="color" name="color">\n      </label>\n    </div>\n  </div>\n</article>\n');
       
       }).call(this);
       

@@ -14,11 +14,11 @@ class Dimensions extends Spine.Controller
   constructor: ->
     super
     $(document).bind 'resize.element move.element', @update
+    @html JST['app/views/inspector/dimensions'](this)
 
   render: =>
     @disabled = not @stage.selection.isSingle()
 
-    @html JST['app/views/inspector/dimensions'](this)
     @update()
 
     @el.toggleClass('disabled', @disabled)

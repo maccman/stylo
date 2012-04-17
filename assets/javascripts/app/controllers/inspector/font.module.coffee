@@ -1,25 +1,37 @@
+Color       = require('app/models/properties/color')
+ColorPicker = require('lib/color_picker')
+
 class Font extends Spine.Controller
   className: 'font'
 
   elements:
     'input': '$inputs'
+    'input[name=size]': '$size'
+    'select[name=family]': '$family'
+
+  events:
+    'change input, select': 'change'
+
+  constructor: ->
+    super
+    @html JST['app/views/inspector/font'](this)
+
+    @$color = new ColorPicker.Preview
+    @$color.bind 'change', => @change()
+
+    @$('input[type=color]').replaceWith(@$color.el)
 
   render: =>
     @disabled = not @stage.selection.isAny()
-    @fontSize  = @stage.selection.get('fontSize') ? 12
-
-    @html JST['app/views/inspector/font'](this)
-
-    # Color
-    # Size
-    # Font family
+    @$color.val(@stage.selection.get('color') or new Color.Black)
+    @$size.val(@stage.selection.get('fontSize'))
+    @$family.val(@stage.selection.get('fontFamily'))
 
   change: (e) ->
-    # val = parseFloat($(e.currentTarget).val())
-    # val = Math.round(val * 100) / 100
-    #
-    # @stage.history.record('opacity')
-    # @stage.selection.set('opacity', val)
-    # @$inputs.val(val)
+    @stage.history.record('font')
+
+    @stage.selection.set('color',       @$color.val())
+    @stage.selection.set('fontSize',    parseInt(@$size.val(), 10))
+    @stage.selection.set('fontFamily',  @$family.val())
 
 module.exports = Font

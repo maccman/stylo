@@ -59,7 +59,7 @@
   return this.require;
 }).call(this);
 this.require.define({"app/controllers/inspector":function(exports, require, module){(function() {
-  var Background, Border, BorderRadius, BoxShadow, Dimensions, DisplayInspector, Inspector, Opacity, TextInspector, TextPosition, TextShadow, Utils,
+  var Background, Border, BorderRadius, BoxShadow, Dimensions, DisplayInspector, Font, Inspector, Opacity, TextInspector, TextPosition, TextShadow, Utils,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -80,6 +80,8 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
 
   TextPosition = require('./inspector/text_position');
 
+  Font = require('./inspector/font');
+
   Utils = require('lib/utils');
 
   TextInspector = (function(_super) {
@@ -92,6 +94,9 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
 
     function TextInspector() {
       TextInspector.__super__.constructor.apply(this, arguments);
+      this.append(this.font = new Font({
+        stage: this.stage
+      }));
       this.append(this.textPosition = new TextPosition({
         stage: this.stage
       }));
@@ -101,14 +106,23 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
     }
 
     TextInspector.prototype.render = function() {
+      this.font.render();
       this.textPosition.render();
       this.textShadow.render();
       return this;
     };
 
     TextInspector.prototype.release = function() {
-      this.textPosition.release();
-      this.textShadow.release();
+      var _ref, _ref1, _ref2;
+      if ((_ref = this.font) != null) {
+        _ref.release();
+      }
+      if ((_ref1 = this.textPosition) != null) {
+        _ref1.release();
+      }
+      if ((_ref2 = this.textShadow) != null) {
+        _ref2.release();
+      }
       return TextInspector.__super__.release.apply(this, arguments);
     };
 

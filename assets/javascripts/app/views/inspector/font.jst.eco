@@ -1,23 +1,22 @@
 <h3>Font</h3>
 
-<label>
-  <span>Color</span>
-  <input type="color" name="color">
-</label>
+<article>
+  <label>
+    <span>Size</span>
+    <input type="number" name="size" placeholder="0px">
+  </label>
 
-<label>
-  <span>Size</span>
-  <input type="number" name="size">
-</label>
+  <label class="color">
+    <span>Color</span>
+    <input type="color" name="color">
+  </label>
 
-# Color
-# Size
-# Line-height
-# Style
-# Decoration
-# Capitalize
-# Font family
-# Alignment
-# text-indent
-# letter-spacing
-# word-spacing
+  <label>
+    <span>Family</span>
+    <select name="family">
+      <option></option>
+      <option value="'Lucida Grande', Lucida, Verdana, sans-serif">Lucida Grande, Lucida, Verdana, sans-serif</option>
+      <option value="'Helvetica Neue', Arial, Helvetica, Geneva, sans-serif">'Helvetica Neue', Arial, Helvetica, Geneva, sans-serif</option>
+    </select>
+  </label>
+</article>

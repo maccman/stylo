@@ -13292,7 +13292,7 @@ this.require.define({"app/controllers/header":function(exports, require, module)
 }).call(this);
 ;}});
 this.require.define({"app/controllers/inspector":function(exports, require, module){(function() {
-  var Background, Border, BorderRadius, BoxShadow, Dimensions, DisplayInspector, Inspector, Opacity, TextInspector, TextPosition, TextShadow, Utils,
+  var Background, Border, BorderRadius, BoxShadow, Dimensions, DisplayInspector, Font, Inspector, Opacity, TextInspector, TextPosition, TextShadow, Utils,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -13313,6 +13313,8 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
 
   TextPosition = require('./inspector/text_position');
 
+  Font = require('./inspector/font');
+
   Utils = require('lib/utils');
 
   TextInspector = (function(_super) {
@@ -13325,6 +13327,9 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
 
     function TextInspector() {
       TextInspector.__super__.constructor.apply(this, arguments);
+      this.append(this.font = new Font({
+        stage: this.stage
+      }));
       this.append(this.textPosition = new TextPosition({
         stage: this.stage
       }));
@@ -13334,14 +13339,23 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
     }
 
     TextInspector.prototype.render = function() {
+      this.font.render();
       this.textPosition.render();
       this.textShadow.render();
       return this;
     };
 
     TextInspector.prototype.release = function() {
-      this.textPosition.release();
-      this.textShadow.release();
+      var _ref, _ref1, _ref2;
+      if ((_ref = this.font) != null) {
+        _ref.release();
+      }
+      if ((_ref1 = this.textPosition) != null) {
+        _ref1.release();
+      }
+      if ((_ref2 = this.textShadow) != null) {
+        _ref2.release();
+      }
       return TextInspector.__super__.release.apply(this, arguments);
     };
 
@@ -14260,10 +14274,14 @@ this.require.define({"app/controllers/inspector/dimensions":function(exports, re
 }).call(this);
 ;}});
 this.require.define({"app/controllers/inspector/font":function(exports, require, module){(function() {
-  var Font,
+  var Color, ColorPicker, Font,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  Color = require('app/models/properties/color');
+
+  ColorPicker = require('lib/color_picker');
 
   Font = (function(_super) {
 
@@ -14271,25 +14289,44 @@ this.require.define({"app/controllers/inspector/font":function(exports, require,
 
     Font.name = 'Font';
 
-    function Font() {
-      this.render = __bind(this.render, this);
-      return Font.__super__.constructor.apply(this, arguments);
-    }
-
     Font.prototype.className = 'font';
 
     Font.prototype.elements = {
-      'input': '$inputs'
+      'input': '$inputs',
+      'input[name=size]': '$size',
+      'select[name=family]': '$family'
     };
+
+    Font.prototype.events = {
+      'change input, select': 'change'
+    };
+
+    function Font() {
+      this.render = __bind(this.render, this);
+
+      var _this = this;
+      Font.__super__.constructor.apply(this, arguments);
+      this.html(JST['app/views/inspector/font'](this));
+      this.$color = new ColorPicker.Preview;
+      this.$color.bind('change', function() {
+        return _this.change();
+      });
+      this.$('input[type=color]').replaceWith(this.$color.el);
+    }
 
     Font.prototype.render = function() {
-      var _ref;
       this.disabled = !this.stage.selection.isAny();
-      this.fontSize = (_ref = this.stage.selection.get('fontSize')) != null ? _ref : 12;
-      return this.html(JST['app/views/inspector/font'](this));
+      this.$color.val(this.stage.selection.get('color') || new Color.Black);
+      this.$size.val(this.stage.selection.get('fontSize'));
+      return this.$family.val(this.stage.selection.get('fontFamily'));
     };
 
-    Font.prototype.change = function(e) {};
+    Font.prototype.change = function(e) {
+      this.stage.history.record('font');
+      this.stage.selection.set('color', this.$color.val());
+      this.stage.selection.set('fontSize', parseInt(this.$size.val(), 10));
+      return this.stage.selection.set('fontFamily', this.$family.val());
+    };
 
     return Font;
 
@@ -17867,7 +17904,7 @@ this.require.define({"app/models/serialize":function(exports, require, module){(
     (function() {
       (function() {
       
-        __out.push('<h3>Font</h3>\n\n<label>\n  <span>Color</span>\n  <input type="color" name="color">\n</label>\n\n<label>\n  <span>Size</span>\n  <input type="number" name="size">\n</label>\n\n# Color\n# Size\n# Line-height\n# Style\n# Decoration\n# Capitalize\n# Font family\n# Alignment\n# text-indent\n# letter-spacing\n# word-spacing\n');
+        __out.push('<h3>Font</h3>\n\n<article>\n  <label>\n    <span>Size</span>\n    <input type="number" name="size" placeholder="0px">\n  </label>\n\n  <label class="color">\n    <span>Color</span>\n    <input type="color" name="color">\n  </label>\n\n  <label>\n    <span>Family</span>\n    <select name="family">\n      <option></option>\n      <option value="\'Lucida Grande\', Lucida, Verdana, sans-serif">Lucida Grande, Lucida, Verdana, sans-serif</option>\n      <option value="\'Helvetica Neue\', Arial, Helvetica, Geneva, sans-serif">\'Helvetica Neue\', Arial, Helvetica, Geneva, sans-serif</option>\n    </select>\n  </label>\n</article>\n');
       
       }).call(this);
       

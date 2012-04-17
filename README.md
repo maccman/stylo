@@ -19,7 +19,7 @@ Phase 1:
   * ✓ content editable
   * ✓ context menu
   * Font alignment
-  * Font family/size/style/color
+  * ✓ Font family/size/color
   * ✓ Text-shadow
   * ✓ Text-spacing (line height)
 
@@ -114,3 +114,10 @@ Issue with border radius is that properties are being applied in the wrong order
 Should 'selected' not be a property?
 Only save selection in history.
 We should have a benchmarking testing library.
+
+--------------
+
+# Style
+# Decoration
+# Capitalize
+# Alignment

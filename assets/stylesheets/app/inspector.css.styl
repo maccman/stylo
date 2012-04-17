@@ -17,17 +17,24 @@
   header {
     hbox()
     -webkit-box-pack: center
-    vbg-gradient(#FFF, rgba(238, 238, 238, 0.9))
+    // vbg-gradient(#FFF, rgba(238, 238, 238, 1))
+    // vbg-gradient(#8F9398, #5D646D)
+    vbg-gradient(#959A9B, #767B7C)
+    color: #FFF
+
     border-left: 1px solid #C6C6C6
     border-bottom: 1px solid darken(#DDDDDD, 10%)
-    text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.8)
-    font-size: 13px
+    // text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.8)
+    text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.5)
+    text-transform: uppercase
+    font-weight: bold
+    font-size: 11px
 
     div {
       box-flex(1)
       padding: 8px 15px
       cursor: pointer
-      border-right: 1px solid rgba(0, 0, 0, 0.1)
+      border-right: 1px solid #767B7C
       text-align: center
 
       &:last-child {
@@ -35,7 +42,7 @@
       }
 
       &:active, &.active {
-        vbg-gradient(darken(rgba(238, 238, 238, 0.9), 10%), rgba(238, 238, 238, 0.9))
+        background: rgba(255, 255, 255, 0.13)
       }
     }
   }
@@ -145,19 +152,6 @@
     }
   }
 
-  // .preview {
-  //   border: 1px solid rgba(0, 0, 0, 0.3)
-  //   padding: 3px
-  //   cursor: pointer
-  //   margin: 5px 0 0 0
-  //   background: url(grid.png) repeat
-  // }
-  //
-  // .preview, .preview .inner {
-  //   width: 30px
-  //   height: 30px
-  // }
-
   .positionPicker {
     width: 40px
     height: 40px
@@ -204,9 +198,9 @@
       }
 
       &.selected {
-        color: #FFF
-        text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.1)
-        vbg-gradient(#BAC4D8, #9AA8C7)
+        text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8)
+        color: #5B5B5B
+        vbg-gradient(rgb(245, 245, 245), rgb(230, 230, 230))
       }
 
       .preview {
@@ -229,8 +223,8 @@
         display: block
         float: left
 
-        color: #5B5B5B;
-        font-size: 14px;
+        color: #5B5B5B
+        font-size: 14px
         font-weight: bold
         text-transform: uppercase
         text-shadow: 0 1px 1px #FFF;

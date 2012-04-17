@@ -59,10 +59,14 @@
   return this.require;
 }).call(this);
 this.require.define({"app/controllers/inspector/font":function(exports, require, module){(function() {
-  var Font,
+  var Color, ColorPicker, Font,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  Color = require('app/models/properties/color');
+
+  ColorPicker = require('lib/color_picker');
 
   Font = (function(_super) {
 
@@ -70,25 +74,44 @@ this.require.define({"app/controllers/inspector/font":function(exports, require,
 
     Font.name = 'Font';
 
-    function Font() {
-      this.render = __bind(this.render, this);
-      return Font.__super__.constructor.apply(this, arguments);
-    }
-
     Font.prototype.className = 'font';
 
     Font.prototype.elements = {
-      'input': '$inputs'
+      'input': '$inputs',
+      'input[name=size]': '$size',
+      'select[name=family]': '$family'
     };
+
+    Font.prototype.events = {
+      'change input, select': 'change'
+    };
+
+    function Font() {
+      this.render = __bind(this.render, this);
+
+      var _this = this;
+      Font.__super__.constructor.apply(this, arguments);
+      this.html(JST['app/views/inspector/font'](this));
+      this.$color = new ColorPicker.Preview;
+      this.$color.bind('change', function() {
+        return _this.change();
+      });
+      this.$('input[type=color]').replaceWith(this.$color.el);
+    }
 
     Font.prototype.render = function() {
-      var _ref;
       this.disabled = !this.stage.selection.isAny();
-      this.fontSize = (_ref = this.stage.selection.get('fontSize')) != null ? _ref : 12;
-      return this.html(JST['app/views/inspector/font'](this));
+      this.$color.val(this.stage.selection.get('color') || new Color.Black);
+      this.$size.val(this.stage.selection.get('fontSize'));
+      return this.$family.val(this.stage.selection.get('fontFamily'));
     };
 
-    Font.prototype.change = function(e) {};
+    Font.prototype.change = function(e) {
+      this.stage.history.record('font');
+      this.stage.selection.set('color', this.$color.val());
+      this.stage.selection.set('fontSize', parseInt(this.$size.val(), 10));
+      return this.stage.selection.set('fontFamily', this.$family.val());
+    };
 
     return Font;
 

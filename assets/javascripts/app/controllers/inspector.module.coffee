@@ -6,6 +6,7 @@ BoxShadow     = require('./inspector/box_shadow')
 TextShadow    = require('./inspector/text_shadow')
 Dimensions    = require('./inspector/dimensions')
 TextPosition  = require('./inspector/text_position')
+Font          = require('./inspector/font')
 Utils         = require('lib/utils')
 
 class TextInspector extends Spine.Controller
@@ -13,17 +14,20 @@ class TextInspector extends Spine.Controller
 
   constructor: ->
     super
+    @append(@font         = new Font(stage: @stage))
     @append(@textPosition = new TextPosition(stage: @stage))
     @append(@textShadow   = new TextShadow(stage: @stage))
 
   render: ->
+    @font.render()
     @textPosition.render()
     @textShadow.render()
     this
 
   release: ->
-    @textPosition.release()
-    @textShadow.release()
+    @font?.release()
+    @textPosition?.release()
+    @textShadow?.release()
     super
 
 class DisplayInspector extends Spine.Controller

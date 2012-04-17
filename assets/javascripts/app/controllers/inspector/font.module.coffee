@@ -25,7 +25,7 @@ class Font extends Spine.Controller
   render: =>
     @disabled = not @stage.selection.isAny()
     @$color.val(@stage.selection.get('color') or new Color.Black)
-    @$size.val(@stage.selection.get('fontSize'))
+    @$size.val(@stage.selection.get('fontSize') ? 12)
     @$family.val(@stage.selection.get('fontFamily'))
 
   change: (e) ->

@@ -200,22 +200,19 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
     List.prototype.click = function(e) {
       this.current = this.backgrounds[$(e.currentTarget).index()];
       this.trigger('change', this.current);
-      this.render();
-      return false;
+      return this.render();
     };
 
     List.prototype.plus = function() {
       this.current = new Background.LinearGradient(new Background.Position(0), [new Background.ColorStop(new Color.Black, 0), new Background.ColorStop(new Color.White, 100)]);
       this.backgrounds.push(this.current);
-      this.trigger('change', this.current);
-      return false;
+      return this.trigger('change', this.current);
     };
 
     List.prototype.minus = function() {
       this.backgrounds.remove(this.current);
       this.current = this.backgrounds.first();
-      this.trigger('change', this.current);
-      return false;
+      return this.trigger('change', this.current);
     };
 
     return List;

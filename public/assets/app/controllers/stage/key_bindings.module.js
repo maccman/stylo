@@ -224,14 +224,14 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       if (!e.metaKey) {
         return;
       }
-      return this.stage.clipboard.copyInternal();
+      return this.stage.clipboard.copyInternal(e);
     };
 
     KeyBindings.prototype.vKey = function(e) {
       if (!e.metaKey) {
         return;
       }
-      return this.stage.clipboard.pasteInternal();
+      return this.stage.clipboard.pasteInternal(e);
     };
 
     KeyBindings.prototype.zKey = function(e) {

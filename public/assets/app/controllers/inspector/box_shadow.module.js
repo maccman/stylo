@@ -196,23 +196,20 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
     BoxShadowList.prototype.click = function(e) {
       this.current = this.shadows[$(e.currentTarget).index()];
       this.trigger('change', this.current);
-      this.render();
-      return false;
+      return this.render();
     };
 
     BoxShadowList.prototype.addShadow = function() {
       this.shadows.push(this.current = new Shadow({
         blur: 3
       }));
-      this.trigger('change', this.current);
-      return false;
+      return this.trigger('change', this.current);
     };
 
     BoxShadowList.prototype.removeShadow = function() {
       this.shadows.remove(this.current);
       this.current = this.shadows.first();
-      this.trigger('change', this.current);
-      return false;
+      return this.trigger('change', this.current);
     };
 
     return BoxShadowList;

@@ -57,6 +57,8 @@ class Clipboard
   pasteInternal: (e) ->
     return unless @data
 
+    e?.preventDefault()
+
     @stage.history.record()
     @stage.add(el) for el in @data
     @stage.selection.refresh(@data)
@@ -64,9 +66,6 @@ class Clipboard
 
     # Re-clone the elements
     @copyInternal()
-
-    # Cancel event propogation
-    false
 
   release: ->
     $(window).unbind 'beforecopy', @cancel

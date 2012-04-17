@@ -146,12 +146,11 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
         _ref.release();
       }
       $(document).mousemove(this.drag);
-      $(document).mouseup(this.drop);
-      return true;
+      return $(document).mouseup(this.drop);
     };
 
     SelectArea.prototype.drag = function(e) {
-      var area, element, _i, _len, _ref;
+      var area, element, _i, _len, _ref, _results;
       if (!this.selectArea) {
         this.selectArea = new Area(e.pageX - this.offset.left + 1, e.pageY - this.offset.top + 1);
         this.append(this.selectArea);
@@ -159,15 +158,16 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
       this.selectArea.resize(e.pageX - this.offset.left, e.pageY - this.offset.top);
       area = this.selectArea.area();
       _ref = this.stage.elements;
+      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         element = _ref[_i];
         if (element.inArea(area)) {
-          this.stage.selection.add(element);
+          _results.push(this.stage.selection.add(element));
         } else {
-          this.stage.selection.remove(element);
+          _results.push(this.stage.selection.remove(element));
         }
       }
-      return true;
+      return _results;
     };
 
     SelectArea.prototype.drop = function(e) {
@@ -177,8 +177,7 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
       }
       this.selectArea = null;
       $(document).unbind('mousemove', this.drag);
-      $(document).unbind('mouseup', this.drop);
-      return true;
+      return $(document).unbind('mouseup', this.drop);
     };
 
     return SelectArea;

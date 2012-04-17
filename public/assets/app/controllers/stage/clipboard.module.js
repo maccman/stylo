@@ -157,6 +157,9 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
       if (!this.data) {
         return;
       }
+      if (e != null) {
+        e.preventDefault();
+      }
       this.stage.history.record();
       _ref = this.data;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -168,8 +171,7 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
         left: 10,
         top: 10
       });
-      this.copyInternal();
-      return false;
+      return this.copyInternal();
     };
 
     Clipboard.prototype.release = function() {

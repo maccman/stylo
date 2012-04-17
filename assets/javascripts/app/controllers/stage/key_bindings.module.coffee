@@ -92,11 +92,11 @@ class KeyBindings extends Spine.Module
 
   cKey: (e) ->
     return unless e.metaKey
-    @stage.clipboard.copyInternal()
+    @stage.clipboard.copyInternal(e)
 
   vKey: (e) ->
     return unless e.metaKey
-    @stage.clipboard.pasteInternal()
+    @stage.clipboard.pasteInternal(e)
 
   zKey: (e) ->
     return unless e.metaKey

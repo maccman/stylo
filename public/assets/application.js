@@ -13654,22 +13654,19 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
     List.prototype.click = function(e) {
       this.current = this.backgrounds[$(e.currentTarget).index()];
       this.trigger('change', this.current);
-      this.render();
-      return false;
+      return this.render();
     };
 
     List.prototype.plus = function() {
       this.current = new Background.LinearGradient(new Background.Position(0), [new Background.ColorStop(new Color.Black, 0), new Background.ColorStop(new Color.White, 100)]);
       this.backgrounds.push(this.current);
-      this.trigger('change', this.current);
-      return false;
+      return this.trigger('change', this.current);
     };
 
     List.prototype.minus = function() {
       this.backgrounds.remove(this.current);
       this.current = this.backgrounds.first();
-      this.trigger('change', this.current);
-      return false;
+      return this.trigger('change', this.current);
     };
 
     return List;
@@ -14091,23 +14088,20 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
     BoxShadowList.prototype.click = function(e) {
       this.current = this.shadows[$(e.currentTarget).index()];
       this.trigger('change', this.current);
-      this.render();
-      return false;
+      return this.render();
     };
 
     BoxShadowList.prototype.addShadow = function() {
       this.shadows.push(this.current = new Shadow({
         blur: 3
       }));
-      this.trigger('change', this.current);
-      return false;
+      return this.trigger('change', this.current);
     };
 
     BoxShadowList.prototype.removeShadow = function() {
       this.shadows.remove(this.current);
       this.current = this.shadows.first();
-      this.trigger('change', this.current);
-      return false;
+      return this.trigger('change', this.current);
     };
 
     return BoxShadowList;
@@ -14310,9 +14304,10 @@ this.require.define({"app/controllers/inspector/font":function(exports, require,
     }
 
     Font.prototype.render = function() {
+      var _ref;
       this.disabled = !this.stage.selection.isAny();
       this.$color.val(this.stage.selection.get('color') || new Color.Black);
-      this.$size.val(this.stage.selection.get('fontSize'));
+      this.$size.val((_ref = this.stage.selection.get('fontSize')) != null ? _ref : 12);
       return this.$family.val(this.stage.selection.get('fontFamily'));
     };
 
@@ -15028,6 +15023,9 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
       if (!this.data) {
         return;
       }
+      if (e != null) {
+        e.preventDefault();
+      }
       this.stage.history.record();
       _ref = this.data;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -15039,8 +15037,7 @@ this.require.define({"app/controllers/stage/clipboard":function(exports, require
         left: 10,
         top: 10
       });
-      this.copyInternal();
-      return false;
+      return this.copyInternal();
     };
 
     Clipboard.prototype.release = function() {
@@ -15630,14 +15627,14 @@ this.require.define({"app/controllers/stage/key_bindings":function(exports, requ
       if (!e.metaKey) {
         return;
       }
-      return this.stage.clipboard.copyInternal();
+      return this.stage.clipboard.copyInternal(e);
     };
 
     KeyBindings.prototype.vKey = function(e) {
       if (!e.metaKey) {
         return;
       }
-      return this.stage.clipboard.pasteInternal();
+      return this.stage.clipboard.pasteInternal(e);
     };
 
     KeyBindings.prototype.zKey = function(e) {
@@ -15836,12 +15833,11 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
         _ref.release();
       }
       $(document).mousemove(this.drag);
-      $(document).mouseup(this.drop);
-      return true;
+      return $(document).mouseup(this.drop);
     };
 
     SelectArea.prototype.drag = function(e) {
-      var area, element, _i, _len, _ref;
+      var area, element, _i, _len, _ref, _results;
       if (!this.selectArea) {
         this.selectArea = new Area(e.pageX - this.offset.left + 1, e.pageY - this.offset.top + 1);
         this.append(this.selectArea);
@@ -15849,15 +15845,16 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
       this.selectArea.resize(e.pageX - this.offset.left, e.pageY - this.offset.top);
       area = this.selectArea.area();
       _ref = this.stage.elements;
+      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         element = _ref[_i];
         if (element.inArea(area)) {
-          this.stage.selection.add(element);
+          _results.push(this.stage.selection.add(element));
         } else {
-          this.stage.selection.remove(element);
+          _results.push(this.stage.selection.remove(element));
         }
       }
-      return true;
+      return _results;
     };
 
     SelectArea.prototype.drop = function(e) {
@@ -15867,8 +15864,7 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
       }
       this.selectArea = null;
       $(document).unbind('mousemove', this.drag);
-      $(document).unbind('mouseup', this.drop);
-      return true;
+      return $(document).unbind('mouseup', this.drop);
     };
 
     return SelectArea;

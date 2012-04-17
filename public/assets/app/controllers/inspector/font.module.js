@@ -101,9 +101,10 @@ this.require.define({"app/controllers/inspector/font":function(exports, require,
     }
 
     Font.prototype.render = function() {
+      var _ref;
       this.disabled = !this.stage.selection.isAny();
       this.$color.val(this.stage.selection.get('color') || new Color.Black);
-      this.$size.val(this.stage.selection.get('fontSize'));
+      this.$size.val((_ref = this.stage.selection.get('fontSize')) != null ? _ref : 12);
       return this.$family.val(this.stage.selection.get('fontFamily'));
     };
 

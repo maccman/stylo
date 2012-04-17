@@ -96,18 +96,15 @@ class BoxShadowList extends Spine.Controller
     @current = @shadows[$(e.currentTarget).index()]
     @trigger 'change', @current
     @render()
-    false
 
   addShadow: ->
     @shadows.push(@current = new Shadow(blur: 3))
     @trigger 'change', @current
-    false
 
   removeShadow: ->
     @shadows.remove(@current)
     @current = @shadows.first()
     @trigger 'change', @current
-    false
 
 class BoxShadow extends Spine.Controller
   className: 'boxShadow'

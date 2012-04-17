@@ -46,7 +46,6 @@ class SelectArea extends Spine.Controller
 
     $(document).mousemove(@drag)
     $(document).mouseup(@drop)
-    true
 
   drag: (e) =>
     # We offset by 1, so it doesn't
@@ -71,13 +70,11 @@ class SelectArea extends Spine.Controller
         @stage.selection.add(element)
       else
         @stage.selection.remove(element)
-    true
 
   drop: (e) =>
     @selectArea?.release()
     @selectArea = null
     $(document).unbind('mousemove', @drag)
     $(document).unbind('mouseup', @drop)
-    true
 
 module.exports = SelectArea

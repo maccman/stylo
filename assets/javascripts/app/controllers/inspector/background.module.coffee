@@ -84,7 +84,6 @@ class List extends Spine.Controller
     @current = @backgrounds[$(e.currentTarget).index()]
     @trigger 'change', @current
     @render()
-    false
 
   plus: ->
     @current = new Background.LinearGradient(
@@ -96,13 +95,11 @@ class List extends Spine.Controller
     )
     @backgrounds.push(@current)
     @trigger 'change', @current
-    false
 
   minus: ->
     @backgrounds.remove(@current)
     @current = @backgrounds.first()
     @trigger 'change', @current
-    false
 
 class BackgroundInspector extends Spine.Controller
   className: 'background'

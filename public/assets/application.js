@@ -13093,13 +13093,14 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
       'dblclick .thumb.br': 'fitToText'
     };
 
-    Text.prototype.textDefaults = function() {
+    Text.prototype.defaults = function() {
       var result;
-      return result = {
+      result = {
         height: 30,
         fontSize: 18,
         backgroundColor: new Color.Transparent
       };
+      return $.extend({}, Text.__super__.defaults.apply(this, arguments), result);
     };
 
     function Text(attrs) {
@@ -13107,7 +13108,6 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
         attrs = {};
       }
       Text.__super__.constructor.apply(this, arguments);
-      this.set(this.textDefaults());
       this.text(attrs.text);
     }
 
@@ -14298,7 +14298,8 @@ this.require.define({"app/controllers/inspector/font":function(exports, require,
     };
 
     Font.prototype.events = {
-      'change input, select': 'change'
+      'change input': 'change',
+      'change select': 'change'
     };
 
     function Font() {
@@ -17904,7 +17905,7 @@ this.require.define({"app/models/serialize":function(exports, require, module){(
     (function() {
       (function() {
       
-        __out.push('<h3>Font</h3>\n\n<article>\n  <label>\n    <span>Size</span>\n    <input type="number" name="size" placeholder="0px">\n  </label>\n\n  <label class="color">\n    <span>Color</span>\n    <input type="color" name="color">\n  </label>\n\n  <label>\n    <span>Family</span>\n    <select name="family">\n      <option></option>\n      <option value="\'Lucida Grande\', Lucida, Verdana, sans-serif">Lucida Grande, Lucida, Verdana, sans-serif</option>\n      <option value="\'Helvetica Neue\', Arial, Helvetica, Geneva, sans-serif">\'Helvetica Neue\', Arial, Helvetica, Geneva, sans-serif</option>\n    </select>\n  </label>\n</article>\n');
+        __out.push('<h3>Font</h3>\n\n<article>\n  <label>\n    <span>Size</span>\n    <input type="number" name="size" placeholder="0px">\n  </label>\n\n  <label class="color">\n    <span>Color</span>\n    <input type="color" name="color">\n  </label>\n\n  <label>\n    <span>Family</span>\n    <select name="family">\n      <option></option>\n      <option value="\'Lucida Grande\', Lucida, Verdana, sans-serif">Lucida Grande, Lucida, Verdana, sans-serif</option>\n      <option value="\'Helvetica Neue\', Arial, Helvetica, Geneva, sans-serif">Helvetica Neue, Arial, Helvetica, Geneva, sans-serif</option>\n      <option value="Georgia, \'Times New Roman\', Times, serif">Georgia, Times New Roman, Times, serif</option>\n      <option value="\'Courier New\', Courier, mono">Courier New, Courier, mono</option>\n    </select>\n  </label>\n</article>\n');
       
       }).call(this);
       

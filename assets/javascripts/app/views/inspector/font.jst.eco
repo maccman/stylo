@@ -16,7 +16,9 @@
     <select name="family">
       <option></option>
       <option value="'Lucida Grande', Lucida, Verdana, sans-serif">Lucida Grande, Lucida, Verdana, sans-serif</option>
-      <option value="'Helvetica Neue', Arial, Helvetica, Geneva, sans-serif">'Helvetica Neue', Arial, Helvetica, Geneva, sans-serif</option>
+      <option value="'Helvetica Neue', Arial, Helvetica, Geneva, sans-serif">Helvetica Neue, Arial, Helvetica, Geneva, sans-serif</option>
+      <option value="Georgia, 'Times New Roman', Times, serif">Georgia, Times New Roman, Times, serif</option>
+      <option value="'Courier New', Courier, mono">Courier New, Courier, mono</option>
     </select>
   </label>
 </article>

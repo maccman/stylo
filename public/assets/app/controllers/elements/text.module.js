@@ -82,13 +82,14 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
       'dblclick .thumb.br': 'fitToText'
     };
 
-    Text.prototype.textDefaults = function() {
+    Text.prototype.defaults = function() {
       var result;
-      return result = {
+      result = {
         height: 30,
         fontSize: 18,
         backgroundColor: new Color.Transparent
       };
+      return $.extend({}, Text.__super__.defaults.apply(this, arguments), result);
     };
 
     function Text(attrs) {
@@ -96,7 +97,6 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
         attrs = {};
       }
       Text.__super__.constructor.apply(this, arguments);
-      this.set(this.textDefaults());
       this.text(attrs.text);
     }
 

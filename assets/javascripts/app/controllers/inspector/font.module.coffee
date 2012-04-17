@@ -10,7 +10,8 @@ class Font extends Spine.Controller
     'select[name=family]': '$family'
 
   events:
-    'change input, select': 'change'
+    'change input': 'change'
+    'change select': 'change'
 
   constructor: ->
     super

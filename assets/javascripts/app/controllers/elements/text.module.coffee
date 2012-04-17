@@ -9,16 +9,16 @@ class Text extends Rectangle
     'dblclick': 'startEditing'
     'dblclick .thumb.br': 'fitToText'
 
-  textDefaults: ->
+  defaults: ->
     result =
       height: 30
       fontSize: 18
       backgroundColor: new Color.Transparent
 
+    $.extend({}, super, result)
+
   constructor: (attrs = {}) ->
     super
-
-    @set(@textDefaults())
     @text(attrs.text)
 
   startEditing: ->

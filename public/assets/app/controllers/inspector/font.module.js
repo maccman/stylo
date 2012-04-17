@@ -83,7 +83,8 @@ this.require.define({"app/controllers/inspector/font":function(exports, require,
     };
 
     Font.prototype.events = {
-      'change input, select': 'change'
+      'change input': 'change',
+      'change select': 'change'
     };
 
     function Font() {

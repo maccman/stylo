@@ -313,7 +313,7 @@ body {
   color: #fff;
   border-left: 1px solid #c6c6c6;
   border-bottom: 1px solid #c7c7c7;
-  text-shadow: 0px -1px 0px rgba(0,0,0,0.50);
+  text-shadow: 0px -1px 0px rgba(0,0,0,0.30);
   text-transform: uppercase;
   font-weight: bold;
   font-size: 11px;
@@ -332,7 +332,7 @@ body {
 }
 #app .inspector header div:active,
 #app .inspector header div.active {
-  background: rgba(255,255,255,0.13);
+  background: rgba(255,255,255,0.18);
 }
 #app .inspector .textInspector,
 #app .inspector .displayInspector {
@@ -392,20 +392,6 @@ body {
   -moz-box-shadow: inset 0 1px 2px rgba(0,0,0,0.10);
   -webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,0.10);
   box-shadow: inset 0 1px 2px rgba(0,0,0,0.10);
-}
-#app .inspector input[type=text]:focus,
-#app .inspector input[type=url]:focus,
-#app .inspector input[type=number]:focus,
-#app .inspector input[type=color]:focus,
-#app .inspector textarea:focus,
-#app .inspector select:focus {
-  outline: none;
-  border-color: rgba(104,189,244,0.80);
-  -webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,0.20), 0 1px 5px 0 rgba(104,189,244,0.60);
-  -moz-box-shadow: inset 0 1px 2px rgba(0,0,0,0.20), 0 1px 5px 0 rgba(104,189,244,0.60);
-  -moz-box-shadow: inset 0 1px 2px rgba(0,0,0,0.20), 0 1px 5px 0 rgba(104,189,244,0.60);
-  -webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,0.20), 0 1px 5px 0 rgba(104,189,244,0.60);
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.20), 0 1px 5px 0 rgba(104,189,244,0.60);
 }
 #app .inspector input[disabled] {
   opacity: 0.8;
@@ -479,7 +465,7 @@ body {
 #app .inspector .list .item {
   padding: 8px;
   cursor: pointer;
-  border-bottom: 1px solid rgba(0,0,0,0.25);
+  border-bottom: 1px solid rgba(0,0,0,0.20);
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
@@ -488,13 +474,13 @@ body {
   border-bottom: none;
 }
 #app .inspector .list .item.selected {
-  text-shadow: 0 1px 1px rgba(255,255,255,0.80);
-  color: #5b5b5b;
-  background: #f5f5f5;
-  background: -webkit-gradient(linear, left top, left bottom, from(#f5f5f5), to(#e6e6e6));
-  background: -webkit-linear-gradient(top, #f5f5f5, #e6e6e6);
-  background: -moz-linear-gradient(top, #f5f5f5, #e6e6e6);
-  background: linear-gradient(top, #f5f5f5, #e6e6e6);
+  color: #fff;
+  text-shadow: 0 -1px 0 rgba(0,0,0,0.20);
+  background: #bcc6de;
+  background: -webkit-gradient(linear, left top, left bottom, from(#bcc6de), to(#9ba8c7));
+  background: -webkit-linear-gradient(top, #bcc6de, #9ba8c7);
+  background: -moz-linear-gradient(top, #bcc6de, #9ba8c7);
+  background: linear-gradient(top, #bcc6de, #9ba8c7);
 }
 #app .inspector .list .item .preview {
   margin: 0 3px 0 0;
@@ -755,7 +741,7 @@ body {
   width: 15px;
 }
 #app .inspector .font label span {
-  width: 40px;
+  width: 45px;
 }
 #app .inspector .font select {
   width: 120px;

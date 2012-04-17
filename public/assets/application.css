@@ -311,8 +311,6 @@ body {
   background: -moz-linear-gradient(top, #959a9b, #767b7c);
   background: linear-gradient(top, #959a9b, #767b7c);
   color: #fff;
-  border-left: 1px solid #c6c6c6;
-  border-bottom: 1px solid #c7c7c7;
   text-shadow: 0px -1px 0px rgba(0,0,0,0.30);
   text-transform: uppercase;
   font-weight: bold;
@@ -324,7 +322,6 @@ body {
   box-flex: 1;
   padding: 8px 15px;
   cursor: pointer;
-  border-right: 1px solid #767b7c;
   text-align: center;
 }
 #app .inspector header div:last-child {
@@ -332,7 +329,14 @@ body {
 }
 #app .inspector header div:active,
 #app .inspector header div.active {
-  background: rgba(255,255,255,0.18);
+  background: #858b8c;
+  background: -webkit-gradient(linear, left top, left bottom, from(#858b8c), to(#707576));
+  background: -webkit-linear-gradient(top, #858b8c, #707576);
+  background: -moz-linear-gradient(top, #858b8c, #707576);
+  background: linear-gradient(top, #858b8c, #707576);
+  -moz-box-shadow: inset 0 0 5px rgba(0,0,0,0.20);
+  -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.20);
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.20);
 }
 #app .inspector .textInspector,
 #app .inspector .displayInspector {

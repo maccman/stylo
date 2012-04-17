@@ -17,14 +17,9 @@
   header {
     hbox()
     -webkit-box-pack: center
-    // vbg-gradient(#FFF, rgba(238, 238, 238, 1))
-    // vbg-gradient(#8F9398, #5D646D)
     vbg-gradient(#959A9B, #767B7C)
     color: #FFF
 
-    border-left: 1px solid #C6C6C6
-    border-bottom: 1px solid darken(#DDDDDD, 10%)
-    // text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.8)
     text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.3)
     text-transform: uppercase
     font-weight: bold
@@ -34,7 +29,6 @@
       box-flex(1)
       padding: 8px 15px
       cursor: pointer
-      border-right: 1px solid #767B7C
       text-align: center
 
       &:last-child {
@@ -42,7 +36,8 @@
       }
 
       &:active, &.active {
-        background: rgba(255, 255, 255, 0.18)
+        vbg-gradient(darken(#959A9B, 10%), darken(#767B7C, 5%))
+        box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2)
       }
     }
   }

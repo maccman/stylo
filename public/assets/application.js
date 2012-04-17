@@ -10044,12 +10044,18 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     };
 
     Controller.prototype.delegateEvents = function(events) {
-      var eventName, key, match, method, selector, _results;
+      var eventName, key, match, method, selector, _results,
+        _this = this;
       _results = [];
       for (key in events) {
         method = events[key];
         if (typeof method !== 'function') {
-          method = this.proxy(this[method]);
+          method = (function(method) {
+            return function() {
+              _this[method].apply(_this, arguments);
+              return true;
+            };
+          })(method);
         }
         match = key.match(this.eventSplitter);
         eventName = match[1];

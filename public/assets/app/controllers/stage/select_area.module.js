@@ -139,7 +139,6 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
       if (e.target !== e.currentTarget) {
         return;
       }
-      e.preventDefault();
       this.offset = this.el.offset();
       this.offset.left -= this.el.scrollLeft();
       this.offset.top -= this.el.scrollTop();
@@ -147,11 +146,12 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
         _ref.release();
       }
       $(document).mousemove(this.drag);
-      return $(document).mouseup(this.drop);
+      $(document).mouseup(this.drop);
+      return true;
     };
 
     SelectArea.prototype.drag = function(e) {
-      var area, element, _i, _len, _ref, _results;
+      var area, element, _i, _len, _ref;
       if (!this.selectArea) {
         this.selectArea = new Area(e.pageX - this.offset.left + 1, e.pageY - this.offset.top + 1);
         this.append(this.selectArea);
@@ -159,16 +159,15 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
       this.selectArea.resize(e.pageX - this.offset.left, e.pageY - this.offset.top);
       area = this.selectArea.area();
       _ref = this.stage.elements;
-      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         element = _ref[_i];
         if (element.inArea(area)) {
-          _results.push(this.stage.selection.add(element));
+          this.stage.selection.add(element);
         } else {
-          _results.push(this.stage.selection.remove(element));
+          this.stage.selection.remove(element);
         }
       }
-      return _results;
+      return true;
     };
 
     SelectArea.prototype.drop = function(e) {
@@ -178,7 +177,8 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
       }
       this.selectArea = null;
       $(document).unbind('mousemove', this.drag);
-      return $(document).unbind('mouseup', this.drop);
+      $(document).unbind('mouseup', this.drop);
+      return true;
     };
 
     return SelectArea;

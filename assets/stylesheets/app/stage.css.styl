@@ -10,20 +10,25 @@
   // background: url('bg-grid.png')
   background: #FFF
   overflow: auto
-  // -webkit-user-select: text
+  -webkit-user-select: none
 
   .element {
     border-box()
     color: #000
+    outline: none
   }
 
-  .element.text.editing, .element.text.selected {
-    outline: 1px solid rgba(0, 0, 0, 0.2)
+  .element.editing {
+    -webkit-user-select: text
   }
 
   .element.text {
     white-space: nowrap
     padding: 5px
+
+    &.editing, &.selected {
+      outline: 1px solid rgba(0, 0, 0, 0.2)
+    }
   }
 
   .resizing .thumb {

@@ -98,7 +98,8 @@ this.require.define({"app/controllers/element":function(exports, require, module
     };
 
     Element.prototype.elementEvents = {
-      'mousedown': 'toggleSelect'
+      'mousedown': 'toggleSelect',
+      'dblclick': 'startEditing'
     };
 
     function Element(attrs) {
@@ -115,6 +116,9 @@ this.require.define({"app/controllers/element":function(exports, require, module
       this.properties = {};
       this.selected = !!attrs.selected;
       this.resizing = new Resizing(this);
+      if (attrs.text) {
+        this.text(attrs.text);
+      }
       this.set(this.defaults());
       this.set(attrs.properties || attrs);
     }
@@ -165,6 +169,9 @@ this.require.define({"app/controllers/element":function(exports, require, module
     };
 
     Element.prototype.toggleSelect = function(e) {
+      if (this.editing) {
+        return;
+      }
       if (this.selected) {
         return this.el.trigger('deselect.element', [this, e != null ? e.shiftKey : void 0]);
       } else {
@@ -176,9 +183,44 @@ this.require.define({"app/controllers/element":function(exports, require, module
       if (bool != null) {
         this.selected = bool;
         this.el.toggleClass('selected', bool);
+        if (!bool) {
+          this.stopEditing();
+        }
         this.resizing.toggle(bool);
       }
       return this.selected;
+    };
+
+    Element.prototype.startEditing = function() {
+      if (this.editing) {
+        return;
+      }
+      this.editing = true;
+      this.resizing.toggle(false);
+      this.el.removeClass('selected');
+      this.el.addClass('editing');
+      this.el.attr('contenteditable', true);
+      this.el.focus();
+      return document.execCommand('selectAll', false, null);
+    };
+
+    Element.prototype.stopEditing = function() {
+      if (!this.editing) {
+        return;
+      }
+      this.editing = false;
+      this.el.blur();
+      this.el.removeAttr('contenteditable');
+      this.el.scrollTop(0);
+      this.el.addClass('selected');
+      return this.el.removeClass('editing');
+    };
+
+    Element.prototype.text = function(text) {
+      if (text != null) {
+        this.el.text(text);
+      }
+      return this.el.text();
     };
 
     Element.prototype.area = function() {
@@ -244,7 +286,8 @@ this.require.define({"app/controllers/element":function(exports, require, module
       var result;
       return result = {
         selected: this.selected,
-        properties: this.properties
+        properties: this.properties,
+        text: this.text()
       };
     };
 

@@ -19,6 +19,7 @@ class Element extends Spine.Controller
 
   elementEvents:
     'mousedown': 'toggleSelect'
+    'dblclick': 'startEditing'
 
   constructor: (attrs = {}) ->
     super(el: attrs.el)
@@ -29,6 +30,8 @@ class Element extends Spine.Controller
     @properties = {}
     @selected   = !!attrs.selected
     @resizing   = new Resizing(this)
+
+    @text(attrs.text) if attrs.text
 
     @set @defaults()
     @set attrs.properties or attrs
@@ -72,6 +75,9 @@ class Element extends Spine.Controller
   # Selecting elements
 
   toggleSelect: (e) ->
+    # Disable selection when editing
+    return if @editing
+
     if @selected
       @el.trigger('deselect.element', [this, e?.shiftKey])
     else
@@ -81,8 +87,42 @@ class Element extends Spine.Controller
     if bool?
       @selected = bool
       @el.toggleClass('selected', bool)
+
+      @stopEditing() unless bool
       @resizing.toggle(bool)
+
     @selected
+
+  # Text editing
+
+  startEditing: ->
+    return if @editing
+    @editing = true
+
+    # We don't want the element to be
+    # resizable, or draggable
+    @resizing.toggle(false)
+    @el.removeClass('selected')
+    @el.addClass('editing')
+
+    # Enable text editing and select text
+    @el.attr('contenteditable', true)
+    @el.focus()
+    document.execCommand('selectAll', false, null)
+
+  stopEditing: ->
+    return unless @editing
+    @editing = false
+
+    @el.blur()
+    @el.removeAttr('contenteditable')
+    @el.scrollTop(0)
+    @el.addClass('selected')
+    @el.removeClass('editing')
+
+  text: (text) ->
+    @el.text(text) if text?
+    @el.text()
 
   # Position & Area
 
@@ -145,5 +185,6 @@ class Element extends Spine.Controller
     result =
       selected:   @selected
       properties: @properties
+      text:       @text()
 
 module.exports = Element

@@ -12455,7 +12455,8 @@ this.require.define({"app/controllers/element":function(exports, require, module
     };
 
     Element.prototype.elementEvents = {
-      'mousedown': 'toggleSelect'
+      'mousedown': 'toggleSelect',
+      'dblclick': 'startEditing'
     };
 
     function Element(attrs) {
@@ -12472,6 +12473,9 @@ this.require.define({"app/controllers/element":function(exports, require, module
       this.properties = {};
       this.selected = !!attrs.selected;
       this.resizing = new Resizing(this);
+      if (attrs.text) {
+        this.text(attrs.text);
+      }
       this.set(this.defaults());
       this.set(attrs.properties || attrs);
     }
@@ -12522,6 +12526,9 @@ this.require.define({"app/controllers/element":function(exports, require, module
     };
 
     Element.prototype.toggleSelect = function(e) {
+      if (this.editing) {
+        return;
+      }
       if (this.selected) {
         return this.el.trigger('deselect.element', [this, e != null ? e.shiftKey : void 0]);
       } else {
@@ -12533,9 +12540,44 @@ this.require.define({"app/controllers/element":function(exports, require, module
       if (bool != null) {
         this.selected = bool;
         this.el.toggleClass('selected', bool);
+        if (!bool) {
+          this.stopEditing();
+        }
         this.resizing.toggle(bool);
       }
       return this.selected;
+    };
+
+    Element.prototype.startEditing = function() {
+      if (this.editing) {
+        return;
+      }
+      this.editing = true;
+      this.resizing.toggle(false);
+      this.el.removeClass('selected');
+      this.el.addClass('editing');
+      this.el.attr('contenteditable', true);
+      this.el.focus();
+      return document.execCommand('selectAll', false, null);
+    };
+
+    Element.prototype.stopEditing = function() {
+      if (!this.editing) {
+        return;
+      }
+      this.editing = false;
+      this.el.blur();
+      this.el.removeAttr('contenteditable');
+      this.el.scrollTop(0);
+      this.el.addClass('selected');
+      return this.el.removeClass('editing');
+    };
+
+    Element.prototype.text = function(text) {
+      if (text != null) {
+        this.el.text(text);
+      }
+      return this.el.text();
     };
 
     Element.prototype.area = function() {
@@ -12601,7 +12643,8 @@ this.require.define({"app/controllers/element":function(exports, require, module
       var result;
       return result = {
         selected: this.selected,
-        properties: this.properties
+        properties: this.properties,
+        text: this.text()
       };
     };
 
@@ -13084,12 +13127,15 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
 
     Text.name = 'Text';
 
+    function Text() {
+      return Text.__super__.constructor.apply(this, arguments);
+    }
+
     Text.prototype.className = 'text';
 
     Text.prototype.id = module.id;
 
     Text.prototype.events = {
-      'dblclick': 'startEditing',
       'dblclick .thumb.br': 'fitToText'
     };
 
@@ -13103,60 +13149,16 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
       return $.extend({}, Text.__super__.defaults.apply(this, arguments), result);
     };
 
-    function Text(attrs) {
-      if (attrs == null) {
-        attrs = {};
-      }
-      Text.__super__.constructor.apply(this, arguments);
-      this.text(attrs.text);
-    }
-
-    Text.prototype.startEditing = function() {
-      if (this.editing) {
-        return;
-      }
-      this.editing = true;
-      this.resizing.toggle(false);
-      this.el.removeClass('selected');
-      this.el.addClass('editing');
-      this.el.css({
-        height: 'auto'
-      });
-      this.el.attr('contenteditable', true);
-      this.el.focus();
-      return document.execCommand('selectAll', false, null);
-    };
-
     Text.prototype.stopEditing = function() {
       if (!this.editing) {
         return;
       }
-      this.editing = false;
-      this.el.blur();
-      this.el.removeAttr('contenteditable');
-      this.el.scrollTop(0);
-      this.el.addClass('selected');
-      this.el.removeClass('editing');
-      this.set({
-        height: this.el.outerHeight()
-      });
-      if (!this.text()) {
+      Text.__super__.stopEditing.apply(this, arguments);
+      if (this.text()) {
+        return this.fitToText();
+      } else {
         return this.remove();
       }
-    };
-
-    Text.prototype.toggleSelect = function() {
-      if (this.editing) {
-        return;
-      }
-      return Text.__super__.toggleSelect.apply(this, arguments);
-    };
-
-    Text.prototype.setSelected = function(bool) {
-      if (!bool) {
-        this.stopEditing();
-      }
-      return Text.__super__.setSelected.apply(this, arguments);
     };
 
     Text.prototype.fitToText = function() {
@@ -13168,20 +13170,6 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
         width: this.el.outerWidth(),
         height: this.el.outerHeight()
       });
-    };
-
-    Text.prototype.text = function(text) {
-      if (text != null) {
-        this.el.text(text);
-      }
-      return this.el.text();
-    };
-
-    Text.prototype.toValue = function() {
-      var result;
-      result = Text.__super__.toValue.apply(this, arguments);
-      result.text = this.text();
-      return result;
     };
 
     return Text;
@@ -15835,7 +15823,6 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
       if (e.target !== e.currentTarget) {
         return;
       }
-      e.preventDefault();
       this.offset = this.el.offset();
       this.offset.left -= this.el.scrollLeft();
       this.offset.top -= this.el.scrollTop();
@@ -15843,11 +15830,12 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
         _ref.release();
       }
       $(document).mousemove(this.drag);
-      return $(document).mouseup(this.drop);
+      $(document).mouseup(this.drop);
+      return true;
     };
 
     SelectArea.prototype.drag = function(e) {
-      var area, element, _i, _len, _ref, _results;
+      var area, element, _i, _len, _ref;
       if (!this.selectArea) {
         this.selectArea = new Area(e.pageX - this.offset.left + 1, e.pageY - this.offset.top + 1);
         this.append(this.selectArea);
@@ -15855,16 +15843,15 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
       this.selectArea.resize(e.pageX - this.offset.left, e.pageY - this.offset.top);
       area = this.selectArea.area();
       _ref = this.stage.elements;
-      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         element = _ref[_i];
         if (element.inArea(area)) {
-          _results.push(this.stage.selection.add(element));
+          this.stage.selection.add(element);
         } else {
-          _results.push(this.stage.selection.remove(element));
+          this.stage.selection.remove(element);
         }
       }
-      return _results;
+      return true;
     };
 
     SelectArea.prototype.drop = function(e) {
@@ -15874,7 +15861,8 @@ this.require.define({"app/controllers/stage/select_area":function(exports, requi
       }
       this.selectArea = null;
       $(document).unbind('mousemove', this.drag);
-      return $(document).unbind('mouseup', this.drop);
+      $(document).unbind('mouseup', this.drop);
+      return true;
     };
 
     return SelectArea;

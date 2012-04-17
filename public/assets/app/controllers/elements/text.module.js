@@ -73,12 +73,15 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
 
     Text.name = 'Text';
 
+    function Text() {
+      return Text.__super__.constructor.apply(this, arguments);
+    }
+
     Text.prototype.className = 'text';
 
     Text.prototype.id = module.id;
 
     Text.prototype.events = {
-      'dblclick': 'startEditing',
       'dblclick .thumb.br': 'fitToText'
     };
 
@@ -92,60 +95,16 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
       return $.extend({}, Text.__super__.defaults.apply(this, arguments), result);
     };
 
-    function Text(attrs) {
-      if (attrs == null) {
-        attrs = {};
-      }
-      Text.__super__.constructor.apply(this, arguments);
-      this.text(attrs.text);
-    }
-
-    Text.prototype.startEditing = function() {
-      if (this.editing) {
-        return;
-      }
-      this.editing = true;
-      this.resizing.toggle(false);
-      this.el.removeClass('selected');
-      this.el.addClass('editing');
-      this.el.css({
-        height: 'auto'
-      });
-      this.el.attr('contenteditable', true);
-      this.el.focus();
-      return document.execCommand('selectAll', false, null);
-    };
-
     Text.prototype.stopEditing = function() {
       if (!this.editing) {
         return;
       }
-      this.editing = false;
-      this.el.blur();
-      this.el.removeAttr('contenteditable');
-      this.el.scrollTop(0);
-      this.el.addClass('selected');
-      this.el.removeClass('editing');
-      this.set({
-        height: this.el.outerHeight()
-      });
-      if (!this.text()) {
+      Text.__super__.stopEditing.apply(this, arguments);
+      if (this.text()) {
+        return this.fitToText();
+      } else {
         return this.remove();
       }
-    };
-
-    Text.prototype.toggleSelect = function() {
-      if (this.editing) {
-        return;
-      }
-      return Text.__super__.toggleSelect.apply(this, arguments);
-    };
-
-    Text.prototype.setSelected = function(bool) {
-      if (!bool) {
-        this.stopEditing();
-      }
-      return Text.__super__.setSelected.apply(this, arguments);
     };
 
     Text.prototype.fitToText = function() {
@@ -157,20 +116,6 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
         width: this.el.outerWidth(),
         height: this.el.outerHeight()
       });
-    };
-
-    Text.prototype.text = function(text) {
-      if (text != null) {
-        this.el.text(text);
-      }
-      return this.el.text();
-    };
-
-    Text.prototype.toValue = function() {
-      var result;
-      result = Text.__super__.toValue.apply(this, arguments);
-      result.text = this.text();
-      return result;
     };
 
     return Text;

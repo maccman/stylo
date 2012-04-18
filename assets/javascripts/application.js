@@ -6,5 +6,7 @@
 //= require spine/relation
 //= require gfx
 //= require gfx/effects
+
 //= require_tree ./lib
 //= require_tree ./app
+//= require_tree ./parsers

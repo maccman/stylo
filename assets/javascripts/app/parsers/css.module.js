@@ -783,8 +783,8 @@ module.exports = (function(){
               top:    270
             };
         
-            var x = mapping[keywords[0]] || 0;
-            var y = mapping[keywords[1]] || 0;
+            x = mapping[keywords[0]] || 0;
+            y = mapping[keywords[1]] || 0;
         
             if (y) {
               x /= 2;

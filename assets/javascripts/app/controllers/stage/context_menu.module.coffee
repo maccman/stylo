@@ -24,7 +24,10 @@ class Menu extends Spine.Controller
     unless item.hasClass('disabled')
       @[type]()
 
-  cancel: -> false
+  cancel: (e) ->
+    # Stop the menu closing immediately
+    e.preventDefault()
+    e.stopPropagation()
 
   # Types
 
@@ -74,6 +77,6 @@ class ContextMenu extends Spine.Controller
     @menu = null
 
   release: ->
-    $('body').unbind('mousedown', @remove)
+    $('body').unbind('mousedown', @hide)
 
 module.exports = ContextMenu

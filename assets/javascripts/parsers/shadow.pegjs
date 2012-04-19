@@ -13,34 +13,19 @@ start
   }
 
 px
-  = number "px"
+  = num "px"
 
-number "number"
-  = int_:int frac:frac exp:exp _ { return parseFloat(int_ + frac + exp); }
-  / int_:int frac:frac _         { return parseFloat(int_ + frac);       }
-  / int_:int exp:exp _           { return parseFloat(int_ + exp);        }
-  / int_:int _                   { return parseFloat(int_);              }
+num
+  = float
+  / integer
 
-int
-  = digit19:digit19 digits:digits     { return digit19 + digits;       }
-  / digit:digit
-  / "-" digit19:digit19 digits:digits { return "-" + digit19 + digits; }
-  / "-" digit:digit                   { return "-" + digit;            }
+integer
+  = digits:[0-9]+ { return parseInt(digits.join(""), 10); }
 
-frac
-  = "." digits:digits { return "." + digits; }
-
-exp
-  = e:e digits:digits { return e + digits; }
-
-digits
-  = digits:digit+ { return digits.join(""); }
-
-digit
-  = [0-9]
-
-digit19
-  = [1-9]
+float
+  = before:[0-9]* "." after:[0-9]+ {
+      return parseFloat(before.join("") + "." + after.join(""));
+    }
 
 _ "whitespace"
   = whitespace*

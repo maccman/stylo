@@ -14,7 +14,7 @@ hexcolor "hexcolor"
     }
 
 hexcolorlong
-  = "#" (hexes:hex*) {
+  = "#" hexes:hex* {
       return hexes.join('');
     }
 

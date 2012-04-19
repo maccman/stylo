@@ -2,6 +2,8 @@ A Photoshop replacement. Inspired by Keynote. Democratizing design.
 
 ##TODO
 
+FIX CONTEXT MENU
+
 Phase 1:
 
 * ✓ Move

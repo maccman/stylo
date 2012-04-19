@@ -97,8 +97,9 @@ this.require.define({"app/controllers/stage/context_menu":function(exports, requ
       }
     };
 
-    Menu.prototype.cancel = function() {
-      return false;
+    Menu.prototype.cancel = function(e) {
+      e.preventDefault();
+      return e.stopPropagation();
     };
 
     Menu.prototype.copy = function() {
@@ -174,7 +175,7 @@ this.require.define({"app/controllers/stage/context_menu":function(exports, requ
     };
 
     ContextMenu.prototype.release = function() {
-      return $('body').unbind('mousedown', this.remove);
+      return $('body').unbind('mousedown', this.hide);
     };
 
     return ContextMenu;

@@ -52,7 +52,8 @@ class App < Sinatra::Base
   end
 
   use Rack::Auth::Basic, "Protected Area" do |username, password|
-    username == 'dragon' && password == 'slayer'
+    (username == 'dragon' && password == 'slayer') ||
+      (username == 'stylo' && password == 'password1')
   end
 
   get '/' do

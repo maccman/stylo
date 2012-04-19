@@ -48,28 +48,28 @@ shadow
 backgroundImage
   = linearGradient / url
 
-// linear-gradient(top left, white, #a6f2c0 30%, rgba(180, 200, 210, .9), black)
+// CSS linear gradient parser
+//
+// Format:
+//  linear-gradient(top left, white, #a6f2c0 30%, rgba(180, 200, 210, .9), black)
+//
 linearGradient
   = "-webkit-"? "linear-gradient(" _ position:(position _)? stops:colorStopList* ")" {
     var LinearGradient = require('app/models/properties/background').LinearGradient;
     return new LinearGradient(position[0], stops);
   }
 
-radialGradient
-  = "radial-gradient(" ")"
-
+// CSS background image url parser
+//
+// Format:
+//  url('http://example.com/image.png')
+//
 url
   = "url(" href:( !")" s:. { return s; })* ")" {
     href = href.join('').replace(/["']{1}/gi, "");
 
     var URL = require('app/models/properties/background').URL;
     return new URL(href);
-  }
-
-position
-  = angle:(angle / positionKeyword) {
-    var Position = require('app/models/properties/background').Position;
-    return new Position(angle);
   }
 
 colorStopList
@@ -82,6 +82,12 @@ colorStop
   }
 
 // Position
+
+position
+  = angle:(angle / positionKeyword) {
+    var Position = require('app/models/properties/background').Position;
+    return new Position(angle);
+  }
 
 positionKeyword
   = keywords:(positionKeywordMultiple / positionKeywordSingle) {

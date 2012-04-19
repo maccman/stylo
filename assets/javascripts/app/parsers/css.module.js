@@ -43,11 +43,10 @@ module.exports = (function(){
         "shadow": parse_shadow,
         "backgroundImage": parse_backgroundImage,
         "linearGradient": parse_linearGradient,
-        "radialGradient": parse_radialGradient,
         "url": parse_url,
-        "position": parse_position,
         "colorStopList": parse_colorStopList,
         "colorStop": parse_colorStop,
+        "position": parse_position,
         "positionKeyword": parse_positionKeyword,
         "positionKeywordMultiple": parse_positionKeywordMultiple,
         "positionKeywordSingle": parse_positionKeywordSingle,
@@ -485,43 +484,6 @@ module.exports = (function(){
         return result0;
       }
       
-      function parse_radialGradient() {
-        var result0, result1;
-        var pos0;
-        
-        pos0 = pos;
-        if (input.substr(pos, 16) === "radial-gradient(") {
-          result0 = "radial-gradient(";
-          pos += 16;
-        } else {
-          result0 = null;
-          if (reportFailures === 0) {
-            matchFailed("\"radial-gradient(\"");
-          }
-        }
-        if (result0 !== null) {
-          if (input.charCodeAt(pos) === 41) {
-            result1 = ")";
-            pos++;
-          } else {
-            result1 = null;
-            if (reportFailures === 0) {
-              matchFailed("\")\"");
-            }
-          }
-          if (result1 !== null) {
-            result0 = [result0, result1];
-          } else {
-            result0 = null;
-            pos = pos0;
-          }
-        } else {
-          result0 = null;
-          pos = pos0;
-        }
-        return result0;
-      }
-      
       function parse_url() {
         var result0, result1, result2, result3;
         var pos0, pos1, pos2, pos3, pos4;
@@ -672,27 +634,6 @@ module.exports = (function(){
         return result0;
       }
       
-      function parse_position() {
-        var result0;
-        var pos0;
-        
-        pos0 = pos;
-        result0 = parse_angle();
-        if (result0 === null) {
-          result0 = parse_positionKeyword();
-        }
-        if (result0 !== null) {
-          result0 = (function(offset, angle) {
-            var Position = require('app/models/properties/background').Position;
-            return new Position(angle);
-          })(pos0, result0);
-        }
-        if (result0 === null) {
-          pos = pos0;
-        }
-        return result0;
-      }
-      
       function parse_colorStopList() {
         var result0, result1, result2, result3;
         var pos0, pos1;
@@ -794,6 +735,27 @@ module.exports = (function(){
             var ColorStop = require('app/models/properties/background').ColorStop;
             return new ColorStop(color, length[1]);
           })(pos0, result0[0], result0[1]);
+        }
+        if (result0 === null) {
+          pos = pos0;
+        }
+        return result0;
+      }
+      
+      function parse_position() {
+        var result0;
+        var pos0;
+        
+        pos0 = pos;
+        result0 = parse_angle();
+        if (result0 === null) {
+          result0 = parse_positionKeyword();
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, angle) {
+            var Position = require('app/models/properties/background').Position;
+            return new Position(angle);
+          })(pos0, result0);
         }
         if (result0 === null) {
           pos = pos0;

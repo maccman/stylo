@@ -13019,37 +13019,15 @@ this.require.define({"app/controllers/elements/image":function(exports, require,
 }).call(this);
 ;}});
 this.require.define({"app/controllers/elements/input":function(exports, require, module){(function() {
-  var CheckBox, Element, Input, Text, Textarea,
+  var CheckBox, Color, Element, Shadow, Text,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Element = require('../element');
 
-  Input = (function(_super) {
+  Color = require('app/models/properties/color');
 
-    __extends(Input, _super);
-
-    Input.name = 'Input';
-
-    function Input() {
-      return Input.__super__.constructor.apply(this, arguments);
-    }
-
-    Input.prototype.tag = 'input';
-
-    Input.prototype.defaults = function() {
-      return {};
-    };
-
-    Input.prototype.text = function() {};
-
-    Input.prototype.startEditing = function() {};
-
-    Input.prototype.stopEditing = function() {};
-
-    return Input;
-
-  })(Element);
+  Shadow = require('app/models/properties/shadow');
 
   Text = (function(_super) {
 
@@ -13061,29 +13039,29 @@ this.require.define({"app/controllers/elements/input":function(exports, require,
       return Text.__super__.constructor.apply(this, arguments);
     }
 
-    Text.prototype.attrs = {
-      type: 'text'
+    Text.prototype.defaults = function() {
+      var result;
+      return result = {
+        width: 125,
+        height: 20,
+        padding: 3,
+        backgroundColor: new Color.White,
+        borderWidth: 1,
+        borderStyle: 'solid',
+        borderColor: new Color(155, 155, 155),
+        boxShadow: new Shadow({
+          inset: true,
+          x: 0,
+          y: 1,
+          blur: 2,
+          color: new Color(0, 0, 0, 0.12)
+        })
+      };
     };
 
     return Text;
 
-  })(Input);
-
-  Textarea = (function(_super) {
-
-    __extends(Textarea, _super);
-
-    Textarea.name = 'Textarea';
-
-    function Textarea() {
-      return Textarea.__super__.constructor.apply(this, arguments);
-    }
-
-    Textarea.prototype.tag = 'textarea';
-
-    return Textarea;
-
-  })(Input);
+  })(Element);
 
   CheckBox = (function(_super) {
 
@@ -13095,17 +13073,12 @@ this.require.define({"app/controllers/elements/input":function(exports, require,
       return CheckBox.__super__.constructor.apply(this, arguments);
     }
 
-    CheckBox.prototype.attrs = {
-      type: 'checkbox'
-    };
-
     return CheckBox;
 
-  })(Input);
+  })(Element);
 
   module.exports = {
     Text: Text,
-    Textarea: Textarea,
     CheckBox: CheckBox
   };
 

@@ -11979,6 +11979,11 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
 }).call(this);
 ;}});
+(function() {
+
+  delete jQuery.cssNumber.lineHeight;
+
+}).call(this);
 this.require.define({"lib/gradient_picker":function(exports, require, module){(function() {
   var Background, Color, ColorPicker, ColorStop, GradientPicker, LinearGradient, Popup, Slider,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
@@ -12174,11 +12179,6 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
 
 }).call(this);
 ;}});
-(function() {
-
-  delete jQuery.cssNumber.lineHeight;
-
-}).call(this);
 this.require.define({"lib/popup":function(exports, require, module){(function() {
   var Popup,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
@@ -12851,6 +12851,10 @@ this.require.define({"app/controllers/elements/button":function(exports, require
       return Button.__super__.constructor.apply(this, arguments);
     }
 
+    Button.prototype.className = 'button';
+
+    Button.prototype.id = module.id;
+
     Button.prototype.events = {
       'resize.element': 'syncLineHeight'
     };
@@ -13056,13 +13060,16 @@ this.require.define({"app/controllers/elements/input":function(exports, require,
       return Text.__super__.constructor.apply(this, arguments);
     }
 
+    Text.prototype.className = 'textInput';
+
+    Text.prototype.id = module.id + '.Text';
+
     Text.prototype.defaults = function() {
       var result;
       return result = {
         width: 125,
         height: 20,
         padding: 3,
-        backgroundColor: new Color.White,
         borderWidth: 1,
         borderStyle: 'solid',
         borderColor: new Color(155, 155, 155),
@@ -13072,7 +13079,8 @@ this.require.define({"app/controllers/elements/input":function(exports, require,
           y: 1,
           blur: 2,
           color: new Color(0, 0, 0, 0.12)
-        })
+        }),
+        backgroundColor: new Color.White
       };
     };
 

@@ -79,6 +79,10 @@ this.require.define({"app/controllers/elements/button":function(exports, require
       return Button.__super__.constructor.apply(this, arguments);
     }
 
+    Button.prototype.className = 'button';
+
+    Button.prototype.id = module.id;
+
     Button.prototype.events = {
       'resize.element': 'syncLineHeight'
     };

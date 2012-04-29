@@ -3,6 +3,9 @@ Color      = require('app/models/properties/color')
 Background = require('app/models/properties/background')
 
 class Button extends Element
+  className: 'button'
+  id: module.id
+
   events:
     'resize.element': 'syncLineHeight'
 

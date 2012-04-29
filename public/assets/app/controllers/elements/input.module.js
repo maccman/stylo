@@ -79,13 +79,16 @@ this.require.define({"app/controllers/elements/input":function(exports, require,
       return Text.__super__.constructor.apply(this, arguments);
     }
 
+    Text.prototype.className = 'textInput';
+
+    Text.prototype.id = module.id + '.Text';
+
     Text.prototype.defaults = function() {
       var result;
       return result = {
         width: 125,
         height: 20,
         padding: 3,
-        backgroundColor: new Color.White,
         borderWidth: 1,
         borderStyle: 'solid',
         borderColor: new Color(155, 155, 155),
@@ -95,7 +98,8 @@ this.require.define({"app/controllers/elements/input":function(exports, require,
           y: 1,
           blur: 2,
           color: new Color(0, 0, 0, 0.12)
-        })
+        }),
+        backgroundColor: new Color.White
       };
     };
 

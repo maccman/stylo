@@ -3,6 +3,12 @@ Element = require('../element')
 class Input extends Element
   tag: 'input'
 
+  # Stub out unused methods
+  defaults: -> {}
+  text: ->
+  startEditing: ->
+  stopEditing: ->
+
 class Text extends Input
   attrs:
     type: 'text'

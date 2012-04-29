@@ -77,6 +77,16 @@ this.require.define({"app/controllers/elements/input":function(exports, require,
 
     Input.prototype.tag = 'input';
 
+    Input.prototype.defaults = function() {
+      return {};
+    };
+
+    Input.prototype.text = function() {};
+
+    Input.prototype.startEditing = function() {};
+
+    Input.prototype.stopEditing = function() {};
+
     return Input;
 
   })(Element);

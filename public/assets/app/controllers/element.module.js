@@ -88,11 +88,8 @@ this.require.define({"app/controllers/element":function(exports, require, module
     Element.prototype.defaults = function() {
       var result;
       return result = {
-        position: 'absolute',
         width: 100,
         height: 100,
-        left: 0,
-        top: 0,
         backgroundColor: new Color.Black(0.2)
       };
     };

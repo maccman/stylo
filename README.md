@@ -60,7 +60,9 @@ Nice to have:
 * Triangle
 * ✓ Rectangle
 * ✓ Ellipsis
-* Form elements
+* Checkbox input
+* ✓ Button input
+* ✓ Text Input
 * ✓ Text
 * ✓ Image
 * Line

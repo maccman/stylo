@@ -1,6 +1,8 @@
 Rectangle  = require('./elements/rectangle')
 Ellipsis   = require('./elements/ellipsis')
 Text       = require('./elements/text')
+Input      = require('./elements/input')
+Button     = require('./elements/button')
 
 class Header extends Spine.Controller
   tag: 'header'
@@ -10,6 +12,8 @@ class Header extends Spine.Controller
     'click .rectangle': 'addRectangle'
     'click .ellipsis': 'addEllipsis'
     'click .text': 'addText'
+    'click .textInput': 'addTextInput'
+    'click .button': 'addButton'
 
   render: ->
     @html JST['app/views/header'](this)
@@ -24,6 +28,12 @@ class Header extends Spine.Controller
   addText: ->
     @addElement(element = new Text)
     element.startEditing()
+
+  addTextInput: ->
+    @addElement(new Input.Text)
+
+  addButton: ->
+    @addElement(new Button)
 
   addElement: (element) ->
     @stage.history.record()

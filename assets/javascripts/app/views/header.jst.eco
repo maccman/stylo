@@ -2,4 +2,6 @@
   <div class="rectangle" title="Rectangle"><span></span></div>
   <div class="ellipsis" title="Ellipsis"><span></span></div>
   <div class="text" title="Text"><span>A</span></div>
+  <div class="textInput" title="Text Input"><span>abc</span></div>
+  <div class="button" title="Button"><span></span></div>
 </nav>

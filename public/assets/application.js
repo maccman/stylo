@@ -12451,11 +12451,8 @@ this.require.define({"app/controllers/element":function(exports, require, module
     Element.prototype.defaults = function() {
       var result;
       return result = {
-        position: 'absolute',
         width: 100,
         height: 100,
-        left: 0,
-        top: 0,
         backgroundColor: new Color.Black(0.2)
       };
     };
@@ -12828,6 +12825,48 @@ this.require.define({"app/controllers/element/resizing":function(exports, requir
 
 }).call(this);
 ;}});
+this.require.define({"app/controllers/elements/button":function(exports, require, module){(function() {
+  var Background, Button, Color, Element,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  Element = require('../element');
+
+  Color = require('app/models/properties/color');
+
+  Background = require('app/models/properties/background');
+
+  Button = (function(_super) {
+
+    __extends(Button, _super);
+
+    Button.name = 'Button';
+
+    function Button() {
+      return Button.__super__.constructor.apply(this, arguments);
+    }
+
+    Button.prototype.defaults = function() {
+      var result;
+      return result = {
+        width: 100,
+        height: 40,
+        borderRadius: 5,
+        borderWidth: 1,
+        borderStyle: 'solid',
+        borderColor: new Color(166, 166, 166),
+        backgroundImage: [new Background.LinearGradient(new Background.Position(270), [new Background.ColorStop(new Color.White, 0), new Background.ColorStop(new Color.White, 30), new Background.ColorStop(new Color(242, 242, 242), 100)])]
+      };
+    };
+
+    return Button;
+
+  })(Element);
+
+  module.exports = Button;
+
+}).call(this);
+;}});
 this.require.define({"app/controllers/elements/canvas":function(exports, require, module){(function() {
   var Canvas, Element,
     __hasProp = {}.hasOwnProperty,
@@ -12997,6 +13036,16 @@ this.require.define({"app/controllers/elements/input":function(exports, require,
     }
 
     Input.prototype.tag = 'input';
+
+    Input.prototype.defaults = function() {
+      return {};
+    };
+
+    Input.prototype.text = function() {};
+
+    Input.prototype.startEditing = function() {};
+
+    Input.prototype.stopEditing = function() {};
 
     return Input;
 
@@ -13216,7 +13265,7 @@ this.require.define({"app/controllers/elements/triangle":function(exports, requi
 }).call(this);
 ;}});
 this.require.define({"app/controllers/header":function(exports, require, module){(function() {
-  var Ellipsis, Header, Rectangle, Text,
+  var Button, Ellipsis, Header, Input, Rectangle, Text,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
@@ -13225,6 +13274,10 @@ this.require.define({"app/controllers/header":function(exports, require, module)
   Ellipsis = require('./elements/ellipsis');
 
   Text = require('./elements/text');
+
+  Input = require('./elements/input');
+
+  Button = require('./elements/button');
 
   Header = (function(_super) {
 
@@ -13243,7 +13296,9 @@ this.require.define({"app/controllers/header":function(exports, require, module)
     Header.prototype.events = {
       'click .rectangle': 'addRectangle',
       'click .ellipsis': 'addEllipsis',
-      'click .text': 'addText'
+      'click .text': 'addText',
+      'click .textInput': 'addTextInput',
+      'click .button': 'addButton'
     };
 
     Header.prototype.render = function() {
@@ -13263,6 +13318,14 @@ this.require.define({"app/controllers/header":function(exports, require, module)
       var element;
       this.addElement(element = new Text);
       return element.startEditing();
+    };
+
+    Header.prototype.addTextInput = function() {
+      return this.addElement(new Input.Text);
+    };
+
+    Header.prototype.addButton = function() {
+      return this.addElement(new Button);
     };
 
     Header.prototype.addElement = function(element) {
@@ -15153,6 +15216,9 @@ this.require.define({"app/controllers/stage/context_menu":function(exports, requ
 
     ContextMenu.prototype.show = function(e) {
       var position;
+      if (e.metaKey) {
+        return;
+      }
       e.preventDefault();
       this.hide();
       position = {
@@ -19500,7 +19566,7 @@ this.require.define({"app/parsers/import":function(exports, require, module){(fu
     (function() {
       (function() {
       
-        __out.push('<nav class="toolbar">\n  <div class="rectangle" title="Rectangle"><span></span></div>\n  <div class="ellipsis" title="Ellipsis"><span></span></div>\n  <div class="text" title="Text"><span>A</span></div>\n</nav>\n');
+        __out.push('<nav class="toolbar">\n  <div class="rectangle" title="Rectangle"><span></span></div>\n  <div class="ellipsis" title="Ellipsis"><span></span></div>\n  <div class="text" title="Text"><span>A</span></div>\n  <div class="textInput" title="Text Input"><span>abc</span></div>\n  <div class="button" title="Button"><span></span></div>\n</nav>\n');
       
       }).call(this);
       

@@ -58,87 +58,45 @@
 
   return this.require;
 }).call(this);
-this.require.define({"app/controllers/header":function(exports, require, module){(function() {
-  var Button, Ellipsis, Header, Input, Rectangle, Text,
+this.require.define({"app/controllers/elements/button":function(exports, require, module){(function() {
+  var Background, Button, Color, Element,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  Rectangle = require('./elements/rectangle');
+  Element = require('../element');
 
-  Ellipsis = require('./elements/ellipsis');
+  Color = require('app/models/properties/color');
 
-  Text = require('./elements/text');
+  Background = require('app/models/properties/background');
 
-  Input = require('./elements/input');
+  Button = (function(_super) {
 
-  Button = require('./elements/button');
+    __extends(Button, _super);
 
-  Header = (function(_super) {
+    Button.name = 'Button';
 
-    __extends(Header, _super);
-
-    Header.name = 'Header';
-
-    function Header() {
-      return Header.__super__.constructor.apply(this, arguments);
+    function Button() {
+      return Button.__super__.constructor.apply(this, arguments);
     }
 
-    Header.prototype.tag = 'header';
-
-    Header.prototype.className = 'header';
-
-    Header.prototype.events = {
-      'click .rectangle': 'addRectangle',
-      'click .ellipsis': 'addEllipsis',
-      'click .text': 'addText',
-      'click .textInput': 'addTextInput',
-      'click .button': 'addButton'
+    Button.prototype.defaults = function() {
+      var result;
+      return result = {
+        width: 100,
+        height: 40,
+        borderRadius: 5,
+        borderWidth: 1,
+        borderStyle: 'solid',
+        borderColor: new Color(166, 166, 166),
+        backgroundImage: [new Background.LinearGradient(new Background.Position(270), [new Background.ColorStop(new Color.White, 0), new Background.ColorStop(new Color.White, 30), new Background.ColorStop(new Color(242, 242, 242), 100)])]
+      };
     };
 
-    Header.prototype.render = function() {
-      this.html(JST['app/views/header'](this));
-      return this;
-    };
+    return Button;
 
-    Header.prototype.addRectangle = function() {
-      return this.addElement(new Rectangle);
-    };
+  })(Element);
 
-    Header.prototype.addEllipsis = function() {
-      return this.addElement(new Ellipsis);
-    };
-
-    Header.prototype.addText = function() {
-      var element;
-      this.addElement(element = new Text);
-      return element.startEditing();
-    };
-
-    Header.prototype.addTextInput = function() {
-      return this.addElement(new Input.Text);
-    };
-
-    Header.prototype.addButton = function() {
-      return this.addElement(new Button);
-    };
-
-    Header.prototype.addElement = function(element) {
-      var position;
-      this.stage.history.record();
-      position = this.stage.center();
-      position.left -= element.get('width') || 50;
-      position.top -= element.get('height') || 50;
-      element.set(position);
-      this.stage.add(element);
-      this.stage.selection.clear();
-      return this.stage.selection.add(element);
-    };
-
-    return Header;
-
-  })(Spine.Controller);
-
-  module.exports = Header;
+  module.exports = Button;
 
 }).call(this);
 ;}});

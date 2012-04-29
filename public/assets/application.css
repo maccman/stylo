@@ -244,6 +244,9 @@ body {
   text-transform: uppercase;
   font-size: 20px;
   text-align: center;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
 #app .header nav .ellipsis span {
   -moz-border-radius: 50%;
@@ -255,6 +258,23 @@ body {
   -moz-box-shadow: none;
   -webkit-box-shadow: none;
   box-shadow: none;
+}
+#app .header nav .textInput span {
+  background: #fff;
+  text-shadow: none;
+  font-size: 8px;
+  text-transform: none;
+  padding-left: 1px;
+}
+#app .header nav .button span {
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  border: 1px solid #a6a6a6;
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  background: -webkit-linear-gradient(270deg, #fff, #fff 30%, #f2f2f2 100%);
 }
 #app {
   position: absolute;
@@ -876,6 +896,9 @@ body {
   box-sizing: border-box;
   color: #000;
   outline: none;
+  position: absolute;
+  left: 0;
+  top: 0;
 }
 #app .stage .element.editing {
   -webkit-user-select: text;

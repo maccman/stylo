@@ -156,6 +156,9 @@ this.require.define({"app/controllers/stage/context_menu":function(exports, requ
 
     ContextMenu.prototype.show = function(e) {
       var position;
+      if (e.metaKey) {
+        return;
+      }
       e.preventDefault();
       this.hide();
       position = {

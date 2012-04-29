@@ -10,11 +10,8 @@ class Element extends Spine.Controller
 
   defaults: ->
     result =
-      position: 'absolute'
       width: 100
       height: 100
-      left: 0
-      top: 0
       backgroundColor: new Color.Black(0.2)
 
   elementEvents:

@@ -62,6 +62,8 @@ class ContextMenu extends Spine.Controller
     $('body').bind('mousedown', @hide)
 
   show: (e) ->
+    return if e.metaKey
+
     e.preventDefault()
     @hide()
 

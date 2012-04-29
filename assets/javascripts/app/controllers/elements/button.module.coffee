@@ -3,11 +3,15 @@ Color      = require('app/models/properties/color')
 Background = require('app/models/properties/background')
 
 class Button extends Element
-  # Stub out unused methods
+  events:
+    'resize.element': 'syncLineHeight'
+
   defaults: ->
     result =
       width: 100
       height: 40
+      textAlign: 'center'
+      lineHeight: 40
       borderRadius: 5
       borderWidth: 1
       borderStyle: 'solid'
@@ -20,5 +24,8 @@ class Button extends Element
           new Background.ColorStop(new Color(242,242,242), 100)
         ]
       )]
+
+  syncLineHeight: ->
+    @set(lineHeight: @get('height'))
 
 module.exports = Button

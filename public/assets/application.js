@@ -12174,6 +12174,11 @@ this.require.define({"lib/gradient_picker":function(exports, require, module){(f
 
 }).call(this);
 ;}});
+(function() {
+
+  delete jQuery.cssNumber.lineHeight;
+
+}).call(this);
 this.require.define({"lib/popup":function(exports, require, module){(function() {
   var Popup,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
@@ -12846,17 +12851,29 @@ this.require.define({"app/controllers/elements/button":function(exports, require
       return Button.__super__.constructor.apply(this, arguments);
     }
 
+    Button.prototype.events = {
+      'resize.element': 'syncLineHeight'
+    };
+
     Button.prototype.defaults = function() {
       var result;
       return result = {
         width: 100,
         height: 40,
+        textAlign: 'center',
+        lineHeight: 40,
         borderRadius: 5,
         borderWidth: 1,
         borderStyle: 'solid',
         borderColor: new Color(166, 166, 166),
         backgroundImage: [new Background.LinearGradient(new Background.Position(270), [new Background.ColorStop(new Color.White, 0), new Background.ColorStop(new Color.White, 30), new Background.ColorStop(new Color(242, 242, 242), 100)])]
       };
+    };
+
+    Button.prototype.syncLineHeight = function() {
+      return this.set({
+        lineHeight: this.get('height')
+      });
     };
 
     return Button;

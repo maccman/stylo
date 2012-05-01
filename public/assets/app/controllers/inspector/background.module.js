@@ -59,7 +59,7 @@
   return this.require;
 }).call(this);
 this.require.define({"app/controllers/inspector/background":function(exports, require, module){(function() {
-  var Background, BackgroundImage, BackgroundInspector, Backgrounds, Collection, Color, ColorPicker, Edit, GradientPicker, List,
+  var Background, BackgroundImage, BackgroundInspector, BackgroundType, Backgrounds, Collection, Color, ColorPicker, Edit, GradientPicker, List, PopupMenu,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -75,6 +75,8 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
   Background = require('app/models/properties/background');
 
   BackgroundImage = Background.BackgroundImage;
+
+  PopupMenu = require('app/controllers/inspector/popup_menu');
 
   Backgrounds = (function(_super) {
 
@@ -165,6 +167,36 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
 
   })(Spine.Controller);
 
+  BackgroundType = (function(_super) {
+
+    __extends(BackgroundType, _super);
+
+    BackgroundType.name = 'BackgroundType';
+
+    BackgroundType.prototype.className = 'backgroundType';
+
+    BackgroundType.prototype.events = {
+      'click [data-type]': 'choose'
+    };
+
+    function BackgroundType() {
+      BackgroundType.__super__.constructor.apply(this, arguments);
+      this.render();
+    }
+
+    BackgroundType.prototype.render = function() {
+      return this.html(JST['app/views/inspector/background/menu'](this));
+    };
+
+    BackgroundType.prototype.choose = function(e) {
+      this.trigger('choose', $(e.currentTarget).data('type'));
+      return this.close();
+    };
+
+    return BackgroundType;
+
+  })(PopupMenu);
+
   List = (function(_super) {
 
     __extends(List, _super);
@@ -203,15 +235,46 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
       return this.render();
     };
 
-    List.prototype.plus = function() {
-      this.current = new Background.LinearGradient(new Background.Position(0), [new Background.ColorStop(new Color.Black, 0), new Background.ColorStop(new Color.White, 100)]);
-      this.backgrounds.push(this.current);
-      return this.trigger('change', this.current);
+    List.prototype.plus = function(e) {
+      var menu,
+        _this = this;
+      menu = new BackgroundType;
+      menu.bind('choose', function(type) {
+        if (type === 'backgroundColor') {
+          return _this.addBackgroundColor();
+        } else if (type === 'linearGradient') {
+          return _this.addLinearGradient();
+        } else if (type === 'url') {
+          return _this.addURL();
+        }
+      });
+      return menu.open({
+        left: e.pageX,
+        top: e.pageY
+      });
     };
 
     List.prototype.minus = function() {
       this.backgrounds.remove(this.current);
       this.current = this.backgrounds.first();
+      return this.trigger('change', this.current);
+    };
+
+    List.prototype.addBackgroundColor = function() {
+      this.current = new Background.Color.White;
+      this.backgrounds.push(this.current);
+      return this.trigger('change', this.current);
+    };
+
+    List.prototype.addLinearGradient = function() {
+      this.current = new Background.LinearGradient(new Background.Position(0), [new Background.ColorStop(new Color.Black, 0), new Background.ColorStop(new Color.White, 100)]);
+      this.backgrounds.push(this.current);
+      return this.trigger('change', this.current);
+    };
+
+    List.prototype.addURL = function() {
+      this.current = new Background.URL;
+      this.backgrounds.push(this.current);
       return this.trigger('change', this.current);
     };
 

@@ -12,7 +12,7 @@ Phase 1:
 * Inspector panel (Element/Text/Ruler)
   * ½ Background (type/direction)
   * ✓ Border
-  * ½ Shadow (inset)
+  * ✓ Shadow
   * ✓ Text-shadow
   * Rotation
   * ✓ Opacity

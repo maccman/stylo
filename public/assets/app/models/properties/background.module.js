@@ -198,7 +198,7 @@ this.require.define({"app/models/properties/background":function(exports, requir
     }
 
     URL.prototype.toString = function() {
-      return "url('" + this.url + "')";
+      return "url('" + (this.url || '') + "')";
     };
 
     URL.prototype.toValue = function() {
@@ -243,6 +243,8 @@ this.require.define({"app/models/properties/background":function(exports, requir
   module.exports.Position = Position;
 
   module.exports.ColorStop = ColorStop;
+
+  module.exports.Color = Color;
 
 }).call(this);
 ;}});

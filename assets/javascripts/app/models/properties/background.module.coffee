@@ -58,7 +58,7 @@ class URL extends BackgroundImage
   constructor: (@url) ->
 
   toString: ->
-    "url('#{@url}')"
+    "url('#{@url or ''}')"
 
   toValue: -> @url
 
@@ -79,3 +79,4 @@ module.exports.LinearGradient  = LinearGradient
 module.exports.URL             = URL
 module.exports.Position        = Position
 module.exports.ColorStop       = ColorStop
+module.exports.Color           = Color

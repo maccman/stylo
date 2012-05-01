@@ -1,0 +1,4 @@
+<div data-type="backgroundColor">Add Background Color</div>
+<div data-type="linearGradient">Add Linear Gradient</div>
+<!-- <div data-type="radialGradient">Add Radial Gradient</div> -->
+<div data-type="url">Add Image URL</div>

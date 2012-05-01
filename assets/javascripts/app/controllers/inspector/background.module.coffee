@@ -4,6 +4,7 @@ GradientPicker  = require('lib/gradient_picker')
 Color           = require('app/models/properties/color')
 Background      = require('app/models/properties/background')
 BackgroundImage = Background.BackgroundImage
+PopupMenu       = require('app/controllers/inspector/popup_menu')
 
 class Backgrounds extends Collection
   getColor: ->
@@ -58,6 +59,23 @@ class Edit extends Spine.Controller
       @background.url = @$('input').val()
       @trigger 'change', @background
 
+class BackgroundType extends PopupMenu
+  className: 'backgroundType'
+
+  events:
+    'click [data-type]': 'choose'
+
+  constructor: ->
+    super
+    @render()
+
+  render: ->
+    @html JST['app/views/inspector/background/menu'](@)
+
+  choose: (e) ->
+    @trigger 'choose', $(e.currentTarget).data('type')
+    @close()
+
 class List extends Spine.Controller
   className: 'list'
 
@@ -85,7 +103,38 @@ class List extends Spine.Controller
     @trigger 'change', @current
     @render()
 
-  plus: ->
+  plus: (e) ->
+    menu = new BackgroundType
+
+    menu.bind 'choose', (type) =>
+      if type is 'backgroundColor'
+        @addBackgroundColor()
+
+      else if type is 'linearGradient'
+        @addLinearGradient()
+
+      else if type is 'url'
+        @addURL()
+
+    menu.open(
+      left: e.pageX,
+      top:  e.pageY
+    )
+
+  minus: ->
+    @backgrounds.remove(@current)
+    @current = @backgrounds.first()
+    @trigger 'change', @current
+
+  # Private
+
+  addBackgroundColor: ->
+    @current = new Background.Color.White
+
+    @backgrounds.push(@current)
+    @trigger 'change', @current
+
+  addLinearGradient: ->
     @current = new Background.LinearGradient(
       new Background.Position(0),
       [
@@ -93,12 +142,14 @@ class List extends Spine.Controller
         new Background.ColorStop(new Color.White, 100)
       ]
     )
+
     @backgrounds.push(@current)
     @trigger 'change', @current
 
-  minus: ->
-    @backgrounds.remove(@current)
-    @current = @backgrounds.first()
+  addURL: ->
+    @current = new Background.URL
+
+    @backgrounds.push(@current)
     @trigger 'change', @current
 
 class BackgroundInspector extends Spine.Controller

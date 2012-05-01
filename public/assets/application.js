@@ -13576,7 +13576,7 @@ this.require.define({"app/controllers/inspector":function(exports, require, modu
 }).call(this);
 ;}});
 this.require.define({"app/controllers/inspector/background":function(exports, require, module){(function() {
-  var Background, BackgroundImage, BackgroundInspector, Backgrounds, Collection, Color, ColorPicker, Edit, GradientPicker, List,
+  var Background, BackgroundImage, BackgroundInspector, BackgroundType, Backgrounds, Collection, Color, ColorPicker, Edit, GradientPicker, List, PopupMenu,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -13592,6 +13592,8 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
   Background = require('app/models/properties/background');
 
   BackgroundImage = Background.BackgroundImage;
+
+  PopupMenu = require('app/controllers/inspector/popup_menu');
 
   Backgrounds = (function(_super) {
 
@@ -13682,6 +13684,36 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
 
   })(Spine.Controller);
 
+  BackgroundType = (function(_super) {
+
+    __extends(BackgroundType, _super);
+
+    BackgroundType.name = 'BackgroundType';
+
+    BackgroundType.prototype.className = 'backgroundType';
+
+    BackgroundType.prototype.events = {
+      'click [data-type]': 'choose'
+    };
+
+    function BackgroundType() {
+      BackgroundType.__super__.constructor.apply(this, arguments);
+      this.render();
+    }
+
+    BackgroundType.prototype.render = function() {
+      return this.html(JST['app/views/inspector/background/menu'](this));
+    };
+
+    BackgroundType.prototype.choose = function(e) {
+      this.trigger('choose', $(e.currentTarget).data('type'));
+      return this.close();
+    };
+
+    return BackgroundType;
+
+  })(PopupMenu);
+
   List = (function(_super) {
 
     __extends(List, _super);
@@ -13720,15 +13752,46 @@ this.require.define({"app/controllers/inspector/background":function(exports, re
       return this.render();
     };
 
-    List.prototype.plus = function() {
-      this.current = new Background.LinearGradient(new Background.Position(0), [new Background.ColorStop(new Color.Black, 0), new Background.ColorStop(new Color.White, 100)]);
-      this.backgrounds.push(this.current);
-      return this.trigger('change', this.current);
+    List.prototype.plus = function(e) {
+      var menu,
+        _this = this;
+      menu = new BackgroundType;
+      menu.bind('choose', function(type) {
+        if (type === 'backgroundColor') {
+          return _this.addBackgroundColor();
+        } else if (type === 'linearGradient') {
+          return _this.addLinearGradient();
+        } else if (type === 'url') {
+          return _this.addURL();
+        }
+      });
+      return menu.open({
+        left: e.pageX,
+        top: e.pageY
+      });
     };
 
     List.prototype.minus = function() {
       this.backgrounds.remove(this.current);
       this.current = this.backgrounds.first();
+      return this.trigger('change', this.current);
+    };
+
+    List.prototype.addBackgroundColor = function() {
+      this.current = new Background.Color.White;
+      this.backgrounds.push(this.current);
+      return this.trigger('change', this.current);
+    };
+
+    List.prototype.addLinearGradient = function() {
+      this.current = new Background.LinearGradient(new Background.Position(0), [new Background.ColorStop(new Color.Black, 0), new Background.ColorStop(new Color.White, 100)]);
+      this.backgrounds.push(this.current);
+      return this.trigger('change', this.current);
+    };
+
+    List.prototype.addURL = function() {
+      this.current = new Background.URL;
+      this.backgrounds.push(this.current);
       return this.trigger('change', this.current);
     };
 
@@ -16966,7 +17029,7 @@ this.require.define({"app/models/properties/background":function(exports, requir
     }
 
     URL.prototype.toString = function() {
-      return "url('" + this.url + "')";
+      return "url('" + (this.url || '') + "')";
     };
 
     URL.prototype.toValue = function() {
@@ -17011,6 +17074,8 @@ this.require.define({"app/models/properties/background":function(exports, requir
   module.exports.Position = Position;
 
   module.exports.ColorStop = ColorStop;
+
+  module.exports.Color = Color;
 
 }).call(this);
 ;}});
@@ -19899,6 +19964,57 @@ this.require.define({"app/parsers/import":function(exports, require, module){(fu
         }
       
         __out.push('\n</div>\n\n<footer>\n  <button class="plus">+</button>\n  <button class="minus">-</button>\n</footer>\n');
+      
+      }).call(this);
+      
+    }).call(__obj);
+    __obj.safe = __objSafe, __obj.escape = __escape;
+    return __out.join('');
+  };
+}).call(this);
+(function() {
+  this.JST || (this.JST = {});
+  this.JST["app/views/inspector/background/menu"] = function(__obj) {
+    if (!__obj) __obj = {};
+    var __out = [], __capture = function(callback) {
+      var out = __out, result;
+      __out = [];
+      callback.call(this);
+      result = __out.join('');
+      __out = out;
+      return __safe(result);
+    }, __sanitize = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else if (typeof value !== 'undefined' && value != null) {
+        return __escape(value);
+      } else {
+        return '';
+      }
+    }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+    __safe = __obj.safe = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else {
+        if (!(typeof value !== 'undefined' && value != null)) value = '';
+        var result = new String(value);
+        result.ecoSafe = true;
+        return result;
+      }
+    };
+    if (!__escape) {
+      __escape = __obj.escape = function(value) {
+        return ('' + value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      };
+    }
+    (function() {
+      (function() {
+      
+        __out.push('<div data-type="backgroundColor">Add Background Color</div>\n<div data-type="linearGradient">Add Linear Gradient</div>\n<!-- <div data-type="radialGradient">Add Radial Gradient</div> -->\n<div data-type="url">Add Image URL</div>\n');
       
       }).call(this);
       

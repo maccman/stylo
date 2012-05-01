@@ -865,6 +865,69 @@ body {
   position: relative;
   top: -6px;
 }
+.popup {
+  position: absolute;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  border: 1px solid #b5b5b5;
+  border-bottom-color: #a7a7a7;
+  border-top-color: #d8d8d8;
+  -moz-box-shadow: 0 4px 8px rgba(0,0,0,0.24);
+  -webkit-box-shadow: 0 4px 8px rgba(0,0,0,0.24);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.24);
+  background: #fff;
+  min-width: 400px;
+  color: #000;
+  z-index: 10000;
+}
+.popup article {
+  padding: 5px;
+}
+.popup footer {
+  border-top: 1px solid rgba(0,0,0,0.15);
+  -moz-box-shadow: inset 0 1px 0 rgba(255,255,255,0.80);
+  -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,0.80);
+  -moz-box-shadow: inset 0 1px 0 rgba(255,255,255,0.80);
+  -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,0.80);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.80);
+  background: #fcfcfc;
+  background: -webkit-gradient(linear, left top, left bottom, from(#fcfcfc), to(rgba(238,238,238,0.90)));
+  background: -webkit-linear-gradient(top, #fcfcfc, rgba(238,238,238,0.90));
+  background: -moz-linear-gradient(top, #fcfcfc, rgba(238,238,238,0.90));
+  background: linear-gradient(top, #fcfcfc, rgba(238,238,238,0.90));
+  -webkit-border-radius: 0 0 4px 4px;
+}
+.popup footer button {
+  margin: 0;
+  color: #717a81;
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-shadow: 0 1px 1px #fff;
+  padding: 8px 13px;
+  -moz-box-shadow: inset -1px 0 1px rgba(255,255,255,0.50);
+  -webkit-box-shadow: inset -1px 0 1px rgba(255,255,255,0.50);
+  box-shadow: inset -1px 0 1px rgba(255,255,255,0.50);
+  border: none;
+  border-right: 1px solid rgba(0,0,0,0.15);
+  background: none;
+}
+.popup.list .items {
+  min-height: 180px;
+}
+.popup.list .item {
+  padding: 10px;
+  cursor: pointer;
+}
+.popup.list .item.selected {
+  color: #fff;
+  background: #bac4d8;
+  background: -webkit-gradient(linear, left top, left bottom, from(#bac4d8), to(#9aa8c7));
+  background: -webkit-linear-gradient(top, #bac4d8, #9aa8c7);
+  background: -moz-linear-gradient(top, #bac4d8, #9aa8c7);
+  background: linear-gradient(top, #bac4d8, #9aa8c7);
+}
 #app .stage {
   position: absolute;
   top: 0;

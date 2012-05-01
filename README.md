@@ -10,7 +10,7 @@ Phase 1:
 * ✓ Select multiple items
 * ✓ Toolbar menu
 * Inspector panel (Element/Text/Ruler)
-  * ½ Background (type/direction)
+  * ½ Background (direction)
   * ✓ Border
   * ✓ Shadow
   * ✓ Text-shadow

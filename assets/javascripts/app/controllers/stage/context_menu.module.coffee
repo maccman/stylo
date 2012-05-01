@@ -55,17 +55,17 @@ class Menu extends Spine.Controller
 
 class ContextMenu extends Spine.Controller
   events:
-    'contextmenu': 'show'
+    'contextmenu': 'open'
 
   constructor: (@stage) ->
     super(el: @stage.el)
-    $('body').bind('mousedown', @hide)
+    $('body').bind('mousedown', @close)
 
-  show: (e) ->
+  open: (e) ->
     return if e.metaKey
 
     e.preventDefault()
-    @hide()
+    @close()
 
     position =
       left: e.pageX + 1
@@ -74,11 +74,11 @@ class ContextMenu extends Spine.Controller
     @menu = new Menu(@stage, position)
     $('body').append(@menu.el)
 
-  hide: =>
+  close: =>
     @menu?.release()
     @menu = null
 
   release: ->
-    $('body').unbind('mousedown', @hide)
+    $('body').unbind('mousedown', @close)
 
 module.exports = ContextMenu

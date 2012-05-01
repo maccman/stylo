@@ -141,26 +141,26 @@ this.require.define({"app/controllers/stage/context_menu":function(exports, requ
     ContextMenu.name = 'ContextMenu';
 
     ContextMenu.prototype.events = {
-      'contextmenu': 'show'
+      'contextmenu': 'open'
     };
 
     function ContextMenu(stage) {
       this.stage = stage;
-      this.hide = __bind(this.hide, this);
+      this.close = __bind(this.close, this);
 
       ContextMenu.__super__.constructor.call(this, {
         el: this.stage.el
       });
-      $('body').bind('mousedown', this.hide);
+      $('body').bind('mousedown', this.close);
     }
 
-    ContextMenu.prototype.show = function(e) {
+    ContextMenu.prototype.open = function(e) {
       var position;
       if (e.metaKey) {
         return;
       }
       e.preventDefault();
-      this.hide();
+      this.close();
       position = {
         left: e.pageX + 1,
         top: e.pageY + 1
@@ -169,7 +169,7 @@ this.require.define({"app/controllers/stage/context_menu":function(exports, requ
       return $('body').append(this.menu.el);
     };
 
-    ContextMenu.prototype.hide = function() {
+    ContextMenu.prototype.close = function() {
       var _ref;
       if ((_ref = this.menu) != null) {
         _ref.release();
@@ -178,7 +178,7 @@ this.require.define({"app/controllers/stage/context_menu":function(exports, requ
     };
 
     ContextMenu.prototype.release = function() {
-      return $('body').unbind('mousedown', this.hide);
+      return $('body').unbind('mousedown', this.close);
     };
 
     return ContextMenu;

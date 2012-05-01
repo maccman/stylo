@@ -77,11 +77,10 @@ class Color extends Property
 
   toString: ->
     if @r? and @g? and @b?
-      if @a?
+      if @a? and @a isnt 1
         "rgba(#{@r}, #{@g}, #{@b}, #{@a})"
       else
-        "rgb(#{@r}, #{@g}, #{@b})"
-
+        @toHex()
     else
       'transparent'
 

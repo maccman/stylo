@@ -14,10 +14,10 @@ class Text extends Element
       borderWidth: 1
       borderStyle: 'solid'
       borderColor: new Color(155,155,155)
-      boxShadow:   new Shadow(
+      boxShadow: [new Shadow(
         inset: true, x: 0, y: 1, blur: 2,
         color: new Color(0, 0, 0, 0.12)
-      )
+      )]
       backgroundColor: new Color.White
 
 class CheckBox extends Element

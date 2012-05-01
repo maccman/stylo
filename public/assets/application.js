@@ -13073,13 +13073,15 @@ this.require.define({"app/controllers/elements/input":function(exports, require,
         borderWidth: 1,
         borderStyle: 'solid',
         borderColor: new Color(155, 155, 155),
-        boxShadow: new Shadow({
-          inset: true,
-          x: 0,
-          y: 1,
-          blur: 2,
-          color: new Color(0, 0, 0, 0.12)
-        }),
+        boxShadow: [
+          new Shadow({
+            inset: true,
+            x: 0,
+            y: 1,
+            blur: 2,
+            color: new Color(0, 0, 0, 0.12)
+          })
+        ],
         backgroundColor: new Color.White
       };
     };
@@ -14012,7 +14014,7 @@ this.require.define({"app/controllers/inspector/border_radius":function(exports,
 }).call(this);
 ;}});
 this.require.define({"app/controllers/inspector/box_shadow":function(exports, require, module){(function() {
-  var BoxShadow, BoxShadowEdit, BoxShadowList, Collection, ColorPicker, Popup, PositionPicker, Shadow,
+  var BoxShadow, BoxShadowEdit, BoxShadowList, BoxShadowType, Collection, ColorPicker, PopupMenu, PositionPicker, Shadow,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -14025,7 +14027,7 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
 
   PositionPicker = require('lib/position_picker');
 
-  Popup = require('lib/popup');
+  PopupMenu = require('app/controllers/inspector/popup_menu');
 
   BoxShadowEdit = (function(_super) {
 
@@ -14114,6 +14116,46 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
 
   })(Spine.Controller);
 
+  BoxShadowType = (function(_super) {
+
+    __extends(BoxShadowType, _super);
+
+    BoxShadowType.name = 'BoxShadowType';
+
+    BoxShadowType.prototype.className = 'boxShadowType';
+
+    BoxShadowType.prototype.events = {
+      'click [data-type=outset]': 'choose',
+      'click [data-type=inset]': 'chooseInset'
+    };
+
+    function BoxShadowType() {
+      BoxShadowType.__super__.constructor.apply(this, arguments);
+      this.render();
+    }
+
+    BoxShadowType.prototype.render = function() {
+      return this.html(JST['app/views/inspector/box_shadow/menu'](this));
+    };
+
+    BoxShadowType.prototype.choose = function() {
+      this.trigger('choose', {
+        inset: false
+      });
+      return this.close();
+    };
+
+    BoxShadowType.prototype.chooseInset = function() {
+      this.trigger('choose', {
+        inset: true
+      });
+      return this.close();
+    };
+
+    return BoxShadowType;
+
+  })(PopupMenu);
+
   BoxShadowList = (function(_super) {
 
     __extends(BoxShadowList, _super);
@@ -14152,11 +14194,22 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
       return this.render();
     };
 
-    BoxShadowList.prototype.addShadow = function() {
-      this.shadows.push(this.current = new Shadow({
-        blur: 3
-      }));
-      return this.trigger('change', this.current);
+    BoxShadowList.prototype.addShadow = function(e) {
+      var menu,
+        _this = this;
+      menu = new BoxShadowType;
+      menu.bind('choose', function(options) {
+        options = $.extend({}, options, {
+          blur: 3
+        });
+        _this.current = new Shadow(options);
+        _this.shadows.push(_this.current);
+        return _this.trigger('change', _this.current);
+      });
+      return menu.open({
+        left: e.pageX,
+        top: e.pageY
+      });
     };
 
     BoxShadowList.prototype.removeShadow = function() {
@@ -14437,6 +14490,68 @@ this.require.define({"app/controllers/inspector/opacity":function(exports, requi
   })(Spine.Controller);
 
   module.exports = Opacity;
+
+}).call(this);
+;}});
+this.require.define({"app/controllers/inspector/popup_menu":function(exports, require, module){(function() {
+  var PopupMenu,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  PopupMenu = (function(_super) {
+
+    __extends(PopupMenu, _super);
+
+    PopupMenu.name = 'PopupMenu';
+
+    PopupMenu.open = function(position) {
+      return (new this).open(position);
+    };
+
+    PopupMenu.prototype.popupEvents = {
+      'mousedown': 'cancel'
+    };
+
+    function PopupMenu() {
+      this.close = __bind(this.close, this);
+      PopupMenu.__super__.constructor.apply(this, arguments);
+      this.delegateEvents(this.popupEvents);
+      this.el.addClass('popupMenu');
+      this.el.css({
+        position: 'absolute'
+      });
+    }
+
+    PopupMenu.prototype.open = function(position) {
+      if (position == null) {
+        position = {};
+      }
+      this.el.css(position);
+      $('body').append(this.el);
+      $('body').bind('mousedown', this.close);
+      return this;
+    };
+
+    PopupMenu.prototype.close = function() {
+      this.release();
+      return this;
+    };
+
+    PopupMenu.prototype.release = function() {
+      $('body').unbind('mousedown', this.close);
+      return PopupMenu.__super__.release.apply(this, arguments);
+    };
+
+    PopupMenu.prototype.cancel = function(e) {
+      return e.stopPropagation();
+    };
+
+    return PopupMenu;
+
+  })(Spine.Controller);
+
+  module.exports = PopupMenu;
 
 }).call(this);
 ;}});
@@ -15199,26 +15314,26 @@ this.require.define({"app/controllers/stage/context_menu":function(exports, requ
     ContextMenu.name = 'ContextMenu';
 
     ContextMenu.prototype.events = {
-      'contextmenu': 'show'
+      'contextmenu': 'open'
     };
 
     function ContextMenu(stage) {
       this.stage = stage;
-      this.hide = __bind(this.hide, this);
+      this.close = __bind(this.close, this);
 
       ContextMenu.__super__.constructor.call(this, {
         el: this.stage.el
       });
-      $('body').bind('mousedown', this.hide);
+      $('body').bind('mousedown', this.close);
     }
 
-    ContextMenu.prototype.show = function(e) {
+    ContextMenu.prototype.open = function(e) {
       var position;
       if (e.metaKey) {
         return;
       }
       e.preventDefault();
-      this.hide();
+      this.close();
       position = {
         left: e.pageX + 1,
         top: e.pageY + 1
@@ -15227,7 +15342,7 @@ this.require.define({"app/controllers/stage/context_menu":function(exports, requ
       return $('body').append(this.menu.el);
     };
 
-    ContextMenu.prototype.hide = function() {
+    ContextMenu.prototype.close = function() {
       var _ref;
       if ((_ref = this.menu) != null) {
         _ref.release();
@@ -15236,7 +15351,7 @@ this.require.define({"app/controllers/stage/context_menu":function(exports, requ
     };
 
     ContextMenu.prototype.release = function() {
-      return $('body').unbind('mousedown', this.hide);
+      return $('body').unbind('mousedown', this.close);
     };
 
     return ContextMenu;
@@ -17057,10 +17172,10 @@ this.require.define({"app/models/properties/color":function(exports, require, mo
 
     Color.prototype.toString = function() {
       if ((this.r != null) && (this.g != null) && (this.b != null)) {
-        if (this.a != null) {
+        if ((this.a != null) && this.a !== 1) {
           return "rgba(" + this.r + ", " + this.g + ", " + this.b + ", " + this.a + ")";
         } else {
-          return "rgb(" + this.r + ", " + this.g + ", " + this.b + ")";
+          return this.toHex();
         }
       } else {
         return 'transparent';
@@ -20056,6 +20171,57 @@ this.require.define({"app/parsers/import":function(exports, require, module){(fu
         }
       
         __out.push('\n</div>\n\n<footer>\n  <button class="plus">+</button>\n  <button class="minus">-</button>\n</footer>\n');
+      
+      }).call(this);
+      
+    }).call(__obj);
+    __obj.safe = __objSafe, __obj.escape = __escape;
+    return __out.join('');
+  };
+}).call(this);
+(function() {
+  this.JST || (this.JST = {});
+  this.JST["app/views/inspector/box_shadow/menu"] = function(__obj) {
+    if (!__obj) __obj = {};
+    var __out = [], __capture = function(callback) {
+      var out = __out, result;
+      __out = [];
+      callback.call(this);
+      result = __out.join('');
+      __out = out;
+      return __safe(result);
+    }, __sanitize = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else if (typeof value !== 'undefined' && value != null) {
+        return __escape(value);
+      } else {
+        return '';
+      }
+    }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+    __safe = __obj.safe = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else {
+        if (!(typeof value !== 'undefined' && value != null)) value = '';
+        var result = new String(value);
+        result.ecoSafe = true;
+        return result;
+      }
+    };
+    if (!__escape) {
+      __escape = __obj.escape = function(value) {
+        return ('' + value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      };
+    }
+    (function() {
+      (function() {
+      
+        __out.push('<div data-type="outset">Add Drop Shadow</div>\n<div data-type="inset">Add Inner Shadow</div>\n');
       
       }).call(this);
       

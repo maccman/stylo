@@ -59,7 +59,7 @@
   return this.require;
 }).call(this);
 this.require.define({"app/controllers/inspector/box_shadow":function(exports, require, module){(function() {
-  var BoxShadow, BoxShadowEdit, BoxShadowList, Collection, ColorPicker, Popup, PositionPicker, Shadow,
+  var BoxShadow, BoxShadowEdit, BoxShadowList, BoxShadowType, Collection, ColorPicker, PopupMenu, PositionPicker, Shadow,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -72,7 +72,7 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
 
   PositionPicker = require('lib/position_picker');
 
-  Popup = require('lib/popup');
+  PopupMenu = require('app/controllers/inspector/popup_menu');
 
   BoxShadowEdit = (function(_super) {
 
@@ -161,6 +161,46 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
 
   })(Spine.Controller);
 
+  BoxShadowType = (function(_super) {
+
+    __extends(BoxShadowType, _super);
+
+    BoxShadowType.name = 'BoxShadowType';
+
+    BoxShadowType.prototype.className = 'boxShadowType';
+
+    BoxShadowType.prototype.events = {
+      'click [data-type=outset]': 'choose',
+      'click [data-type=inset]': 'chooseInset'
+    };
+
+    function BoxShadowType() {
+      BoxShadowType.__super__.constructor.apply(this, arguments);
+      this.render();
+    }
+
+    BoxShadowType.prototype.render = function() {
+      return this.html(JST['app/views/inspector/box_shadow/menu'](this));
+    };
+
+    BoxShadowType.prototype.choose = function() {
+      this.trigger('choose', {
+        inset: false
+      });
+      return this.close();
+    };
+
+    BoxShadowType.prototype.chooseInset = function() {
+      this.trigger('choose', {
+        inset: true
+      });
+      return this.close();
+    };
+
+    return BoxShadowType;
+
+  })(PopupMenu);
+
   BoxShadowList = (function(_super) {
 
     __extends(BoxShadowList, _super);
@@ -199,11 +239,22 @@ this.require.define({"app/controllers/inspector/box_shadow":function(exports, re
       return this.render();
     };
 
-    BoxShadowList.prototype.addShadow = function() {
-      this.shadows.push(this.current = new Shadow({
-        blur: 3
-      }));
-      return this.trigger('change', this.current);
+    BoxShadowList.prototype.addShadow = function(e) {
+      var menu,
+        _this = this;
+      menu = new BoxShadowType;
+      menu.bind('choose', function(options) {
+        options = $.extend({}, options, {
+          blur: 3
+        });
+        _this.current = new Shadow(options);
+        _this.shadows.push(_this.current);
+        return _this.trigger('change', _this.current);
+      });
+      return menu.open({
+        left: e.pageX,
+        top: e.pageY
+      });
     };
 
     BoxShadowList.prototype.removeShadow = function() {

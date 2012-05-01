@@ -2,7 +2,7 @@ Collection     = require('lib/collection')
 Shadow         = require('app/models/properties/shadow')
 ColorPicker    = require('lib/color_picker')
 PositionPicker = require('lib/position_picker')
-Popup          = require('lib/popup')
+PopupMenu      = require('app/controllers/inspector/popup_menu')
 
 class BoxShadowEdit extends Spine.Controller
   className: 'edit'
@@ -71,6 +71,28 @@ class BoxShadowEdit extends Spine.Controller
     @$position?.release()
     super
 
+class BoxShadowType extends PopupMenu
+  className: 'boxShadowType'
+
+  events:
+    'click [data-type=outset]': 'choose'
+    'click [data-type=inset]': 'chooseInset'
+
+  constructor: ->
+    super
+    @render()
+
+  render: ->
+    @html JST['app/views/inspector/box_shadow/menu'](@)
+
+  choose: ->
+    @trigger 'choose', inset: false
+    @close()
+
+  chooseInset: ->
+    @trigger 'choose', inset: true
+    @close()
+
 class BoxShadowList extends Spine.Controller
   className: 'list'
 
@@ -97,9 +119,21 @@ class BoxShadowList extends Spine.Controller
     @trigger 'change', @current
     @render()
 
-  addShadow: ->
-    @shadows.push(@current = new Shadow(blur: 3))
-    @trigger 'change', @current
+  addShadow: (e) ->
+    menu = new BoxShadowType
+
+    menu.bind 'choose', (options) =>
+      options = $.extend({}, options, blur: 3)
+
+      @current = new Shadow(options)
+      @shadows.push(@current)
+
+      @trigger 'change', @current
+
+    menu.open(
+      left: e.pageX,
+      top:  e.pageY
+    )
 
   removeShadow: ->
     @shadows.remove(@current)

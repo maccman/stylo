@@ -2,8 +2,6 @@ A Photoshop replacement. Inspired by Keynote. Democratizing design.
 
 ##TODO
 
-FIX CONTEXT MENU
-
 Phase 1:
 
 * ✓ Move
@@ -54,6 +52,7 @@ Nice to have:
 * Layers?
 * ✓ Context menu
 * Similar distance snapping
+* Bootstrap integration
 
 ##Elements
 

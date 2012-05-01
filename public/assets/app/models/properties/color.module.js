@@ -177,10 +177,10 @@ this.require.define({"app/models/properties/color":function(exports, require, mo
 
     Color.prototype.toString = function() {
       if ((this.r != null) && (this.g != null) && (this.b != null)) {
-        if (this.a != null) {
+        if ((this.a != null) && this.a !== 1) {
           return "rgba(" + this.r + ", " + this.g + ", " + this.b + ", " + this.a + ")";
         } else {
-          return "rgb(" + this.r + ", " + this.g + ", " + this.b + ")";
+          return this.toHex();
         }
       } else {
         return 'transparent';

@@ -73,7 +73,7 @@ this.require.define({"app/controllers/stage/context_menu":function(exports, requ
     Menu.prototype.className = 'contextMenu';
 
     Menu.prototype.events = {
-      'mousedown': 'cancel',
+      'mousedown': 'cancelEvent',
       'click [data-type]': 'click'
     };
 
@@ -97,7 +97,7 @@ this.require.define({"app/controllers/stage/context_menu":function(exports, requ
       }
     };
 
-    Menu.prototype.cancel = function(e) {
+    Menu.prototype.cancelEvent = function(e) {
       e.preventDefault();
       return e.stopPropagation();
     };

@@ -77,18 +77,21 @@ this.require.define({"lib/popup":function(exports, require, module){(function() 
 
     Popup.prototype.width = 400;
 
-    function Popup() {
-      this.remove = __bind(this.remove, this);
+    Popup.prototype.popupEvents = {
+      'click .close': 'close',
+      'mousedown': 'cancelEvent'
+    };
 
+    function Popup() {
       this.close = __bind(this.close, this);
 
       this.open = __bind(this.open, this);
       Popup.__super__.constructor.apply(this, arguments);
-      this.el.delegate('click', '.close', this.close);
+      this.delegateEvents(this.popupEvents);
       this.el.addClass('popup');
       this.el.css({
         position: 'absolute'
-      }).hide();
+      });
     }
 
     Popup.prototype.open = function(position) {
@@ -106,17 +109,14 @@ this.require.define({"lib/popup":function(exports, require, module){(function() 
       this.el.css({
         left: left,
         top: top
-      });
+      }).hide();
       $('body').append(this.el);
-      this.el.gfxRaisedIn();
-      return this.delay(function() {
-        return $('body').mousedown(this.remove);
-      });
+      $('body').bind('mousedown', this.close);
+      return this.el.gfxRaisedIn();
     };
 
     Popup.prototype.close = function() {
       var _this = this;
-      $('body').unbind('mousedown', this.remove);
       this.el.gfxRaisedOut();
       return this.el.queueNext(function() {
         _this.release();
@@ -124,14 +124,17 @@ this.require.define({"lib/popup":function(exports, require, module){(function() 
       });
     };
 
-    Popup.prototype.remove = function(e) {
-      if (!$(e.target).closest(this.el).length) {
-        return this.close();
-      }
+    Popup.prototype.release = function() {
+      $('body').unbind('mousedown', this.close);
+      return Popup.__super__.release.apply(this, arguments);
     };
 
     Popup.prototype.isOpen = function() {
       return !!this.el.parent().length;
+    };
+
+    Popup.prototype.cancelEvent = function(e) {
+      return e.stopPropagation();
     };
 
     return Popup;

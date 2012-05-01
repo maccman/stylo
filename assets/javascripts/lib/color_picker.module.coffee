@@ -261,14 +261,14 @@ class ColorPicker extends Popup
 
   save: (e) ->
     e.preventDefault()
-    @close()
     @trigger 'save', @color
+    @close()
 
   cancel: (e) ->
     e.preventDefault()
-    @close()
     @trigger 'cancel'
     @trigger 'change', @original
+    @close()
 
   release: ->
     super

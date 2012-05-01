@@ -437,15 +437,15 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
     ColorPicker.prototype.save = function(e) {
       e.preventDefault();
-      this.close();
-      return this.trigger('save', this.color);
+      this.trigger('save', this.color);
+      return this.close();
     };
 
     ColorPicker.prototype.cancel = function(e) {
       e.preventDefault();
-      this.close();
       this.trigger('cancel');
-      return this.trigger('change', this.original);
+      this.trigger('change', this.original);
+      return this.close();
     };
 
     ColorPicker.prototype.release = function() {

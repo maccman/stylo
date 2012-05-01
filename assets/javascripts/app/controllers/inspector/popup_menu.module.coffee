@@ -2,12 +2,12 @@ class PopupMenu extends Spine.Controller
   @open: (position) ->
     (new this).open(position)
 
-  popupEvents:
-    'mousedown': 'cancel'
+  popupMenuEvents:
+    'mousedown': 'cancelEvent'
 
   constructor: ->
     super
-    @delegateEvents(@popupEvents)
+    @delegateEvents(@popupMenuEvents)
     @el.addClass('popupMenu')
     @el.css(position: 'absolute')
 
@@ -25,7 +25,7 @@ class PopupMenu extends Spine.Controller
     $('body').unbind('mousedown', @close)
     super
 
-  cancel: (e) ->
+  cancelEvent: (e) ->
     e.stopPropagation()
 
 module.exports = PopupMenu

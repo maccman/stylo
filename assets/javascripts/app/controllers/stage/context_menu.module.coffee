@@ -2,7 +2,7 @@ class Menu extends Spine.Controller
   className: 'contextMenu'
 
   events:
-    'mousedown': 'cancel'
+    'mousedown': 'cancelEvent'
     'click [data-type]': 'click'
 
   constructor: (@stage, position) ->
@@ -24,7 +24,7 @@ class Menu extends Spine.Controller
     unless item.hasClass('disabled')
       @[type]()
 
-  cancel: (e) ->
+  cancelEvent: (e) ->
     # Stop the menu closing immediately
     e.preventDefault()
     e.stopPropagation()

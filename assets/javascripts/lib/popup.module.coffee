@@ -4,11 +4,15 @@ class Popup extends Spine.Controller
 
   width: 400
 
+  popupEvents:
+    'click .close': 'close'
+    'mousedown': 'cancelEvent'
+
   constructor: ->
     super
-    @el.delegate 'click', '.close', @close
+    @delegateEvents(@popupEvents)
     @el.addClass('popup')
-    @el.css(position: 'absolute').hide()
+    @el.css(position: 'absolute')
 
   open: (position = {left: 0, top: 0}) =>
     left = position.left or position.clientX
@@ -17,26 +21,26 @@ class Popup extends Spine.Controller
     left -= @width + 17
     top  -= 5
 
-    @el.css(left: left, top: top)
+    @el.css(left: left, top: top).hide()
     $('body').append(@el)
+    $('body').bind('mousedown', @close)
+
     @el.gfxRaisedIn()
 
-    @delay ->
-      $('body').mousedown(@remove)
-
   close: =>
-    $('body').unbind('mousedown', @remove)
     @el.gfxRaisedOut()
     @el.queueNext =>
       @release()
       @trigger 'close'
 
-  remove: (e) =>
-    # Hide unless the click was on the popup
-    unless $(e.target).closest(@el).length
-      @close()
+  release: ->
+    $('body').unbind('mousedown', @close)
+    super
 
   isOpen: ->
     !!@el.parent().length
+
+  cancelEvent: (e) ->
+    e.stopPropagation()
 
 module.exports = Popup

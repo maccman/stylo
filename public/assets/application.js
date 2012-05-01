@@ -11840,15 +11840,15 @@ this.require.define({"lib/color_picker":function(exports, require, module){(func
 
     ColorPicker.prototype.save = function(e) {
       e.preventDefault();
-      this.close();
-      return this.trigger('save', this.color);
+      this.trigger('save', this.color);
+      return this.close();
     };
 
     ColorPicker.prototype.cancel = function(e) {
       e.preventDefault();
-      this.close();
       this.trigger('cancel');
-      return this.trigger('change', this.original);
+      this.trigger('change', this.original);
+      return this.close();
     };
 
     ColorPicker.prototype.release = function() {
@@ -12198,18 +12198,21 @@ this.require.define({"lib/popup":function(exports, require, module){(function() 
 
     Popup.prototype.width = 400;
 
-    function Popup() {
-      this.remove = __bind(this.remove, this);
+    Popup.prototype.popupEvents = {
+      'click .close': 'close',
+      'mousedown': 'cancelEvent'
+    };
 
+    function Popup() {
       this.close = __bind(this.close, this);
 
       this.open = __bind(this.open, this);
       Popup.__super__.constructor.apply(this, arguments);
-      this.el.delegate('click', '.close', this.close);
+      this.delegateEvents(this.popupEvents);
       this.el.addClass('popup');
       this.el.css({
         position: 'absolute'
-      }).hide();
+      });
     }
 
     Popup.prototype.open = function(position) {
@@ -12227,17 +12230,14 @@ this.require.define({"lib/popup":function(exports, require, module){(function() 
       this.el.css({
         left: left,
         top: top
-      });
+      }).hide();
       $('body').append(this.el);
-      this.el.gfxRaisedIn();
-      return this.delay(function() {
-        return $('body').mousedown(this.remove);
-      });
+      $('body').bind('mousedown', this.close);
+      return this.el.gfxRaisedIn();
     };
 
     Popup.prototype.close = function() {
       var _this = this;
-      $('body').unbind('mousedown', this.remove);
       this.el.gfxRaisedOut();
       return this.el.queueNext(function() {
         _this.release();
@@ -12245,14 +12245,17 @@ this.require.define({"lib/popup":function(exports, require, module){(function() 
       });
     };
 
-    Popup.prototype.remove = function(e) {
-      if (!$(e.target).closest(this.el).length) {
-        return this.close();
-      }
+    Popup.prototype.release = function() {
+      $('body').unbind('mousedown', this.close);
+      return Popup.__super__.release.apply(this, arguments);
     };
 
     Popup.prototype.isOpen = function() {
       return !!this.el.parent().length;
+    };
+
+    Popup.prototype.cancelEvent = function(e) {
+      return e.stopPropagation();
     };
 
     return Popup;
@@ -14572,14 +14575,14 @@ this.require.define({"app/controllers/inspector/popup_menu":function(exports, re
       return (new this).open(position);
     };
 
-    PopupMenu.prototype.popupEvents = {
-      'mousedown': 'cancel'
+    PopupMenu.prototype.popupMenuEvents = {
+      'mousedown': 'cancelEvent'
     };
 
     function PopupMenu() {
       this.close = __bind(this.close, this);
       PopupMenu.__super__.constructor.apply(this, arguments);
-      this.delegateEvents(this.popupEvents);
+      this.delegateEvents(this.popupMenuEvents);
       this.el.addClass('popupMenu');
       this.el.css({
         position: 'absolute'
@@ -14606,7 +14609,7 @@ this.require.define({"app/controllers/inspector/popup_menu":function(exports, re
       return PopupMenu.__super__.release.apply(this, arguments);
     };
 
-    PopupMenu.prototype.cancel = function(e) {
+    PopupMenu.prototype.cancelEvent = function(e) {
       return e.stopPropagation();
     };
 
@@ -15309,7 +15312,7 @@ this.require.define({"app/controllers/stage/context_menu":function(exports, requ
     Menu.prototype.className = 'contextMenu';
 
     Menu.prototype.events = {
-      'mousedown': 'cancel',
+      'mousedown': 'cancelEvent',
       'click [data-type]': 'click'
     };
 
@@ -15333,7 +15336,7 @@ this.require.define({"app/controllers/stage/context_menu":function(exports, requ
       }
     };
 
-    Menu.prototype.cancel = function(e) {
+    Menu.prototype.cancelEvent = function(e) {
       e.preventDefault();
       return e.stopPropagation();
     };

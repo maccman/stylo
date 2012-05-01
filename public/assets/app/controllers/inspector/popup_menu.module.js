@@ -74,14 +74,14 @@ this.require.define({"app/controllers/inspector/popup_menu":function(exports, re
       return (new this).open(position);
     };
 
-    PopupMenu.prototype.popupEvents = {
-      'mousedown': 'cancel'
+    PopupMenu.prototype.popupMenuEvents = {
+      'mousedown': 'cancelEvent'
     };
 
     function PopupMenu() {
       this.close = __bind(this.close, this);
       PopupMenu.__super__.constructor.apply(this, arguments);
-      this.delegateEvents(this.popupEvents);
+      this.delegateEvents(this.popupMenuEvents);
       this.el.addClass('popupMenu');
       this.el.css({
         position: 'absolute'
@@ -108,7 +108,7 @@ this.require.define({"app/controllers/inspector/popup_menu":function(exports, re
       return PopupMenu.__super__.release.apply(this, arguments);
     };
 
-    PopupMenu.prototype.cancel = function(e) {
+    PopupMenu.prototype.cancelEvent = function(e) {
       return e.stopPropagation();
     };
 

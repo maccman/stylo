@@ -42,12 +42,11 @@ Phase 3:
 
 Nice to have:
 
+* HTML import
 * ✓ Keyboard shortcuts
 * Versioning
-* Exporting HTML?
 * ✓ Exporting CSS
 * Share (dropbox/email?)
-* Clone HTML components
 * WebFonts
 * Layers?
 * ✓ Context menu
@@ -77,20 +76,6 @@ Nice to have:
 * ✓ You can have negative widths
 
 -------------------------------------------------------------------------------------------------------------------------------------
-
-##Rulers & Snap
-
-When moving element - cycle through all the other elements, compare the sides - inject rulers if necessary. Also show rulers for center of page. Need to think about how multiple selected items works.
-
-Two types of snapping:
-
-* Line snapping to:
-  * Center of page (x/y) axis
-  * Bottom/left/right side of pages?
-  * Sides of elements?
-  * Middle of elements
-* Width snapping:
-  * Detect distance between elements - snap when two distances are the same.
 
 #Save to png
 

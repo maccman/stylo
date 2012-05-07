@@ -110,8 +110,11 @@ this.require.define({"app/models/properties/shadow":function(exports, require, m
     Shadow.prototype.toValue = function() {
       var value;
       return value = {
+        inset: this.inset,
         x: this.x,
         y: this.y,
+        blur: this.blur,
+        spread: this.spread,
         color: this.color
       };
     };

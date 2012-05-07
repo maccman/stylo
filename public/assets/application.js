@@ -13207,23 +13207,34 @@ this.require.define({"app/controllers/elements/text":function(exports, require, 
       return $.extend({}, Text.__super__.defaults.apply(this, arguments), result);
     };
 
+    Text.prototype.startEditing = function() {
+      if (this.editing) {
+        return;
+      }
+      Text.__super__.startEditing.apply(this, arguments);
+      return this.autoSize();
+    };
+
     Text.prototype.stopEditing = function() {
       if (!this.editing) {
         return;
       }
       Text.__super__.stopEditing.apply(this, arguments);
       if (this.text()) {
-        return this.fitToText();
+        return this.fixSize();
       } else {
         return this.remove();
       }
     };
 
-    Text.prototype.fitToText = function() {
-      this.el.css({
+    Text.prototype.autoSize = function() {
+      return this.el.css({
         width: 'auto',
         height: 'auto'
       });
+    };
+
+    Text.prototype.fixSize = function() {
       return this.set({
         width: this.el.outerWidth(),
         height: this.el.outerHeight()
@@ -17316,8 +17327,11 @@ this.require.define({"app/models/properties/shadow":function(exports, require, m
     Shadow.prototype.toValue = function() {
       var value;
       return value = {
+        inset: this.inset,
         x: this.x,
         y: this.y,
+        blur: this.blur,
+        spread: this.spread,
         color: this.color
       };
     };

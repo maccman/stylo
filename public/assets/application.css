@@ -498,6 +498,13 @@ body {
   overflow: hidden;
   white-space: nowrap;
 }
+#app .inspector .list .item .preview {
+  margin: 0 3px 0 0;
+  width: 8px;
+  height: 8px;
+  display: inline-block;
+  border: 1px solid rgba(0,0,0,0.10);
+}
 #app .inspector .list .item:last-child {
   border-bottom: none;
 }
@@ -510,12 +517,8 @@ body {
   background: -moz-linear-gradient(top, #bcc6de, #9ba8c7);
   background: linear-gradient(top, #bcc6de, #9ba8c7);
 }
-#app .inspector .list .item .preview {
-  margin: 0 3px 0 0;
-  width: 8px;
-  height: 8px;
-  display: inline-block;
-  border: 1px solid rgba(0,0,0,0.10);
+#app .inspector .list .item.selected .preview {
+  border: none;
 }
 #app .inspector .list footer {
   border-top: 1px solid rgba(0,0,0,0.15);

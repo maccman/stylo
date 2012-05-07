@@ -16,18 +16,26 @@ class Text extends Rectangle
 
     $.extend({}, super, result)
 
+  startEditing: ->
+    return if @editing
+    super
+
+    @autoSize()
+
   stopEditing: ->
     return unless @editing
     super
 
     if @text()
-      @fitToText()
+      @fixSize()
     else
       # Remove the element if empty
       @remove()
 
-  fitToText: ->
+  autoSize: ->
     @el.css(width: 'auto', height: 'auto')
+
+  fixSize: ->
     @set(
       width:  @el.outerWidth(),
       height: @el.outerHeight()

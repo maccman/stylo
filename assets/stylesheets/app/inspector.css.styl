@@ -180,6 +180,14 @@
       border-bottom: 1px solid rgba(0, 0, 0, 0.2)
       ellipsis()
 
+      .preview {
+        margin: 0 3px 0 0
+        width: 8px
+        height: 8px
+        display: inline-block
+        border: 1px solid rgba(0, 0, 0, 0.1)
+      }
+
       &:last-child {
         border-bottom: none
       }
@@ -190,12 +198,8 @@
         vbg-gradient(#BCC6DE, #9BA8C7)
       }
 
-      .preview {
-        margin: 0 3px 0 0
-        width: 8px
-        height: 8px
-        display: inline-block
-        border: 1px solid rgba(0, 0, 0, 0.1)
+      &.selected .preview {
+        border: none
       }
    }
 

@@ -23,8 +23,11 @@ class Shadow extends Property
 
   toValue: ->
     value =
+      inset: @inset
       x: @x
       y: @y
+      blur: @blur
+      spread: @spread
       color: @color
 
 module.exports = Shadow

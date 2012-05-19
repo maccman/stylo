@@ -69,6 +69,7 @@ Nice to have:
 
 * Background image
 * Background gradient rotation
+* Drop image needs background image set
 * Color inspector movable window
 * Dragging right and up doesn't select elements - offset by the header
 * We want the resize to be around the selection?

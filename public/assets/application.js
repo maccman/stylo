@@ -14632,6 +14632,31 @@ this.require.define({"app/controllers/inspector/popup_menu":function(exports, re
 
 }).call(this);
 ;}});
+this.require.define({"app/controllers/inspector/stage":function(exports, require, module){(function() {
+  var StageInspector,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  StageInspector = (function(_super) {
+
+    __extends(StageInspector, _super);
+
+    StageInspector.name = 'StageInspector';
+
+    function StageInspector() {
+      return StageInspector.__super__.constructor.apply(this, arguments);
+    }
+
+    StageInspector.prototype.className = 'stageInspector';
+
+    return StageInspector;
+
+  })(Spine.Controller);
+
+  module.exports = StageInspector;
+
+}).call(this);
+;}});
 this.require.define({"app/controllers/inspector/text_position":function(exports, require, module){(function() {
   var TextPosition,
     __hasProp = {}.hasOwnProperty,

@@ -51,9 +51,9 @@ class App < Sinatra::Base
     end
   end
 
-  use Rack::Auth::Basic, "Protected Area" do |username, password|
-    (username == 'dragon' && password == 'tamer')
-  end
+  # use Rack::Auth::Basic, "Protected Area" do |username, password|
+  #   (username == 'dragon' && password == 'tamer')
+  # end
 
   get '/' do
     send_file File.join(settings.public_folder, 'index.html')

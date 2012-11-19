@@ -22,6 +22,7 @@ class App < Sinatra::Base
   set :show_exceptions, true
   set :sprockets, Sprockets::Environment.new(root)
   set :precompile, [ /\w+\.(?!js|css).+/, /application.(css|js)$/ ]
+  set :protection, false
 
   configure do
     sprockets.append_path(root.join('assets', 'javascripts'))

@@ -151,8 +151,8 @@ class Stage extends Spine.Controller
   center: ->
     area = @area()
     position =
-      left: area.width / 2
-      top:  area.height / 2
+      left: Math.floor(area.width / 2)
+      top:  Math.floor(area.height / 2)
 
   # Properties
 

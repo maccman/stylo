@@ -84,8 +84,8 @@ class VerticalCenterSnap extends Snap
   type: 'vertical'
 
   snapIn: (area, difference) ->
-    left   = area.left + (area.width / 2)
-    middle = @stage.area().width / 2
+    left   = Math.floor(area.left + (area.width / 2))
+    middle = Math.floor(@stage.area().width / 2)
 
     # Vertical center of stage
     if @withinThreshold(left - middle)
@@ -98,8 +98,8 @@ class HorizontalCenterSnap extends Snap
   type: 'horizontal'
 
   snapIn: (area, difference) ->
-    top    = area.top + (area.height / 2)
-    middle = @stage.area().height / 2
+    top    = Math.floor(area.top + (area.height / 2))
+    middle = Math.floor(@stage.area().height / 2)
 
     # Horizontal center of stage
     if @withinThreshold(top - middle)
@@ -159,7 +159,7 @@ class HorizontalElementSnap extends Snap
     for area, i in areas
       areas[i] =
         top:    area.top
-        middle: area.top + area.height / 2
+        middle: Math.floor(area.top + area.height / 2)
         bottom: area.top + area.height
 
     current = areas.shift()
@@ -193,7 +193,7 @@ class VerticalElementSnap extends Snap
     for area, i in areas
       areas[i] =
         left:   area.left
-        middle: area.left + area.width / 2
+        middle: Math.floor(area.left + area.width / 2)
         right:  area.left + area.width
 
     current = areas.shift()

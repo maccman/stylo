@@ -36,6 +36,8 @@ class Resizing extends Spine.Controller
 
   events:
     'drag.resize': 'resize'
+    'start.resize': 'save'
+    'end.resize': 'save'
 
   constructor: (@element) ->
     super(el: @element.el)
@@ -98,14 +100,14 @@ class Resizing extends Spine.Controller
         area.left   += position.left
 
     if lockAR
-      # TODO - FIXME, this doesn't lock AR properly
-      area.width  = Math.max(area.width, area.height)
-      area.height = area.width
+      area.width = @area.width * area.height / @area.height
 
     # Make sure we can't have negative widths/heights
     area.width  = Math.max(0, area.width)
     area.height = Math.max(0, area.height)
 
     @element.resize(area)
+  save: ->
+    @area = @element.area()
 
 module.exports = Resizing

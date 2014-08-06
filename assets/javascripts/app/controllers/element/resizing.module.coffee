@@ -62,40 +62,18 @@ class Resizing extends Spine.Controller
   resize: (e, type, position, lockAR) ->
     area = @element.area()
 
-    switch type
-      when 'tl'
-        area.width  -= position.left
-        area.height -= position.top
+    switch type[0]
+      when 't'
         area.top    += position.top
-        area.left   += position.left
-
-      when 'tt'
         area.height -= position.top
-        area.top    += position.top
-
-      when 'tr'
-        area.width  += position.left
-        area.height -= position.top
-        area.top    += position.top
-
-      when 'rr'
-        area.width  += position.left
-
-      when 'br'
-        area.width  += position.left
+      when 'b'
         area.height += position.top
-
-      when 'bb'
-        area.height += position.top
-
-      when 'bl'
-        area.width  -= position.left
-        area.height += position.top
-        area.left   += position.left
-
-      when 'll'
+    switch type[1]
+      when 'l'
         area.width  -= position.left
         area.left   += position.left
+      when 'r'
+        area.width  += position.left
 
     if lockAR
       # TODO - FIXME, this doesn't lock AR properly
